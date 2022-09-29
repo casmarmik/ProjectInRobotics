@@ -1,4 +1,4 @@
-To start gathering feed from camera run:
+To start gathering feed from camera first start a roscore then run:
 ```
 roslaunch openni_launch openni.launch
 ```
