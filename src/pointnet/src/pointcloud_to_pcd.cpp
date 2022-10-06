@@ -143,6 +143,8 @@ public:
     bool savePCD(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res)
     {
         save_ = true;
+        res.message = "Saved point cloud";
+        res.success = true;
         return true;
     }
 
@@ -151,6 +153,7 @@ public:
     {
         // Check if a prefix parameter is defined for output file names.
         ros::NodeHandle priv_nh("~");
+        priv_nh.setParam("prefix", "/home/marcus/pir/ros_ws/src/pointnet/data/");
         if (priv_nh.getParam("prefix", prefix_))
         {
             ROS_INFO_STREAM("PCD file prefix is: " << prefix_);

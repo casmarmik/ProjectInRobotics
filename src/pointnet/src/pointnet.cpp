@@ -20,6 +20,17 @@ namespace pointnet
     }
 } // namespace pointnet
 
+pcl::PointCloud<pcl::PointXYZ>::Ptr readPCDFile(std::string filepath)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filepath, *cloud) == -1) //* load the file
+  {
+    std::cout << "Couldn't read file " << filepath << std::endl;;
+    return NULL;
+  }
+  return cloud;
+}
+
 
 int main(int argc, char **argv)
 {
@@ -29,12 +40,14 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
   pointnet::PointNet pn(nh);
 
+  std::string filepath = "/home/marcus/pir/ros_ws/src/pointnet/data/1665043838010637.pcd";
   
-  while (ros::ok())
-  {
-    ros::Duration(0.01).sleep();
-    ros::spinOnce();
-  }
+  
+  // while (ros::ok())
+  // {
+  //   ros::Duration(0.01).sleep();
+  //   ros::spinOnce();
+  // }
 
 
   return 0;
