@@ -1,3 +1,0 @@
-;FOLD sth_PLC Init
-;dosth
-;ENDFOLD (sth_PLC Init)

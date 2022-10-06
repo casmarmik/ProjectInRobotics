@@ -1,3 +1,0 @@
-;FOLD sth PLC Loop
-;dosth
-;ENDFOLD (sth PLC Loop)

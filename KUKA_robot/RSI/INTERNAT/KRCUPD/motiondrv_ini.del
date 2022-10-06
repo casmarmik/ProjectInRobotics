@@ -1,9 +1,0 @@
-[Version]
-Version=1.0.1
-Type=Block
-
-[DeleteStandStillfromEMI_DRIVERS]
-Type=Cut
-Start=RSI_MOVECORR,mdrStandStill.o
-End=RSI_MOVECORR,mdrStandStill.o
-ErrorsAsWarnings = TRUE

@@ -1,1 +1,0 @@
-RSI_MOVECORR,mdrStandStill.o

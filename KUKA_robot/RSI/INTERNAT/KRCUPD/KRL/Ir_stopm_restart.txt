@@ -1,3 +1,0 @@
-;FOLD sth
-;dosth
-;ENDFOLD ;(sth)

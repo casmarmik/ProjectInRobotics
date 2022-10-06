@@ -1,9 +1,0 @@
-;=======================
-;VERSION=1.0.0
-;for upgrading the RSI Var
-;Changed by: HD; Modtime:    27.09.2008
-;=======================
-
-GLOBAL BOOL RSIERRMSG=
-GLOBAL BOOL RSILOGCONTEXT=
-GLOBAL INT RSITECHIDX=
