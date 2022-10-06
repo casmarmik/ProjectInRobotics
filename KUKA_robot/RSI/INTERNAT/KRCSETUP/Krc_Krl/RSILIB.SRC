@@ -1,0 +1,6734 @@
+&ACCESS R
+&REL 436
+&PARAM DISKPATH = TP/RSI
+DEFFCT BOOL rsilib( )
+;# Library Name: RSILIB
+;# Version: 2.1.0
+;# Copyright (C) 2006 KUKA Roboter GmbH
+;# All rights reserved
+ENDFCT
+
+;##General RSI commands:
+;#- RSI_PERSIST
+;#- RSI_UPDATE
+;#- RSI_TESTMODULE
+;# RSI_TESTRSILIB
+;##
+;##RSI movement commands:
+;# RSI_SKIPPTP
+;# RSI_RETPTP
+;# RSI_PTPREL
+;# RSI_SKIPLIN
+;# RSI_RETLIN
+;# RSI_LINREL
+;# RSI_SKIPCIRC
+;# RSI_RETCIRC
+;# RSI_CIRCREL
+;# RSI_MOVESENS
+;# ST_BREAKMOVE
+;##
+;##RSI objects:
+;## Data accessing objects:
+;#  ST_DIGIN
+;#  ST_DIGOUT
+;#  ST_ANIN
+;#  ST_ANOUT
+;#  ST_SEN_PINT
+;#  ST_SEN_PREA
+;#  ST_POSACT
+;#  ST_AXISACT
+;#  ST_SOURCE
+;#  ST_GEARTORQUE
+;#  ST_MOTORCURRENT
+;#  ST_STATUS
+;#  ST_OV_PRO
+;##
+;## Signal processing objects:
+;##  Transformations:
+;#-  ST_GENTRANS
+;#-  ST_SN2TOOL
+;#-  ST_SN2BASE
+;#-  ST_SN2WORLD
+;#-  ST_SN2TTS
+;#   ST_TRAFO_USERFRAME
+;#   ST_TRAFO_ROBFRAME
+;##
+;##  Logic operation objects:
+;#   ST_AND
+;#   ST_OR
+;#   ST_XOR
+;#   ST_NOT
+;##
+;##  Bitwise logic operation objects:
+;#   ST_BAND
+;#   ST_BOR
+;#   ST_BCOMPL
+;##
+;##  Compare operation objects:
+;#   ST_EQUAL
+;#   ST_LESS
+;#   ST_GREATER
+;##
+;##  Control objects:
+;#   ST_P
+;#   ST_PD
+;#   ST_I
+;#   ST_D
+;#-  ST_IEUL
+;#   ST_PID
+;#   ST_PT1
+;#   ST_PT2
+;#   ST_GENCTRL
+;#   ST_IIRFILTER
+;##
+;##  Math operation objects:
+;#   ST_SUM
+;#   ST_MULTI
+;#   ST_ABS
+;#   ST_POW
+;#   ST_SIN
+;#   ST_COS
+;#   ST_TAN
+;#   ST_ASIN
+;#   ST_ACOS
+;#   ST_ATAN
+;#   ST_EXP
+;#   ST_LOG
+;#   ST_CEIL
+;#   ST_FLOOR
+;#   ST_ROUND
+;#   ST_ATAN2
+;##
+;##  Others:
+;#   ST_CONTAINER
+;#   ST_TIMER
+;#   ST_LIMIT
+;#-  ST_SATURATION
+;#   ST_MINMAX
+;#   ST_DELAY
+;#   ST_SIGNALSWITCH
+;#   ST_ETHERNET
+;##
+;##
+;## Action objects:
+;#  ST_MAP2OV_PRO
+;#  ST_STOP
+;#  ST_MAP2SEN_PINT
+;#  ST_MAP2SEN_PREA
+;#  ST_MAP2DIGOUT
+;#  ST_MAP2ANOUT
+;#  ST_SETDIGOUT
+;#  ST_RESETDIGOUT
+;#  ST_POSCORR
+;#  ST_AXISCORR
+;#  ST_MONITOR
+;##
+;##
+;## RSI linking commands:
+;#    RSI_NEWLINK
+;#    RSI_DELLINK
+;##
+;## RSI Object concerning commands:
+;#    RSI_SETPARAM
+;#    RSI_GETPARAM
+;#    RSI_GETPARAMINT
+;##
+;## No longer supported commands:
+;#    ST_ON
+;#    ST_ON1
+;#    ST_ANAIN
+;#    ST_PATHCORR
+;#    ST_VEL
+;#    ST_ENABLE
+;#    ST_DISABLE
+;#    ST_MOVESENS
+;#    ST_SETPARAM
+;#    ST_GETPARAM
+;#    ST_NEWLINK
+;#    ST_DELLINK
+;##
+
+;# Function:
+;# RSI_PERSIST
+;#
+;# Description:
+;# Toggle for normal and persistent mode. In persistent 
+;# mode RSI objects are not destroyed when the KRL program 
+;# is resetted or closed.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR RSI_PERSIST (pFlag:IN)
+;#
+;# Parameters:
+;# IN pFlag (BOOL): Persistence mode
+;# FALSE: Standard (Default)
+;# TRUE: Persistant
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK: Successful
+;#
+
+GLOBAL DEFFCT RSIERR RSI_PERSIST(pFlag:IN)
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+BOOL pFlag
+
+WAIT SEC 0
+
+fctName[]="EFC_rsi_krlPersist"
+msgTxt[]="RSI_PERSIST -> "
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],pFlag)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+WAIT SEC 0.015
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_UPDATE
+;#
+;# Description:
+;# Updates the calling order.
+;# The calling order is defined by the linkage of RSI 
+;# objects. That is the order the RSI objects are executed  
+;# every sensor cycle. Updating the calling order is 
+;# normally done automatically by the RSI framework.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR RSI_UPDATE()
+;#
+;# Parameters:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK: Successful
+;#
+
+GLOBAL DEFFCT RSIERR RSI_UPDATE()
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+WAIT SEC 0
+
+fctName[]="EFC_rsi_krlUpdate"
+msgTxt[]="RSI_UPDATE -> "
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_TESTMODULE
+;#
+;# Description:
+;# Looks if a module specified by a filename is loaded 
+;# If not loaded a GUI message is displayed.
+;# This command works too if the RSI framework is not 
+;# loaded.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT BOOL RSI_TESTMODULE(MODNAME[]:OUT,SFLAG:IN)
+;#
+;# Parameters:
+;# IN MODNAME (CHAR[]): Module filename
+;# IN SFLAG (BOOL): Stop flag prevents program to continue
+;#
+;# Return Type:
+;# BOOL
+;#
+;# Return Values:
+;# TRUE:  Module loaded
+;# FALSE: Module not loaded
+;#
+
+GLOBAL DEFFCT BOOL RSI_TESTMODULE(MODULENAME[]:OUT,SFLAG:IN)
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+CHAR moduleName[]
+BOOL sFlag
+
+WAIT SEC 0
+
+fctName[]="EFC_rsi_krlTestMod"
+msgTxt[]="RSI_TESTMODULE -> "
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],MODULENAME[],SFLAG)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return FALSE;
+ENDIF
+IF SFLAG THEN
+RETURN TRUE
+ENDIF
+RETURN FALSE
+ENDFCT
+
+;# Function:
+;# RSI_TESTRSILIB
+;#
+;# Description:
+;# Looks if RSI base framework is loaded.
+;# If not loaded a GUI message is displayed.
+;# 
+;# Declaration:
+;# GLOBAL DEFFCT BOOL RSI_TESTRSILIB(SFLAG:IN)
+;#
+;# Parameters:
+;# IN SFLAG (BOOL): Stop flag prevents program to continue
+;#
+;# Return Type:
+;# BOOL
+;#
+;# Return Values:
+;# TRUE:  RSI module loaded
+;# FALSE  RSI module not loaded
+;#
+
+GLOBAL DEFFCT BOOL RSI_TESTRSILIB(SFLAG:IN)
+CHAR MODULENAME[8]
+BOOL RET,SFLAG
+
+MODULENAME[]="RSI.o"
+RET=RSI_TESTMODULE(MODULENAME[],SFLAG)
+
+RETURN RET
+ENDFCT
+
+;# Function:
+;# RSI_SKIPPTP
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a PTP movement to the specified point.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot continues with the next 
+;# command without returning to the start position.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_SKIPPTP(E6P:IN)
+;#
+;# Parameters:
+;# IN E6P (E6POS): Destination point of the PTP movement
+;# IN BINT (BOOL): Flag for returning to $POS_INT
+;#
+
+GLOBAL DEF RSI_SKIPPTP(E6P:IN, BINT:IN)
+DECL E6POS E6P
+BOOL BINT
+
+IF (VARSTATE("BINT") == #DECLARED) THEN
+ BINT=TRUE
+ENDIF
+
+IF BINT THEN
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(TRUE)
+ELSE
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(FALSE)
+ENDIF
+PTPBREAKSUB(E6P)
+END
+
+;# Function:
+;# RSI_RETPTP
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a PTP movement to the specified point.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot returns to the start 
+;# position. 
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_RETPTP(E6P:IN)
+;#
+;# Parameters:
+;# IN E6P (E6POS): Destination point of the PTP movement
+;#
+
+GLOBAL DEF RSI_RETPTP(E6P:IN)
+DECL E6POS E6P
+
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVERET()
+PTPBREAKSUB(E6P)
+END
+
+;# Function:
+;# RSI_PTPREL
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a PTP_REL movement to the specified point.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot continues with the next 
+;# command.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_PTPREL(E6P:IN)
+;#
+;# Parameters:
+;# IN E6P (E6POS): Destination point of the PTP movement
+;# IN BINT (BOOL): Flag for returning to $POS_INT
+;#
+
+GLOBAL DEF RSI_PTPREL(E6P:IN, BINT:IN)
+DECL E6POS E6P
+BOOL BINT
+
+IF (VARSTATE("BINT") == #DECLARED) THEN
+ BINT=TRUE
+ENDIF
+
+IF BINT THEN
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(TRUE)
+ELSE
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(FALSE)
+ENDIF
+PTPRELBREAKSUB(E6P)
+END
+
+;# Function:
+;# RSI_SKIPLIN
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a LIN movement to the specified point.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot continues with the next 
+;# command without returning to the start position.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_SKIPLIN(E6P:IN)
+;#
+;# Parameters:
+;# IN E6P (E6POS): Destination point of the LIN movement
+;# IN BINT (BOOL): Flag for returning to $POS_INT
+;#
+
+GLOBAL DEF RSI_SKIPLIN(E6P:IN, BINT:IN)
+DECL E6POS E6P
+BOOL BINT
+
+IF (VARSTATE("BINT") == #DECLARED) THEN
+ BINT=TRUE
+ENDIF
+
+IF BINT THEN
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(TRUE)
+ELSE
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(FALSE)
+ENDIF
+LINBREAKSUB(E6P)
+END
+
+;# Function:
+;# RSI_RETLIN
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a LIN movement to the specified point.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot returns to the start 
+;# position.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_RETLIN(E6P:IN) 
+;#
+;# Parameters:
+;# IN E6P (E6POS): Destination point of the LIN movement
+;#
+
+GLOBAL DEF RSI_RETLIN(E6P:IN)
+DECL E6POS E6P
+
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVERET()
+LINBREAKSUB(E6P)
+END
+
+;# Function:
+;# RSI_LINREL
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a LIN_REL movement to the specified point.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot returns to the start 
+;# position.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_LINREL(E6P:IN) 
+;#
+;# Parameters:
+;# IN E6P (E6POS): Destination point of the LIN movement
+;# IN BINT (BOOL): Flag for returning to $POS_INT
+;#
+
+GLOBAL DEF RSI_LINREL(E6P:IN, BINT:IN)
+DECL E6POS E6P
+BOOL BINT
+
+IF (VARSTATE("BINT") == #DECLARED) THEN
+ BINT=TRUE
+ENDIF
+
+IF BINT THEN
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(TRUE)
+ELSE
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(FALSE)
+ENDIF
+LINRELBREAKSUB(E6P)
+END
+
+;# Function:
+;# RSI_SKIPCIRC
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a CIRC movement according to the specified points.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot continues with next 
+;# command.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_SKIPCIRC(E6P1:IN,E6P2:IN)
+;#
+;# Parameters:
+;# IN E6P2 (E6POS): Auxiliary point of CIRC movement
+;# IN E6P1 (E6POS): Destination point of CIRC movement
+;# IN BINT (BOOL): Flag for returning to $POS_INT
+;#
+
+GLOBAL DEF RSI_SKIPCIRC(E6P1:IN,E6P2:IN, BINT:IN)
+DECL E6POS E6P1,E6P2
+BOOL BINT
+
+IF (VARSTATE("BINT") == #DECLARED) THEN
+ BINT=TRUE
+ENDIF
+
+IF BINT THEN
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(TRUE)
+ELSE
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(FALSE)
+ENDIF
+CIRCBREAKSUB(E6P1,E6P2)
+END
+
+;# Function:
+;# RSI_RETCIRC
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a CIRC movement according to the specified points.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot returns to the start 
+;# position.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_RETCIRC(E6P1:IN,E6P2:IN)
+;#
+;# Parameters:
+;# IN E6P1 (E6POS): Auxiliary point of CIRC movement
+;# IN E6P2 (E6POS): Destination point of CIRC movement
+;#
+
+GLOBAL DEF RSI_RETCIRC(E6P1:IN,E6P2:IN)
+DECL E6POS E6P1,E6P2
+
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVERET()
+CIRCBREAKSUB (E6P1,E6P2)
+END
+
+;# Function:
+;# RSI_CIRCREL
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Makes a CIRC_REL movement according to the specified 
+;# points.
+;# It is possible to break the movement with a BREAK signal.
+;# In case of a break the robot continues with the next 
+;# command.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_CIRCREL(E6P1:IN,E6P2:IN)
+;#
+;# Parameters:
+;# IN E6P1 (E6POS): Auxiliary point of CIRC movement
+;# IN E6P2 (E6POS): Destination point of CIRC movement
+;# IN BINT (BOOL): Flag for returning to $POS_INT
+;#
+
+GLOBAL DEF RSI_CIRCREL(E6P1:IN,E6P2:IN, BINT:IN)
+DECL E6POS E6P1,E6P2
+BOOL BINT
+
+IF (VARSTATE("BINT") == #DECLARED) THEN
+ BINT=TRUE
+ENDIF
+
+IF BINT THEN
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(TRUE)
+ELSE
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO MOVESKIP(FALSE)
+ENDIF
+CIRCRELBREAKSUB (E6P1,E6P2)
+END
+
+;# Function:
+;# RSI_MOVESENS
+;#
+;# Description:
+;# RSI command for a breakable movement (see ST_BREAKMOVE).
+;# Allows a pure sensor guided movement with corrections
+;# from ST_POSCORR or ST_AXISCORR RSI objects.
+;# It is possible to break the movement with a BREAK signal.
+;# The behaviour in case of a break is defined with 
+;# parameter mode.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_MOVESENS(mode:IN)
+;#
+;# Parameters:
+;# IN mode (INT): Break mode
+;#  0: Continue
+;#  1: Continue on IR
+;#  2: Continue on start
+;#
+
+GLOBAL DEF RSI_MOVESENS(mode:IN)
+INT mode
+SWITCH mode
+CASE 1
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO IRSENSMOVE(1)
+CASE 2
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO IRSENSMOVE(2)
+DEFAULT
+INTERRUPT DECL RSIINTERRUPTIDX WHEN $OUT[RSIBREAK]==TRUE DO IRSENSMOVE(0)
+ENDSWITCH
+SENSBREAKSUB()
+END
+
+;# Function:
+;# ST_BREAKMOVE
+;#
+;# Description:
+;# Creates a RSI object able to break a RSI movement 
+;# command like RSI_SKIPLIN, RSI_RETLIN,...
+;# The object's input changing to TRUE invokes a KRL 
+;# interrupt routine. The interrupt routine cancels the 
+;# actual movement. The robot moves back to the start 
+;# position for a RSI_RET... movement or continues 
+;# immediately with the next command for a RSI_SKIP... 
+;# movement.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_BREAKMOVE(OBJID:OUT,CONTID:IN, 
+;# ID1:IN,IDX1:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;#
+;# Object Inputs:
+;# 1 (BOOL): Signal to break a RSI movement
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:             Successful
+;# RSIINVCONT:        Invalid container
+;# RSILNKOUTOBJID:    Invalid ID for linkage
+;# RSILNKOUTINDEX:    Invalid output index for linkage
+;# RSILNKSIGNAL:      Signal input output mismatch
+;# RSILNKMAXDEP:      Too many signals from output
+;# RSILNKCYCLE:       Cyclic linkage
+;# RSINOLNKOBJ:       Not a linkable object
+;# RSILNKOUTDISABLED: Output disabled
+;#
+
+GLOBAL DEFFCT RSIERR ST_BREAKMOVE(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+DECL RSIERR err
+err = ST_SETDIGOUT(OBJID,CONTID,ID1,IDX1,RSIBREAK)
+RETURN  err
+ENDFCT
+
+;# Function:
+;# ST_DIGIN
+;#
+;# Description:
+;# Creates a RSI object to access the digital inputs $IN[].
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_DIGIN(OBJID:OUT,CONTID:IN,inIDX:IN,len:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  inIDX  (INT): Offset of digitals input to read
+;# -> in Bit for len 0 (Bit) >=1
+;# -> in Byte for len 1,2,3 (Byte, Word) >=1
+;# IN  len    (INT): Range of bits to read
+;# -> 0: Bit
+;# -> 1: Byte
+;# -> 2: Word unsigned
+;# -> 3: Word signed
+;#
+;# Object Parameters:
+;# 1 inIDX (INT): see parameter inIDX
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (INT): Digital input value at $IN[inIDX]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter inIDX
+;#
+
+GLOBAL DEFFCT RSIERR ST_DIGIN(OBJID:OUT,CONTID:IN,inIDX:IN,len:IN)
+INT OBJID,CONTID,inIDX,len
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlDigIn"
+msgTxt[]="ST_DIGIN -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,inIDX,len)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_DIGOUT
+;#
+;# Description:
+;# Creates a RSI object to access the digital outputs 
+;# $OUT[].
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_DIGOUT(OBJID:OUT,CONTID:IN,outIDX:IN,len:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  outIDX  (INT): Offset of digitals output to read
+;# -> in Bit for len 0 (Bit) >=1
+;# -> in Byte for len 1,2,3 (Byte, Word) >=1
+;# IN  len    (INT): Range of bits to read
+;# -> 0: Bit
+;# -> 1: Byte
+;# -> 2: Word unsigned
+;# -> 3: Word signed
+;#
+;# Object Parameters:
+;# 1 outIDX (INT): see parameter outIDX
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (INT):  Digital output value at $OUT[outIDX]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter outIDX
+;#
+
+GLOBAL DEFFCT RSIERR ST_DIGOUT(OBJID:OUT,CONTID:IN,outIdx:IN,len:IN)
+INT OBJID,CONTID,outIdx,len
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlDigOut"
+msgTxt[]="ST_DIGOUT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,outIdx,len)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_ANIN
+;#
+;# Description:
+;# Creates a RSI object to access the analog input 
+;# $ANIN[inIDX].
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ANIN(OBJID:OUT,CONTID:IN,inIDX:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  inIDX  (INT): Offset of analog input to read >=1
+;#
+;# Object Parameters:
+;# 1 inIDX (INT): see parameter inIDX
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (REAL): Analog input value at $ANIN[inIDX]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter inIDX
+;#
+
+GLOBAL DEFFCT RSIERR ST_ANIN(OBJID:OUT,CONTID:IN,inIdx:IN)
+INT OBJID,CONTID,inIdx
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlAnaIn"
+msgTxt[]="ST_ANIN -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,inIdx)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_ANOUT
+;#
+;# Description:
+;# Creates a RSI object to access the analog output 
+;# $ANOUT[outIDX].
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ANOUT(OBJID:OUT,CONTID:IN,outIDX:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  outIDX (INT): Offset of analog output to read >=1
+;#
+;# Object Parameters:
+;# 1 inIDX (INT): see parameter outIDX
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (REAL): Analog output value at $ANOUT[outIDX]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter outIDX
+;#
+
+GLOBAL DEFFCT RSIERR ST_ANOUT(OBJID:OUT,CONTID:IN,outIdx:IN)
+INT OBJID,CONTID,outIdx
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlAnaOut"
+msgTxt[]="ST_ANOUT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,outIdx)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SEN_PINT
+;#
+;# Description:
+;# Creates a RSI object to access the sensor variables 
+;# $SEN_PINT[varIDX].
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SEN_PINT(OBJID:OUT,CONTID:IN,varIDX:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  varIDX (INT): Index in $SEN_PINT array >=1
+;#
+;# Object Parameters:
+;# 1 varIDX (INT): see parameter varIDX
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (REAL): Signal value of $SEN_PINT[varIDX]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter varIDX
+;#
+
+GLOBAL DEFFCT RSIERR ST_SEN_PINT(OBJID:OUT,CONTID:IN,varIdx:IN)
+INT OBJID,CONTID,varIdx
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlSEN_PINT"
+msgTxt[]="ST_SEN_PINT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,varIdx)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SEN_PREA
+;#
+;# Description:
+;# Creates a RSI object to access the sensor variables 
+;# $SEN_PREA[varIDX].
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SEN_PREA(OBJID:OUT,CONTID:IN,varIDX:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  varIDX (INT): Index in $SEN_PREA array >=1
+;#
+;# Object Parameters:
+;# 1 inIDX (INT): see parameter varIDX
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (REAL): Signal value of $SEN_PREA[varIDX]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter varIDX
+;#
+
+GLOBAL DEFFCT RSIERR ST_SEN_PREA(OBJID:OUT,CONTID:IN,varIdx:IN)
+INT OBJID,CONTID,varIdx
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlSEN_PREA"
+msgTxt[]="ST_SEN_PREA -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,varIdx)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_POSACT
+;#
+;# Description:
+;# Creates a RSI object to access the robots actual 
+;# cartesian position. The delivered position relates to 
+;# the actual settings of $BASE and $TOOL.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_POSACT(OBJID:OUT,CONTID:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;#
+;# Object Parameters:
+;# 1 type   (INT): Type of position          (Default: 0)
+;# -> 0: measured position
+;# -> 1: set position before filter
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (REAL): X Position [mm]
+;# 2 (REAL): Y Position [mm]
+;# 3 (REAL): Z Position [mm]
+;# 4 (REAL): A Rotation [°]
+;# 5 (REAL): B Rotation [°]
+;# 6 (REAL): C Rotation [°]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK :          Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_POSACT(OBJID:OUT,CONTID:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlActPos"
+msgTxt[]="ST_POSACT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_AXISACT
+;#
+;# Description:
+;# Creates a RSI object to acces the actual axis positions. 
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ACTAXIS(OBJID:OUT,CONTID:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;#
+;# Object Parameters:
+;# 1 type   (INT): Type of position          (Default: 0)
+;# -> 0: measured position
+;# -> 1: set position before filter
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1  (REAL): A1 Position axis 1
+;# 2  (REAL): A2 Position axis 2
+;# 3  (REAL): A3 Position axis 3
+;# 4  (REAL): A4 Position axis 4
+;# 5  (REAL): A5 Position axis 5
+;# 6  (REAL): A6 Position axis 6
+;# 7  (REAL): E1 Position external axis 1
+;# 8  (REAL): E2 Position external axis 2
+;# 9  (REAL): E3 Position external axis 3
+;# 10 (REAL): E4 Position external axis 4
+;# 11 (REAL): E5 Position external axis 5
+;# 12 (REAL): E6 Position external axis 6
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK :          Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_AXISACT(OBJID:OUT,CONTID:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlActAxis"
+msgTxt[]="ST_AXISACT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SOURCE
+;#
+;# Description:
+;# Creates a RSI object that can generate standard signals:
+;# -> constant signal
+;# -> sine /cosine signal
+;# -> square signal
+;# -> saw tooth signal
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SOURCE(OBJID:OUT,CONTID:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;#
+;# Object Parameters:
+;# 1 type   (INT): Type of signal          (Default: 0)
+;# -> 0: constant signal
+;# -> 1: sine signal
+;# -> 2: cosine signal
+;# -> 3: square signal
+;# -> 4: sawtooth signal
+;# 2 OFFSET (REAL): Amplitude offset       (Default: 0)
+;# 3 AMPL   (REAL): Amplitude              (Default: 1)
+;# 4 PERIOD (REAL): Periode in [sec]       (Default: 5)
+;# 5 PARAM1 (REAL): Depends on signal type (Default: 0.25)
+;# 6 PARAM2 (REAL): Depends on signal type (Default: 0.25)
+;# 7 PARAM3 (REAL): Depends on signal type (Default: 0.25)
+;# 8 PARAM4 (REAL): Depends on signal type (Default: 0.25)
+;# 9 PARAM5 (REAL): Depends on signal type (Default: 0.25)
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (REAL): Desired signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_SOURCE(OBJID:OUT,CONTID:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlSource"
+msgTxt[]="ST_SOURCE -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_GEARTORQUE
+;#
+;# Description:
+;# Creates a RSI object to access the gear torques.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_GEARTORQUE(OBJID:OUT,CONTID:IN,type:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  type   (INT): Type of torques to access
+;# -> 0: Commanded gear torques - load side
+;# -> 1: Commanded feed forward gear torques - load side
+;# -> 2: Commanded gear torques - motor side
+;#
+;# Object Parameters:
+;# 1 type (INT): see parameter type
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1  (DOUBLE): Torque for axis 1 [Nm]
+;# ...
+;# 6  (DOUBLE): Torque for axis 6 [Nm]
+;# 7  (DOUBLE): Torque for external axis 1 [Nm]
+;# ...
+;# 12 (DOUBLE): Torque for external axis 6 [Nm]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter type
+;#
+
+GLOBAL DEFFCT RSIERR ST_GEARTORQUE(OBJID:OUT,CONTID:IN,type:IN)
+INT OBJID,CONTID,type
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlGearTorq"
+msgTxt[]="ST_GEARTORQUE -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,type)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MOTORCURRENT
+;#
+;# Description:
+;# Creates a RSI object to access the commanded motor 
+;# currents.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MOTORCURRENT(OBJID:OUT,CONTID:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (DOUBLE): Current for axis 1 [A]
+;# ...
+;# 6 (DOUBLE): Current for axis 6 [A]
+;# 7 (DOUBLE): Current for external axis 1 [A]
+;# ...
+;# 12 (DOUBLE): Current for external axis 6 [A]
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_MOTORCURRENT(OBJID:OUT,CONTID:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlMotorCur"
+msgTxt[]="ST_MOTORCURRENT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_STATUS
+;#
+;# Description:
+;# Creates a RSI object to access system states and modes.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_STATUS(OBJID:OUT,CONTID:IN,type:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;# IN  TYPE   (INT): Status to access
+;# -> 0 : IPO state
+;# Bit 1: Interpolator is working
+;# Bit 2: Start was restart after stop
+;# Bit 3: Pathstop normal
+;# Bit 4: Pathstop fast
+;# Bit 5: Energy stop
+;# Bit 6: Energy stop, Robot is still in motion
+;# Bit 7: Current movement is cartesian
+;# Bit 8: Interpolator still smoothing
+;# -> 1 : $PRO_STATE submit interpreter
+;# 1: FREE
+;# 2: RESET
+;# 3: ACTIVE
+;# 4: STOP
+;# 5: ENDE
+;# -> 2 : $PRO_STATE robot interpreter
+;# 1: FREE
+;# 2: RESET
+;# 3: ACTIVE
+;# 4: STOP
+;# 5: ENDE
+;# -> 3 : $PRO_MODE submit interpreter
+;# 1: I_STEP
+;# 2: I_MSTEP
+;# 3: P_STEP;
+;# 4: C_STEP
+;# 5: B_STEP
+;# 6: GO
+;# 7: Invalid
+;# -> 4 : $PRO_MODE robot interpreter
+;# 1: I_STEP
+;# 2: I_MSTEP
+;# 3: P_STEP;
+;# 4: C_STEP
+;# 5: B_STEP
+;# 6: GO
+;# 7: Invalid
+;# -> 5 : $MODE_OP
+;# 1: T1
+;# 2: T2
+;# 3: AUT
+;# 4: EXT
+;# 5: Invalid
+;# -> 6 : $IPO_MODE
+;# 1: BASE
+;# 2: TCP
+;# -> 7 : $IPO_MODE_C
+;# 1: BASE
+;# 2: TCP
+;#
+;# Object Parameters:
+;# 1 TYPE (INT): see parameter TYPE
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (INT): Current state
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter TYPE
+;#
+
+GLOBAL DEFFCT RSIERR ST_STATUS(OBJID:OUT,CONTID:IN,type:IN)
+INT OBJID,CONTID,type
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlStatus"
+msgTxt[]="ST_STATUS -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,type)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_OV_PRO
+;#
+;# Description:
+;# Creates a RSI object to access the program override 
+;# $OV_PRO.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_OV_PRO(OBJID:OUT,CONTID:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of the container for the new object
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# No
+;#
+;# Object Outputs:
+;# 1 (INT): Signal value of $OV_PRO (0 - 100)
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_OV_PRO(OBJID:OUT,CONTID:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlOV_PRO"
+msgTxt[]="ST_OV_PRO -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_TRAFO_USERFRAME
+;#
+;# Description:
+;# Creates a RSI object to transform a 3D input signal 
+;# vector (inputs 1 - 3) from a source frame FraSource to a  
+;# target frame FraTarget. Parameter FRA defines the 
+;# translation and rotation of FraTarget in FraSource. 
+;# Parameter TYPE defines if rotation and translation or 
+;# only rotation is taken into account or if the input 
+;# signal is vector of Euler angles A/B/C.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_TRAFO_USERFRAME(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,TYPE:IN,FRA:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID1 to link to input 2
+;# IN  ID3    (INT): ID of the object to link to input 3
+;# IN  IDX3   (INT): Output index of ID1 to link to input 3
+;# IN  TYPE   (INT): Type of calculation
+;# -> 0: Rotation and translation
+;# -> 1: Only rotation
+;# -> 2: Euler angles ABC vector in °
+;# IN  FRA (FRAME): Translation and rotation of FraTarget 
+;#
+;# Object Parameters:
+;# 1 TYPE (INT): see parameter TYPE
+;# 2 FRA_X  (REAL): see parameter FRA X component
+;# 3 FRA_Y  (REAL): see parameter FRA Y component
+;# 4 FRA_Z  (REAL): see parameter FRA Z component
+;# 5 FRA_A  (REAL): see parameter FRA A component
+;# 6 FRA_B  (REAL): see parameter FRA B component
+;# 7 FRA_C  (REAL): see parameter FRA C component
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;# 3 (REAL): Input signal 3
+;#
+;# Object Outputs:
+;# 1 (REAL): Transformed output signal 1
+;# 2 (REAL): Transformed output signal 2
+;# 3 (REAL): Transformed output signal 3
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter TYPE
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKOUTDISABLED:
+;# RSILNKMAXDEP:
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable
+;#
+
+GLOBAL DEFFCT RSIERR ST_TRAFO_USERFRAME(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,TYPE:IN,FRA:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3,TYPE
+CHAR fctName[26]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[3]
+INT arrIDX[3]
+FRAME FRA
+REAL arrFRA[6]
+arrFRA[1]=FRA.X
+arrFRA[2]=FRA.Y
+arrFRA[3]=FRA.Z
+arrFRA[4]=FRA.A
+arrFRA[5]=FRA.B
+arrFRA[6]=FRA.C
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+
+fctName[]="EFC_rsi_krlTrafoUserFrame"
+msgTxt[]="ST_TRAFO_USER... -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],TYPE,arrFRA[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_TRAFO_ROBFRAME
+;#
+;# Description:
+;# Creates a RSI object to transform a 3D input signal 
+;# vector (inputs 1 - 3) from a source frame FraSource to a 
+;# target frame FraTarget. With the parameters FRASRC and 
+;# FRATARG transformations between all robot known frames 
+;# can be defined. Parameter TYPE defines if rotation and 
+;# translation or only rotation is taken into account or if 
+;# the input signal is a vector of Euler angles A/B/C.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_TRAFO_ROBFRAME(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,TYPE:IN,FRASRC:IN,FRATARG:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID1 to link to input 2
+;# IN  ID3    (INT): ID of the object to link to input 3
+;# IN  IDX3   (INT): Output index of ID1 to link to input 3
+;# IN  TYPE   (INT): Type of calculation
+;# -> 0: Rotation and translation
+;# -> 1: Only rotation
+;# -> 2: Euler angles ABC vector in °
+;# IN FRASRC (TECHSYS): Define source frame
+;# -> #WORLD
+;# -> #BASE
+;# -> #ROBROOT
+;# -> #TCP
+;# -> #TTS
+;# IN FRATARG (TECHSYS): Define target frame
+;# -> #WORLD
+;# -> #BASE
+;# -> #ROBROOT
+;# -> #TCP
+;# -> #TTS
+;#
+;# Object Parameters:
+;# 1 TYPE    (INT): see parameter TYPE
+;# 2 FRASRC  (INT): see parameter FRASRC
+;# 3 FRATARG (INT): see parameter FRATARG
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;# 3 (REAL): Input signal 3
+;#
+;# Object Outputs:
+;# 1 (REAL): Transformed output signal 1
+;# 2 (REAL): Transformed output signal 2
+;# 3 (REAL): Transformed output signal 3
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter TYPE
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKOUTDISABLED:
+;# RSILNKMAXDEP:
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable
+;#
+
+GLOBAL DEFFCT RSIERR ST_TRAFO_ROBFRAME(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,TYPE:IN,FRASRC:IN,FRATARG:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3,TYPE
+CHAR fctName[26]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[3]
+INT arrIDX[3]
+DECL TECHSYS FRASRC,FRATARG
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+
+fctName[]="EFC_rsi_krlTrafoRobFrame"
+msgTxt[]="ST_TRAFO_ROB... -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],TYPE,FRASRC,FRATARG)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_GENTRANS
+;#
+;# Description:
+;# Creates a RSI object to transform a Input signal vector 
+;# from frame a FrI to a frame FrO. The object parameters 
+;# 1 - 6 define the translation and rotation of FrI in Fr0 
+;# With parameter type set to 1 or 3 only the rotation 
+;# is taken into account. With type set to 0, 2 or 4 the 
+;# transformation takes the translation and the rotation of 
+;# the frames into account. type 0 and 1 are used for the 
+;# 3 dimensional vector of input 1 - 3. In this case the 
+;# parameters for the linkage of inputs 4 - 6 have to be 
+;# set to 0. For the 6 dimensional vector transformed with 
+;# type 2, 3 and 4 the vector follows the X,Y,Z,A,B,C 
+;# convention. With type 4 a 6 dimensional force torque 
+;# vector is transformed from FrI to Fr0 with respect to 
+;# the dependency of force and torque.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_GENTRANS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID1 to link to input 2
+;# IN  ID3    (INT): ID of the object to link to input 3
+;# IN  IDX3   (INT): Output index of ID1 to link to input 3
+;# IN  ID4    (INT): ID of the object to link to input 4
+;# IN  IDX4   (INT): Output index of ID1 to link to input 4
+;# IN  ID5    (INT): ID of the object to link to input 5
+;# IN  IDX5   (INT): Output index of ID1 to link to input 5
+;# IN  ID6    (INT): ID of the object to link to input 6
+;# IN  IDX6   (INT): Output index of ID1 to link to input 6
+;# IN  type   (INT): Type of calculation
+;# -> 0: 3 dim. vector - rotation and translation
+;# -> 1: 3 dim. vector - only rotation
+;# -> 2: 6 dim. vector - rot. and tran. X,Y,Z,A,B,C input
+;# -> 3: 6 dim. vector - only rot. X,Y,Z,A,B,C input
+;# -> 4: 6 dim. vector - force torque Fx,Fy,Fz,Mz,My,Mx
+;#
+;# Object Parameters:
+;# 1 TransX (REAL): Translation X of FrO in FrI
+;# 2 TransY (REAL): Translation Y of FrO in FrI
+;# 3 TransZ (REAL): Translation Z of FrO in FrI
+;# 4 RotZ   (REAL): Rotation A of FrO in FrI
+;# 5 RotY   (REAL): Rotation B of FrO in FrI
+;# 6 RotX   (REAL): Rotation C of FrO in FrI
+;# 7 type    (INT): Type of calculation (see parameter type)
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;# 3 (REAL): Input signal 3
+;# 4 (REAL): Input signal 4 (optional s. type)
+;# 5 (REAL): Input signal 5 (optional s. type)
+;# 6 (REAL): Input signal 6 (optional s. type)
+;#
+;# Object Outputs:
+;# 1 (REAL): Transformed output signal 1
+;# 2 (REAL): Transformed output signal 2
+;# 3 (REAL): Transformed output signal 3
+;# 4 (REAL): Transformed output signal 4 (optional s. type)
+;# 5 (REAL): Transformed output signal 5 (optional s. type)
+;# 6 (REAL): Transformed output signal 6 (optional s. type)
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter type
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKOUTDISABLED:
+;# RSILNKMAXDEP:
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable
+;#
+
+GLOBAL DEFFCT RSIERR ST_GENTRANS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3,ID4,IDX4,ID5,IDX5,ID6,IDX6,type
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[6]
+INT arrIDX[6]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrID[4]=ID4
+arrID[5]=ID5
+arrID[6]=ID6
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+arrIDX[4]=IDX4
+arrIDX[5]=IDX5
+arrIDX[6]=IDX6
+
+fctName[]="EFC_rsi_krlGenTrans"
+msgTxt[]="ST_GENTRANS -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],type)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SN2TOOL
+;#
+;# Description:
+;# Creates a RSI object to transform a Input signal vector 
+;# from a sensor frame (FrSen) attached to the robot to the 
+;# actual TOOL frame (FrTool). The object parameters 1 - 6 
+;# define the translation and rotation of FrSen in the 
+;# robot flange frame (FrFlange). 
+;# With parameter type set to 1 or 3 only the rotation 
+;# is taken into account. With type set to 0, 2 or 4 the 
+;# transformation takes the translation and the rotation of 
+;# the frames into account. type 0 and 1 are used for the 
+;# 3 dimensional vector of input 1 - 3. In this case the 
+;# parameters for the linkage of inputs 4 - 6 have to be 
+;# set to 0. For the 6 dimensional vector transformed with 
+;# type 2, 3 and 4 the vector follows the X,Y,Z,A,B,C 
+;# convention. With type 4 a 6 dimensional force torque 
+;# vector is transformed from FrI to Fr0 with respect to 
+;# the dependency of force and torque.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SN2TOOL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID1 to link to input 2
+;# IN  ID3    (INT): ID of the object to link to input 3
+;# IN  IDX3   (INT): Output index of ID1 to link to input 3
+;# IN  ID4    (INT): ID of the object to link to input 4
+;# IN  IDX4   (INT): Output index of ID1 to link to input 4
+;# IN  ID5    (INT): ID of the object to link to input 5
+;# IN  IDX5   (INT): Output index of ID1 to link to input 5
+;# IN  ID6    (INT): ID of the object to link to input 6
+;# IN  IDX6   (INT): Output index of ID1 to link to input 6
+;# IN  type   (INT): Type of calculation
+;# -> 0: 3 dim. vector - rotation and translation
+;# -> 1: 3 dim. vector - only rotation
+;# -> 2: 6 dim. vector - rot. and tran. X,Y,Z,A,B,C input
+;# -> 3: 6 dim. vector - only rot. X,Y,Z,A,B,C input
+;# -> 4: 6 dim. vector - force torque Fx,Fy,Fz,Mz,My,Mx
+;#
+;# Object Parameters:
+;# 1 TransX (REAL): Translation X of FrSen in FrFlange
+;# 2 TransY (REAL): Translation Y of FrSen in FrFlange
+;# 3 TransZ (REAL): Translation Z of FrSen in FrFlange
+;# 4 RotZ   (REAL): Rotation A of FrSen in FrFlange
+;# 5 RotY   (REAL): Rotation B of FrSen in FrFlange
+;# 6 RotX   (REAL): Rotation C of FrSen in FrFlange
+;# 7 type    (INT): Type of calculation (see parameter type)
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;# 3 (REAL): Input signal 3
+;# 4 (REAL): Input signal 4 (optional s. type)
+;# 5 (REAL): Input signal 5 (optional s. type)
+;# 6 (REAL): Input signal 6 (optional s. type)
+;#
+;# Object Outputs:
+;# 1 (REAL): Transformed output signal 1
+;# 2 (REAL): Transformed output signal 2
+;# 3 (REAL): Transformed output signal 3
+;# 4 (REAL): Transformed output signal 4 (optional s. type)
+;# 5 (REAL): Transformed output signal 5 (optional s. type)
+;# 6 (REAL): Transformed output signal 6 (optional s. type)
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter type
+
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable
+;#
+
+GLOBAL DEFFCT RSIERR ST_SN2TOOL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3,ID4,IDX4,ID5,IDX5,ID6,IDX6,type
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[6]
+INT arrIDX[6]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrID[4]=ID4
+arrID[5]=ID5
+arrID[6]=ID6
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+arrIDX[4]=IDX4
+arrIDX[5]=IDX5
+arrIDX[6]=IDX6
+
+fctName[]="EFC_rsi_krlSn2Tool"
+msgTxt[]="ST_SN2TOOL -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],type)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SN2BASE
+;#
+;# Description:
+;# Creates a RSI object to transform a Input signal vector 
+;# from a sensor frame (FrSen) attached to the robot to the 
+;# actual BASE frame (FrBase). The object parameters 1 - 6 
+;# define the translation and rotation of FrSen in the 
+;# robot flange frame (FrFlange). 
+;# With parameter type set to 1 or 3 only the rotation 
+;# is taken into account. With type set to 0, 2 or 4 the 
+;# transformation takes the translation and the rotation of 
+;# the frames into account. type 0 and 1 are used for the 
+;# 3 dimensional vector of input 1 - 3. In this case the 
+;# parameters for the linkage of inputs 4 - 6 have to be 
+;# set to 0. For the 6 dimensional vector transformed with 
+;# type 2, 3 and 4 the vector follows the X,Y,Z,A,B,C 
+;# convention. With type 4 a 6 dimensional force torque 
+;# vector is transformed from FrI to Fr0 with respect to 
+;# the dependency of force and torque.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SN2BASE(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID1 to link to input 2
+;# IN  ID3    (INT): ID of the object to link to input 3
+;# IN  IDX3   (INT): Output index of ID1 to link to input 3
+;# IN  ID4    (INT): ID of the object to link to input 4
+;# IN  IDX4   (INT): Output index of ID1 to link to input 4
+;# IN  ID5    (INT): ID of the object to link to input 5
+;# IN  IDX5   (INT): Output index of ID1 to link to input 5
+;# IN  ID6    (INT): ID of the object to link to input 6
+;# IN  IDX6   (INT): Output index of ID1 to link to input 6
+;# IN  type   (INT): Type of calculation
+;# -> 0: 3 dim. vector - rotation and translation
+;# -> 1: 3 dim. vector - only rotation
+;# -> 2: 6 dim. vector - rot. and tran. X,Y,Z,A,B,C input
+;# -> 3: 6 dim. vector - only rot. X,Y,Z,A,B,C input
+;# -> 4: 6 dim. vector - force torque Fx,Fy,Fz,Mz,My,Mx
+;#
+;# Object Parameters:
+;# 1 TransX (REAL): Translation X of FrSen in FrFlange
+;# 2 TransY (REAL): Translation Y of FrSen in FrFlange
+;# 3 TransZ (REAL): Translation Z of FrSen in FrFlange
+;# 4 RotZ   (REAL): Rotation A of FrSen in FrFlange
+;# 5 RotY   (REAL): Rotation B of FrSen in FrFlange
+;# 6 RotX   (REAL): Rotation C of FrSen in FrFlange
+;# 7 type    (INT): Type of calculation (see parameter type)
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;# 3 (REAL): Input signal 3
+;# 4 (REAL): Input signal 4 (optional s. type)
+;# 5 (REAL): Input signal 5 (optional s. type)
+;# 6 (REAL): Input signal 6 (optional s. type)
+;#
+;# Object Outputs:
+;# 1 (REAL): Transformed output signal 1
+;# 2 (REAL): Transformed output signal 2
+;# 3 (REAL): Transformed output signal 3
+;# 4 (REAL): Transformed output signal 4 (optional s. type)
+;# 5 (REAL): Transformed output signal 5 (optional s. type)
+;# 6 (REAL): Transformed output signal 6 (optional s. type)
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter type
+
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable
+;# RSIINVPARAM:     Invalid parameter type
+;#
+
+GLOBAL DEFFCT RSIERR ST_SN2BASE(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3,ID4,IDX4,ID5,IDX5,ID6,IDX6,type
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[6]
+INT arrIDX[6]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrID[4]=ID4
+arrID[5]=ID5
+arrID[6]=ID6
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+arrIDX[4]=IDX4
+arrIDX[5]=IDX5
+arrIDX[6]=IDX6
+
+fctName[]="EFC_rsi_krlSn2Base"
+msgTxt[]="ST_SN2BASE -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],type)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SN2WORLD
+;#
+;# Description:
+;# Creates a RSI object to transform a Input signal vector 
+;# from a sensor frame (FrSen) attached to the robot to the 
+;# actual WORLD frame (FrWorld). The object parameters 
+;# 1 - 6 define the translation and rotation of FrSen in 
+;# the robot flange frame (FrFlange). 
+;# With parameter type set to 1 or 3 only the rotation 
+;# is taken into account. With type set to 0, 2 or 4 the 
+;# transformation takes the translation and the rotation of 
+;# the frames into account. type 0 and 1 are used for the 
+;# 3 dimensional vector of input 1 - 3. In this case the 
+;# parameters for the linkage of inputs 4 - 6 have to be 
+;# set to 0. For the 6 dimensional vector transformed with 
+;# type 2, 3 and 4 the vector follows the X,Y,Z,A,B,C 
+;# convention. With type 4 a 6 dimensional force torque 
+;# vector is transformed from FrI to Fr0 with respect to 
+;# the dependency of force and torque.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SN2WORLD(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID1 to link to input 2
+;# IN  ID3    (INT): ID of the object to link to input 3
+;# IN  IDX3   (INT): Output index of ID1 to link to input 3
+;# IN  ID4    (INT): ID of the object to link to input 4
+;# IN  IDX4   (INT): Output index of ID1 to link to input 4
+;# IN  ID5    (INT): ID of the object to link to input 5
+;# IN  IDX5   (INT): Output index of ID1 to link to input 5
+;# IN  ID6    (INT): ID of the object to link to input 6
+;# IN  IDX6   (INT): Output index of ID1 to link to input 6
+;# IN  type   (INT): Type of calculation
+;# -> 0: 3 dim. vector - rotation and translation
+;# -> 1: 3 dim. vector - only rotation
+;# -> 2: 6 dim. vector - rot. and tran. X,Y,Z,A,B,C input
+;# -> 3: 6 dim. vector - only rot. X,Y,Z,A,B,C input
+;# -> 4: 6 dim. vector - force torque Fx,Fy,Fz,Mz,My,Mx
+;#
+;# Object Parameters:
+;# 1 TransX (REAL): Translation X of FrSen in FrFlange
+;# 2 TransY (REAL): Translation Y of FrSen in FrFlange
+;# 3 TransZ (REAL): Translation Z of FrSen in FrFlange
+;# 4 RotZ   (REAL): Rotation A of FrSen in FrFlange
+;# 5 RotY   (REAL): Rotation B of FrSen in FrFlange
+;# 6 RotX   (REAL): Rotation C of FrSen in FrFlange
+;# 7 type    (INT): Type of calculation (see parameter type)
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;# 3 (REAL): Input signal 3
+;# 4 (REAL): Input signal 4 (optional s. type)
+;# 5 (REAL): Input signal 5 (optional s. type)
+;# 6 (REAL): Input signal 6 (optional s. type)
+;#
+;# Object Outputs:
+;# 1 (REAL): Transformed output signal 1
+;# 2 (REAL): Transformed output signal 2
+;# 3 (REAL): Transformed output signal 3
+;# 4 (REAL): Transformed output signal 4 (optional s. type)
+;# 5 (REAL): Transformed output signal 5 (optional s. type)
+;# 6 (REAL): Transformed output signal 6 (optional s. type)
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter type
+
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable
+;#
+
+GLOBAL DEFFCT RSIERR ST_SN2WORLD(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3,ID4,IDX4,ID5,IDX5,ID6,IDX6,type
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[6]
+INT arrIDX[6]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrID[4]=ID4
+arrID[5]=ID5
+arrID[6]=ID6
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+arrIDX[4]=IDX4
+arrIDX[5]=IDX5
+arrIDX[6]=IDX6
+
+fctName[]="EFC_rsi_krlSn2World"
+msgTxt[]="ST_SN2WORLD -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],type)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SN2TTS
+;#
+;# Description:
+;# Creates a RSI object to transform a Input signal vector 
+;# from a sensor frame (FrSen) attached to the robot to the 
+;# actual TTS frame (FrTTS). The object parameters 1 - 6 
+;# define the translation and rotation of FrSen in the 
+;# robot flange frame (FrFlange). 
+;# With parameter type set to 1 or 3 only the rotation 
+;# is taken into account. With type set to 0, 2 or 4 the 
+;# transformation takes the translation and the rotation of 
+;# the frames into account. type 0 and 1 are used for the 
+;# 3 dimensional vector of input 1 - 3. In this case the 
+;# parameters for the linkage of inputs 4 - 6 have to be 
+;# set to 0. For the 6 dimensional vector transformed with 
+;# type 2, 3 and 4 the vector follows the X,Y,Z,A,B,C 
+;# convention. With type 4 a 6 dimensional force torque 
+;# vector is transformed from FrI to Fr0 with respect to 
+;# the dependency of force and torque.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SN2TTS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID1 to link to input 2
+;# IN  ID3    (INT): ID of the object to link to input 3
+;# IN  IDX3   (INT): Output index of ID1 to link to input 3
+;# IN  ID4    (INT): ID of the object to link to input 4
+;# IN  IDX4   (INT): Output index of ID1 to link to input 4
+;# IN  ID5    (INT): ID of the object to link to input 5
+;# IN  IDX5   (INT): Output index of ID1 to link to input 5
+;# IN  ID6    (INT): ID of the object to link to input 6
+;# IN  IDX6   (INT): Output index of ID1 to link to input 6
+;# IN  type   (INT): Type of calculation
+;# -> 0: 3 dim. vector - rotation and translation
+;# -> 1: 3 dim. vector - only rotation
+;# -> 2: 6 dim. vector - rot. and tran. X,Y,Z,A,B,C input
+;# -> 3: 6 dim. vector - only rot. X,Y,Z,A,B,C input
+;# -> 4: 6 dim. vector - force torque Fx,Fy,Fz,Mz,My,Mx
+;#
+;# Object Parameters:
+;# 1 TransX (REAL): Translation X of FrSen in FrFlange
+;# 2 TransY (REAL): Translation Y of FrSen in FrFlange
+;# 3 TransZ (REAL): Translation Z of FrSen in FrFlange
+;# 4 RotZ   (REAL): Rotation A of FrSen in FrFlange
+;# 5 RotY   (REAL): Rotation B of FrSen in FrFlange
+;# 6 RotX   (REAL): Rotation C of FrSen in FrFlange
+;# 7 type    (INT): Type of calculation (see parameter type)
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;# 3 (REAL): Input signal 3
+;# 4 (REAL): Input signal 4 (optional s. type)
+;# 5 (REAL): Input signal 5 (optional s. type)
+;# 6 (REAL): Input signal 6 (optional s. type)
+;#
+;# Object Outputs:
+;# 1 (REAL): Transformed output signal 1
+;# 2 (REAL): Transformed output signal 2
+;# 3 (REAL): Transformed output signal 3
+;# 4 (REAL): Transformed output signal 4 (optional s. type)
+;# 5 (REAL): Transformed output signal 5 (optional s. type)
+;# 6 (REAL): Transformed output signal 6 (optional s. type)
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter type
+
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable
+;#
+
+GLOBAL DEFFCT RSIERR ST_SN2TTS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,ID4:IN,IDX4:IN,ID5:IN,IDX5:IN,ID6:IN,IDX6:IN,type:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3,ID4,IDX4,ID5,IDX5,ID6,IDX6,type
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[6]
+INT arrIDX[6]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrID[4]=ID4
+arrID[5]=ID5
+arrID[6]=ID6
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+arrIDX[4]=IDX4
+arrIDX[5]=IDX5
+arrIDX[6]=IDX6
+
+fctName[]="EFC_rsi_krlSn2TTS"
+msgTxt[]="ST_SN2TTS -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],type)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_AND
+;#
+;# Description:
+;# Creates a RSI object to do a binary AND operation. The 
+;# inputs 1 and 2 have to be linked at creation time. All 
+;# further inputs 3 - 10 can be established with 
+;# RSI_NEWLINK().
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_AND(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+;# 
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID2 to link to input 2
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1  (BOOL): Input signal  1
+;# 2  (BOOL): Input signal  2
+;# 3  (BOOL): Input signal  3 (optional)
+;# ...
+;# 10 (BOOL): Input signal 10 (optional)
+;#
+;# Object Outputs:
+;# 1 (BOOL): AND operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_AND(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlAnd"
+msgTxt[]="ST_AND -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_OR
+;#
+;# Description:
+;# Creates a RSI object to do a binary OR operation. The 
+;# inputs 1 and 2 have to be linked at creation time. All 
+;# further inputs 3 - 10 can be established with 
+;# RSI_NEWLINK().
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_OR(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+;# 
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID2 to link to input 2
+;# 
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1  (BOOL): Input signal  1 (mandatory)
+;# 2  (BOOL): Input signal  2 (mandatory)
+;# 3  (BOOL): Input signal  3 (optional)
+;# ...
+;# 10 (BOOL): Input signal 10 (optional)
+;#
+;# Object Outputs:
+;# 1 (BOOL): OR operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_OR(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlOr"
+msgTxt[]="ST_OR -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_XOR
+;#
+;# Description:
+;# Creates a RSI object to do a binary XOR operation.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_XOR(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID2 to link to input 2
+;# 
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (BOOL): Input signal 1
+;# 2 (BOOL): Input signal 2
+;#
+;# Object Outputs:
+;# 1 (BOOL): XOR operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_XOR(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlXOr"
+msgTxt[]="ST_XOR -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_NOT
+;# 
+;# Description:
+;# Creates a RSI object to do a binary NOT operation.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_NOT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input
+;# IN  IDX1   (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (BOOL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (BOOL): NOT operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_NOT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlNot"
+msgTxt[]="ST_NOT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_BAND
+;#
+;# Description:
+;# Creates a RSI object to do a bitwise AND operation. If 
+;# the second input is unlinked the operation is done with 
+;# the first signal and the constant value of parameter 
+;# defVal. In this case ID2 and IDX2 have to be set to 0.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_BAND(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID2 to link to input 2
+;# IN  defVal (INT): Default value if input 2 is unlinked
+;# 
+;# Object Parameters:
+;# 1 defVal (INT): Default value if input 2 is unlinked
+;#
+;# Object Inputs:
+;# 1 (INT): Input signal 1
+;# 2 (INT): Input signal 2 (optional)
+;#
+;# Object Outputs:
+;# 1 (INT): Bitwise AND operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_BAND(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,defVal
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlBAnd"
+msgTxt[]="ST_BAND -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],defVal)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_BOR
+;#
+;# Description:
+;# Creates a RSI object to do a bitwise OR operation. If 
+;# the second input is unlinked the operation is done with 
+;# the first signal and the constant value of parameter 
+;# defVal. In this case ID2 and IDX2 have to be set to 0.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_BOR(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID1 to link to input 2
+;# IN  defVal (INT): Default value if input 2 is unlinked
+;#
+;# Object Parameters:
+;# 1 defVal (INT): Default value if input 2 is unlinked
+;#
+;# Object Inputs:
+;# 1 (INT): Input signal 1
+;# 2 (INT): Input signal 2 (optional)
+;#
+;# Object Outputs:
+;# 1 (INT): Bitwise OR operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_BOR(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,defVal
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlBOr"
+msgTxt[]="ST_BOR -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],defVal)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_BCOMPL
+;#
+;# Description:
+;# Creates a RSI object to calculate the bitwise complement.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_BCOMPL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (INT): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (INT): Calculated complement
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_BCOMPL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlBCompl"
+msgTxt[]="ST_BCOMPL -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_EQUAL
+;#
+;# Description:
+;# Creates a RSI object to compares its input signals. The  
+;# result is TRUE if the first and the second input are 
+;# equal. If the second input is unlinked the first 
+;# signal is compared with the constant value of parameter 
+;# defVal. In this case ID2 and IDX2 have to be set to 0.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_EQUAL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN,DEV:IN)
+;# 
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  ID2     (INT): ID of the object to link to input 2
+;# IN  IDX2    (INT): Output index of ID2 to link to input 2
+;# IN  defVal (REAL): Default value if input 2 is unlinked
+;# IN  DEV    (REAL): Deviation for comparison
+;#
+;# Object Parameters:
+;# 1 defVal (REAL): see parameter defVal
+;# 2 DEV    (REAL): see parameter DEV
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2 (optional)
+;#
+;# Object Outputs:
+;# 1 (BOOL): Comparison operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_EQUAL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN,dev:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL defVal,dev
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlEqual"
+msgTxt[]="ST_EQUAL -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],defVal,dev)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_LESS
+;#
+;# Description:
+;# Creates a RSI object to compare its input signals. The 
+;# result is TRUE if the first input is less than the 
+;# second one. If the second input is unlinked the first 
+;# signal is compared with the constant value of parameter 
+;# defVal. In this case ID2 and IDX2 have to be set to 0.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_LESS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN,HIST:IN)
+;# 
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  ID2     (INT): ID of the object to link to input 2
+;# IN  IDX2    (INT): Output index of ID2 to link to input 2
+;# IN  defVal (REAL): Default value if input 2 is unlinked
+;# IN  HIST   (REAL): Histeresis for comparison
+;#
+;# Object Parameters:
+;# 1 defVal (REAL): see parameter defVal
+;# 2 HIST   (REAL): see parameter HIST
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2 (optional)
+;#
+;# Object Outputs:
+;# 1 (BOOL): Comparison operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_LESS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN,hist:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL defVal,hist
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlLess"
+msgTxt[]="ST_LESS -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],defVal,hist)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_GREATER
+;#
+;# Description:
+;# Creates a RSI object to compare its input signals. The 
+;# result is TRUE if the first input is greater than the 
+;# second one. If the second input is unlinked the first 
+;# signal is compared with the constant value of parameter 
+;# defVal. In this case ID2 and IDX2 have to be set to 0.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_GREATER(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN,HIST:IN)
+;# 
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  ID2     (INT): ID of the object to link to input 2
+;# IN  IDX2    (INT): Output index of ID2 to link to input 2
+;# IN  defVal (REAL): Default value if input 2 is unlinked
+;# IN  HIST   (REAL): Histeresis for comparison
+;#
+;# Object Parameters:
+;# 1 defVal (REAL): see parameter defVal
+;# 2 HIST   (REAL): see parameter HIST
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2 (optional)
+;#
+;# Object Outputs:
+;# 1 (BOOL): Comparison operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_GREATER(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,defVal:IN,hist:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL defVal,hist
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlGreater"
+msgTxt[]="ST_GREATER -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],defVal,hist)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_P
+;#
+;# Description:
+;# Creates a RSI object with P control functionality. With 
+;# KR set to 1 the object can be used to change the signal 
+;# y(k) = KR * x(k)
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_P(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KR:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  KR     (REAL): Control parameter KR
+;#
+;# Object Parameters:
+;# 1: KR (REAL): see parameter KR
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_P(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KR:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL KR
+
+fctName[]="EFC_rsi_krlPCtrl"
+msgTxt[]="ST_P -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,KR)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_PD
+;#
+;# Description:
+;# Creates a RSI object with PD control functionality.
+;# y(k) = B0 * x(k) + B1 * x(k-1)
+;# with:
+;# B0 = KR * (1 + (TV  / 0.012))
+;# B1 = -KR * (TV / 0.012)
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_PD(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KR:IN,TV:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  KR     (REAL): Control parameter KR
+;# IN  TV     (REAL): Control parameter TV in [sec]
+;#
+;# Object Parameters:
+;# 1: KR (REAL): see parameter KR
+;# 2: TV (REAL): see parameter TV
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_PD(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KR:IN,TV:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL KR,TV
+
+fctName[]="EFC_rsi_krlPDCtrl"
+msgTxt[]="ST_PD -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,KR,TV)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_I
+;#
+;# Description:
+;# Creates a RSI object with I control functionality with 
+;# the trapeze algorithm. With parameter iMode set to 1 the
+;# integration is only done when a CP movement (LIN / CIRC) 
+;# is active.
+;# y(k) = B0 * (x(k) + x(k-1)) + y(k-1)
+;# with:
+;# B0 = 0.012 / (2 * TI)
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_I(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,TI:IN,IMODE:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  TI     (REAL): Control parameter TI in [sec]
+;# IN  IMODE   (INT): Mode of integration
+;# -> 0: Always
+;# -> 1: Only on CP movements
+;#
+;# Object Parameters:
+;# 1: RESET (BOOL): Set to TRUE resets the integrator
+;# 2: TI    (REAL): see parameter TI
+;# 3: IMODE  (INT): see parameter IMODE
+;# 4: LIMLOW (REAL): Anti windup lower limit
+;# 5: LIMUPP (REAL): Anti windup upper limit
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_I(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,TI:IN,iMode:IN)
+INT OBJID,CONTID,ID1,IDX1,IMODE
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL TI
+
+fctName[]="EFC_rsi_krlICtrl"
+msgTxt[]="ST_I -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,TI,IMODE)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_D
+;#
+;# Description:
+;# Creates a RSI object with D control functionality.
+;# y(k) = B0 * (x(k) - x(k-1))
+;# with:
+;# B0 = KD / 0.012
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_D(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KD:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  KD     (REAL): Control parameter KD
+;#
+;# Object Parameters:
+;# 1: KD    (REAL): see parameter KD
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_D(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KD:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL KD
+
+fctName[]="EFC_rsi_krlDCtrl"
+msgTxt[]="ST_D -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,KD)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_IEUL (Do not use this function! Not released!)
+;#
+;# Description:
+;# Creates a RSI object with I control functionality 
+;# especially to integrate corrections of Euler angles 
+;# A, B, C. With parameter iMode set to 1 the integration
+;# is only done when a CP movement (LIN / CIRC) is active.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_IEUL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,iMode:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  ID2     (INT): ID of the object to link to input 2
+;# IN  IDX2    (INT): Output index of ID1 to link to input 2
+;# IN  ID3     (INT): ID of the object to link to input 3
+;# IN  IDX3    (INT): Output index of ID1 to link to input 3
+;# IN  iMode   (INT): Mode of integration
+;# -> 0: Always
+;# -> 1: Only on CP movements
+;#
+;# Object Parameters:
+;# 1: RESET (BOOL): Set to TRUE resets integrator
+;# 2: iMode  (INT): see parameter iMode
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal A angle
+;# 2 (REAL): Input signal C angle
+;# 3 (REAL): Input signal B angle
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal A angle
+;# 2 (REAL): Output signal C angle
+;# 3 (REAL): Output signal B angle
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_IEUL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN,iMode:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3,iMode
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[3]
+INT arrIDX[3]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+
+fctName[]="EFC_rsi_krlIEulCtrl"
+msgTxt[]="ST_IEUL -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],iMode)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_PID
+;#
+;# Description:
+;# Creates a RSI object with PID control functionality.
+;# y(k) = y(k-1) + B0 * x(k) + B1 * x(k-1) + B2 * x(k-2)
+;# with:
+;# B0 = KR * (1 + TV / 0.012)
+;# B1 = - KR * (1 - 0.012 / TN + 2 * TV / 0.012)
+;# B2 = KR * TV / 0.012
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_PID(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KR:IN,TV:IN,TN:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  KR     (REAL): Control parameter KR
+;# IN  TV     (REAL): Control parameter TV in [sec]
+;# IN  TN     (REAL): Control parameter TN in [sec]
+;#
+;# Object Parameters:
+;# 1: KR (REAL): see parameter KR
+;# 2: TV (REAL): see parameter TV
+;# 3: TN (REAL): see parameter TN
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_PID(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KR:IN,TV:IN,TN:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL KR,TV,TN
+
+fctName[]="EFC_rsi_krlPIDCtrl"
+msgTxt[]="ST_PID -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,KR,TV,TN)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_PT1
+;#
+;# Description:
+;# Creates a RSI object with PT1 control functionality.
+;# y(k) = - A0 * y(k-1) + B0 * x(k)
+;# with:
+;# A0 = -exp(-0.012 / T1)
+;# B0 = KR * (1 - exp(-0.012 / T1)
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_PT1(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KP:IN,T1:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  KP     (REAL): Control parameter KR
+;# IN  T1     (REAL): Control parameter T1 in [sec]
+;#
+;# Object Parameters:
+;# 1: KR (REAL): see parameter KR
+;# 2: T1 (REAL): see parameter T1
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_PT1(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KP:IN,T1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL KP,T1
+
+fctName[]="EFC_rsi_krlPT1Ctrl"
+msgTxt[]="ST_PT1 -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,KP,T1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_PT2
+;#
+;# Description:
+;# Creates a RSI object with PT2 control functionality.
+;# y(k) = - A0 * y(k-1) - A1 * y(k-2) + B0 * x(k) + B1 *x(k-1)
+;# with:
+;# Case 1: T1 != T2
+;# Z1 = exp(-0.012 / T1)
+;# Z2 = exp(-0.012 / T2)
+;# A0 = -Z1 - Z2
+;# A1 = Z1 * Z2
+;# B0 = (KP / (T1 - T2)) / (T1 * (1 - Z1) - T2 * (1 - Z2))
+;# B1 = (KP / (T1 - T2)) / (T2 * Z1 *(1 - Z2) - T1 * Z2 *(1 - Z1))
+;# Case 2: T1 == T2
+;# Z0 = exp(-0.012 / T1)
+;# A0 = -2 * Z0
+;# A1 = pow(Z0,2)
+;# B0 = KP * (1 - Z0 * ((0.012 / T1) + 1))
+;# B1 = KP * Z0 * (Z0 + (0.012 / T1) - 1)
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_PT2(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KP:IN,T1:IN,T2:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  KP     (REAL): Control parameter KR
+;# IN  T1     (REAL): Control parameter T1 in [sec]
+;# IN  T2     (REAL): Control parameter T2 in [sec]
+;#
+;# Object Parameters:
+;# 1: KR (REAL): see parameter KR
+;# 2: T1 (REAL): see parameter T1
+;# 3: T2 (REAL): see parameter T2
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_PT2(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,KP:IN,T1:IN,T2:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL KP,T1,T2
+
+fctName[]="EFC_rsi_krlPT2Ctrl"
+msgTxt[]="ST_PT2 -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,KP,T1,T2)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_GENCTRL
+;#
+;# Description:
+;# Creates a RSI object with generic transfer
+;# functionality.
+;# y(z)=
+;# B0*u(z)+B1*u(z-1)+B2*u(z-2)+...+B8*u(z-8)
+;# -A1*y(z-1)-A2*y(z-2)-...-A8*y(z-8)
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_GENCTRL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;#
+;# Object Parameters:
+;#  1: RESET (BOOL): Reset the internal values
+;#  2: A1 (REAL): A1 coefficient
+;#  3: A2 (REAL): A2 coefficient
+;#  4: A3 (REAL): A3 coefficient
+;#  5: A4 (REAL): A4 coefficient
+;#  6: A5 (REAL): A5 coefficient
+;#  7: A6 (REAL): A6 coefficient
+;#  8: A7 (REAL): A7 coefficient
+;#  9: A8 (REAL): A8 coefficient
+;# 10: B0 (REAL): B0 coefficient
+;# 11: B1 (REAL): B1 coefficient
+;# 12: B2 (REAL): B2 coefficient
+;# 13: B3 (REAL): B3 coefficient
+;# 14: B4 (REAL): B4 coefficient
+;# 15: B5 (REAL): B5 coefficient
+;# 16: B6 (REAL): B6 coefficient
+;# 17: B7 (REAL): B7 coefficient
+;# 18: B8 (REAL): B8 coefficient
+;#
+;# Object Inputs:
+;# 1 (REAL): input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_GENCTRL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlGenCtrl"
+msgTxt[]="ST_GENCTRL -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_IIRFILTER
+;#
+;# Description:
+;# Creates a RSI object with IIR filter functionality.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_IIRFILTER(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,type:IN,NAME:IN,ORDER:IN,cutoffFREQ:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  type    (INT): Type of filter
+;# -> 0: Lowpass
+;# -> 1: Highpass
+;# IN  NAME    (INT):
+;# -> 0: Bessel
+;# -> 1: Butterworth
+;# -> 2: Tschebyscheff with ripple 0.5 db
+;# -> 3: Tschebyscheff with ripple 1 db
+;# -> 4: Tschebyscheff with ripple 2 db
+;# -> 5: Tschebyscheff with ripple 3 db
+;# IN  ORDER   (INT) 
+;# -> 0: 2 order
+;# -> 1: 4 order
+;# -> 2: 6 order
+;# -> 3: 8 order
+;# -> 4: 10 order
+;# IN  CUTFREQ (REAL):Cutoff frequency in [Hz]
+;#
+;# Object Parameters:
+;#  1: RESET (BOOL): Reset the internal values
+;#
+;# Object Inputs:
+;# 1 (REAL): input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_IIRFILTER(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,type:IN,name:IN,order:IN,cutoff:IN)
+INT OBJID,CONTID,ID1,IDX1,type,name,order
+REAL cutoff
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlIIRFilter"
+msgTxt[]="ST_IIRFILTER -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,type,name,order,cutoff)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_CONTAINER
+;#
+;# Description:
+;# Creates a container object. A container is used to group 
+;# RSI objects. The commands ST_DELOBJ, ST_ENABLE and 
+;# ST_DISABLE are usable on a containers. RSI objects are 
+;# assigned to a container at creation time with the second 
+;# paramater CONTID. A first level container with ID 0 is 
+;# predefined. Objects created on a second level container 
+;# are by default disabled. 
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_CONTAINER(OBJID:OUT)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# No - A container has no signal functionality
+;#
+;# Object Outputs:
+;# No - A container has no signal functionality
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;#
+
+GLOBAL DEFFCT RSIERR ST_CONTAINER(OBJID:OUT)
+INT OBJID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlContainer"
+msgTxt[]="ST_CONTAINER -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SUM
+;#
+;# Description:
+;# Creates a RSI object to sum up its input signals. The 
+;# object supports up to 10 inputs - at least one input has 
+;# to be linked. The constant value of cVal is added to 
+;# the input sum. If the second input should be unlinked 
+;# ID2 and IDX2 have to be set to 0.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SUM(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,cVal:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID2 to link to input 2
+;# IN  cVal  (REAL): Constant value to add
+;#
+;# Object Parameters:
+;# 1: cVal (REAL): see parameter cVal
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# ...
+;# 5 (REAL): Input signal 5
+;#
+;# Object Outputs:
+;# 1 (REAL): Addition operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_SUM(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,cVal:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL cVal
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlSum"
+msgTxt[]="ST_SUM -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[],cVal)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MULTI
+;#
+;# Description:
+;# Creates a RSI object to multiply its two input signals.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MULTI(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID2 to link to input 2
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;#
+;# Object Outputs:
+;# 1 (REAL): Multiplication operation result
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSILNKOUTOBJ:    Invalid ID for linkage
+;# RSILNKOUTINDEX:  Invalid index for linkage
+;# RSILNKSIGNAL:    Input output signal mismatch
+;# RSILNKCYCLE:     Cyclic linkage
+;# RSINOLNKOBJ:     Object not linkable 
+;#
+
+GLOBAL DEFFCT RSIERR ST_MULTI(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlMulti"
+msgTxt[]="ST_MULTI -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_TIMER
+;#
+;# Description:
+;# Creates a RSI object with a bool output flipping to TRUE 
+;# after a defineable period of time. When the optional 
+;# input is connected the timer is only proceeding when the
+;# input signal is TRUE.
+;# Linkage to this object has to be done with RSI_NEWLINK().
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_TIMER(OBJID:OUT,CONTID:IN,time:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  time  (REAL): Timer lenght in [sec]
+;#
+;# Object Parameters:
+;# 1: RESET (BOOL): Set to TRUE resets the timer
+;# 2: time  (REAL): see parameter time
+;#
+;# Object Inputs:
+;# 1 (BOOL): Control input
+;# -> Linked: TRUE proceeding / FALSE not proceeding
+;# -> Unlinked: Always proceeding
+;#
+;# Object Outputs:
+;# 1 (BOOL): Timer output - TRUE when timer expired
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter time
+;#
+
+GLOBAL DEFFCT RSIERR ST_TIMER(OBJID:OUT,CONTID:IN,timeX:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL timeX
+
+fctName[]="EFC_rsi_krlTimer"
+msgTxt[]="ST_TIMER -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,timeX)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_LIMIT
+;#
+;# Description:
+;# Bounds the range of input signal to upper and lower 
+;# saturation values.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_LIMIT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,lowLim:IN,uppLim:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  lowLim (REAL): Lower limit to bound
+;# IN  uppLim (REAL): Upper limit to bound
+;#
+;# Object Parameters:
+;# 1: lowLim (REAL): see parameter lowLim
+;# 2: uppLim (REAL): see parameter uppLim
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Bounded output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK: Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_LIMIT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,lowLim:IN,uppLim:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL lowLim,uppLim
+
+fctName[]="EFC_rsi_krlLimit"
+msgTxt[]="ST_LIMIT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,lowLim,uppLim)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_LIMITEX
+;#
+;# Description:
+;# Bounds the range of input signal to upper and lower 
+;# saturation values.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_LIMITEX(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;#
+;# Object Parameters:
+;# 1: RESET  (BOOL): Reset
+;# 2: lowLim (REAL): Lower limit
+;# 3: uppLim (REAL): Upper limit
+;# 4: lowLim (REAL): Lower limit 1
+;# 5: uppLim (REAL): Upper limit 1
+;# 6: lowLim (REAL): Lower limit 2
+;# 7: uppLim (REAL): Upper limit 2
+;# 8: lowLim (REAL): Lower limit 3
+;# 9: uppLim (REAL): Upper limit 3
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Bounded output signal 1
+;# 2 (INT):  Index for limiting constraint
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK: Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_LIMITEX(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlLimitEx"
+msgTxt[]="ST_LIMITEX -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SATURATION
+;#
+;# Description:
+;# Bounds the range of input signal to upper and lower 
+;# saturation values and map it to a range of output signal.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SATURATION(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;#
+;# Object Parameters:
+;# 1: ILOW (REAL): Input lower bound
+;# 2: IUPP (REAL): Input upper bound
+;# 3: OLOW (REAL): Output lower bound
+;# 4: OUPP (REAL): Output upper bound
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Bounded output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_SATURATION(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlSaturat"
+msgTxt[]="ST_SATURATION -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MINMAX
+;#
+;# Description:
+;# Creates a RSI object that finds out the minimal and the 
+;# maximal signal value of all inputs. The minimal value is 
+;# written to output 1 and the maximal value is written to
+;# on the output 2. The inputs 1 and 2 have to be linked at 
+;# creation time. All further inputs 3 - 10 can be 
+;# established with RSI_NEWLINK().
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MINMAX(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID2 to link to input 2
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1  (REAL): Input signal 1
+;# 2  (REAL): Input signal 2
+;# 3  (REAL): Input signal 3 (optional)
+;# ...
+;# 10 (REAL): Input signal 10(optional)
+;#
+;# Object Outputs:
+;# 1 (REAL): Minimal signal value
+;# 2 (REAL): Maximal signal value
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_MINMAX(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL cVal
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlMinMax"
+msgTxt[]="ST_MINMAX -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_DELAY
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_DELAY(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,DELAY:IN)
+;#
+;# Description:
+;# Creates a RSI object to delay the inpit signal for a 
+;# defineable period of time.
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  DELAY (REAL): Delay time in [sec]
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;#
+;# Object Outputs:
+;# 1 (REAL): Delayed output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_DELAY(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,delay1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL delay1
+
+fctName[]="EFC_rsi_krlDelay"
+msgTxt[]="ST_TIMER -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,delay1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_ABS
+;#
+;# Description:
+;# Creates a RSI object to make a RSI signal positiv.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ABS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1 
+;#
+;# Object Outputs:
+;# 1 (REAL): Positiv output signal 1
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_ABS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlAbs"
+msgTxt[]="ST_ABS -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SIGNALSWITCH
+;#
+;# Description:
+;# Creates a RSI object to switch between two signals in  
+;# dependance of a control input. If the input 1 is TRUE   
+;# then the input signal 2 is mapped to the output 1 and the 
+;# input signal 3 is mapped to the output 2. If input 1 is 
+;# FALSE then input signal 2 is mapped to the output 2 and 
+;# the input signal 3 is mapped to the output 1. 
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SIGNALSWITCH(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  ID1     (INT): ID of the object to link to input 1
+;# IN  IDX1    (INT): Output index of ID1 to link to input 1
+;# IN  ID2     (INT): ID of the object to link to input 2
+;# IN  IDX2    (INT): Output index of ID1 to link to input 2
+;# IN  ID3     (INT): ID of the object to link to input 3
+;# IN  IDX3    (INT): Output index of ID1 to link to input 3
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (BOOL): Control input 1
+;# 2 (REAL): Input signal 2
+;# 3 (REAL): Input signal 3
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal 1
+;# 2 (REAL): Output signal 2
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_SIGNALSWITCH(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN,ID3:IN,IDX3:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2,ID3,IDX3
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[3]
+INT arrIDX[3]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrID[3]=ID3
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+arrIDX[3]=IDX3
+
+fctName[]="EFC_rsi_krlSwitch"
+msgTxt[]="ST_SIGNALSWITCH -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MAP2OV_PRO
+;#
+;# Description:
+;# Creates a RSI object to modify the program override 
+;# $OV_PRO.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MAP2OV_PRO(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (INT): Input signal 1 for value $OV_PRO (Range 0 - 100)
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_MAP2OV_PRO(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlVel"
+msgTxt[]="ST_MAP2OV_PRO -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_STOP
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_STOP(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,mode:IN)
+;#
+;# Description:
+;# Creates a RSI object to stop a movement with a message 
+;# in the GUI if the input becomes TRUE.
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  mode   (INT): Stop mode
+;# 0 : Info Message (no stop)
+;# 1 : Normal stop on path
+;# 2 : Velocity stop
+;# 3 : Fast stop on path
+;# 4 : Exit RSI_MOVESENS command
+;#
+;# Object Parameters:
+;# 1 mode (INT): see parameter mode
+;#
+;# Object Inputs:
+;# 1 (BOOL): Input signal 1
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter mode
+;#
+
+GLOBAL DEFFCT RSIERR ST_STOP(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,mode:IN)
+INT OBJID,CONTID,ID1,IDX1,mode
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlStop"
+msgTxt[]="ST_STOP -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,mode)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MAP2SEN_PINT
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MAP2SEN_PINT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,varIDX:IN)
+;#
+;# Description:
+;# Creates a RSI object to map the input signal to the 
+;# KRL variable $SEN_PINT[varIDX].
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  varIDX (INT): Index in $SEN_PINT array (>= 1 < 20)
+;#
+;# Object Parameters:
+;# 1 varIDX (INT): see parameter varIDX
+;#
+;# Object Inputs:
+;# 1 (INT): Input signal 1 to map to $SEN_PINT[varIDX]
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter varIDX
+;# RSILNKOUTOBJ:    invalid output object ID to link (see logging)
+;# RSILNKOUTINDEX:  invalid index at output object (see logging)
+;# RSILNKSIGNAL:    input and output signal don't match together (see logging)
+;#
+
+GLOBAL DEFFCT RSIERR ST_MAP2SEN_PINT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,varIDX:IN)
+INT OBJID,CONTID,ID1,IDX1,varIDX
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krl2SEN_PINT"
+msgTxt[]="ST_MAP2SEN_PINT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,varIDX)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MAP2SEN_PREA
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MAP2SEN_PREA(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,varIDX:IN)
+;#
+;# Description:
+;# Creates a RSI object to map the input signal to the 
+;# KRL variable $SEN_PREA[varIDX].
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  varIDX (INT): Index in $SEN_PREA array (>= 1 < 20)
+;#
+;# Object Parameters:
+;# 1 varIDX (INT): see parameter varIDX
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1 to map to $SEN_PREA[varIDX] 
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter varIDX
+;# RSILNKOUTOBJ:    invalid output object ID to link (see logging)
+;# RSILNKOUTINDEX:  invalid index at output object (see logging)
+;# RSILNKSIGNAL:    input and output signal don't match together (see logging)
+;# RSIINVPARAM:     invalid object parameter Index
+;#
+
+GLOBAL DEFFCT RSIERR ST_MAP2SEN_PREA(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,varIDX:IN)
+INT OBJID,CONTID,ID1,IDX1,varIDX
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krl2SEN_PREA"
+msgTxt[]="ST_MAP2SEN_PREA -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,varIDX)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MAP2DIGOUT
+;#
+;# Description:
+;# Creates a RSI object to map the input signal to the 
+;# digital outputs $OUT[].
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MAP2DIGOUT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,outIDX:IN,len:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  outIDX (INT): Offset of digital outputs to write
+;# -> in Bit for len 0 (Bit) >=1
+;# -> in Byte for len 1,2,3 (Byte, Word) >=1
+;# IN  len    (INT): Range of bits to write
+;# -> 0: Bit
+;# -> 1: Byte
+;# -> 2: Word
+;#
+;# Object Parameters:
+;# 1 outIDX (INT): see parameter outIDX
+;# 1 len    (INT): see parameter len
+;#
+;# Object Inputs:
+;# 1 (INT): Input signal 1 to map to $OUT[]
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter
+;# RSILNKOUTOBJ:    invalid output object ID to link (see logging)
+;# RSILNKOUTINDEX:  invalid index at output object (see logging)
+;# RSILNKSIGNAL:    input and output signal don't match together (see logging)
+;# RSIINVPARAM:     invalid object parameter (see logging)
+;#
+
+GLOBAL DEFFCT RSIERR ST_MAP2DIGOUT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,outIDX:IN,len:IN)
+INT OBJID,CONTID,ID1,IDX1,outIDX,len
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krl2DigOut"
+msgTxt[]="ST_MAP2DIGOUT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,outIDX,len)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MAP2ANOUT
+;#
+;# Description:
+;# Creates a RSI object to map the Input signal to the 
+;# analog output $ANOUT[outIDX].
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MAP2ANOUT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,outIDX:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  outIDX (INT): Offset of analog outputs to write >=1
+;#
+;# Object Parameters:
+;# 1 outIDX (INT): see parameter outIDX
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1 to map to $ANOUT[outIDX].
+;#
+;# Object Outputs:
+;# No
+
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter outIDX
+;# RSILNKOUTOBJ:    invalid output object ID to link (see logging)
+;# RSILNKOUTINDEX:  invalid index at output object (see logging)
+;# RSILNKSIGNAL:    input and output signal don't match together (see logging)
+;# RSIINVPARAM:     invalid object parameter (see logging)
+;#
+
+GLOBAL DEFFCT RSIERR ST_MAP2ANOUT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,outIDX:IN)
+INT OBJID,CONTID,ID1,IDX1,outIDX
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krl2AnaOut"
+msgTxt[]="ST_MAP2ANAOUT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,outIDX)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SETDIGOUT
+;#
+;# Description:
+;# Creates a RSI object to set a digital output $OUT[outIDX] 
+;# to TRUE if the signal input becomes TRUE. In difference 
+;# to ST_MAP2DIGOUT the output stays TRUE independent of 
+;# the further signal flow.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SETDIGOUT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,outIDX:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  outIDX (INT): Offset of digital output to write >=1
+;#
+;# Object Parameters:
+;# 1 outIDX (INT): see parameter outIDX
+;#
+;# Object Inputs:
+;# 1 (BOOL): Input signal 1 to set to $OUT[outIDX]
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter OUIDX
+;# RSILNKOUTOBJ:    invalid output object ID to link (see logging)
+;# RSILNKOUTINDEX:  invalid index at output object (see logging)
+;# RSILNKSIGNAL:    input and output signal don't match together (see logging)
+;# RSIINVPARAM:     invalid object parameter Index
+;#
+
+GLOBAL DEFFCT RSIERR ST_SETDIGOUT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,outIDX:IN)
+INT OBJID,CONTID,ID1,IDX1,outIDX
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlSetDigOut"
+msgTxt[]="ST_SETDIGOUT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,outIDX)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_RESETDIGOUT
+;#
+;# Description:
+;# Creates a RSI object to set a digital output $OUT[outIDX] 
+;# to FALSE if the signal input becomes TRUE. In difference 
+;# to ST_MAP2DIGOUT the output stays FALSE indepencent of 
+;# the further signal flow.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_RESETDIGOUT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,outIDX:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  outIDX (INT): Offset of digital output to write >=1
+;#
+;# Object Parameters:
+;# 1 outIDX (INT): see parameter outIDX
+;#
+;# Object Inputs:
+;# 1 (BOOL): Input signal 1 to reset $OUT[outIDX]
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter outIDX
+;# RSILNKOUTOBJ:    invalid output object ID to link (see logging)
+;# RSILNKOUTINDEX:  invalid index at output object (see logging)
+;# RSILNKSIGNAL:    input and output signal don't match together (see logging)
+;# RSIINVPARAM:     invalid object parameter Index
+;#
+
+GLOBAL DEFFCT RSIERR ST_RESETDIGOUT(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,outIDX:IN)
+INT OBJID,CONTID,ID1,IDX1,outIDX
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlRsDigOut"
+msgTxt[]="ST_RESETDIGOUT -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,outIDX)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_POSCORR
+;#
+;# Description:
+;# Creates a RSI object to do a cartesian path correction. 
+;# The object allows to set correction values for the robot 
+;# position every sensor cycle. The linkage to this object 
+;# has to be done with RSI_NEWLINK(). The reference 
+;# coordinate system and integration mode depends on 
+;# parameters for ST_ON().
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_POSCORR(OBJID:OUT,CONTID:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;#
+;# Object Parameters:
+;# 1 (REAL): Lower bound of correction in X, Default: -5
+;# 2 (REAL): Lower bound of correction in Y, Default: -5
+;# 3 (REAL): Lower bound of correction in Z, Default: -5
+;# 4 (REAL): Upper bound of correction in X, Default: 5
+;# 5 (REAL): Upper bound of correction in Y, Default: 5
+;# 6 (REAL): Upper bound of correction in Z, Default: 5
+;# 7 (REAL): Maximal rotation angle, Default: 5
+;#
+;# Object Inputs:
+;# 1 (REAL): X translation correction value [mm]
+;# 2 (REAL): Y translation correction value [mm]
+;# 3 (REAL): Z translation correction value [mm]
+;# 4 (REAL): A rotation correction value [°]
+;# 5 (REAL): B rotation correction value [°]
+;# 6 (REAL): C rotation correction value [°]
+;#
+;# Object Outputs:
+;# 1 (INT): Correction active signal
+;# -> 0: Interpolator not active
+;# -> 1: Correction active
+;# -> 2: Correction out of range
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_POSCORR(OBJID:OUT,CONTID:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlPathCorr"
+msgTxt[]="ST_POSCORR -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_AXISCORR
+;#
+;# Description:
+;# Creates a RSI object to do a axis correction. The object 
+;# allows to set correction values for the robot position 
+;# every sensor cycle. The linkage to this object has to be 
+;# done with RSI_NEWLINK(). The integration mode depends on 
+;# parameters for ST_ON().
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_AXISCORR(OBJID:OUT,CONTID:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;#
+;# Object Parameters:
+;# 1 (REAL): Lower bound of correction A1, Default: -5
+;# 2 (REAL): Lower bound of correction A2, Default: -5
+;# 3 (REAL): Lower bound of correction A3, Default: -5
+;# 4 (REAL): Lower bound of correction A4, Default: -5
+;# 5 (REAL): Lower bound of correction A5, Default: -5
+;# 6 (REAL): Lower bound of correction A6, Default: -5
+;# 7 (REAL): Lower bound of correction E1, Default: -5
+;# 8 (REAL): Lower bound of correction E2, Default: -5
+;# 9 (REAL): Lower bound of correction E3, Default: -5
+;# 10 (REAL): Lower bound of correction E4, Default: -5
+;# 11 (REAL): Lower bound of correction E5, Default: -5
+;# 12 (REAL): Lower bound of correction E6, Default: -5
+;# 13 (REAL): Upper bound of correction A1, Default: 5
+;# 14 (REAL): Upper bound of correction A2, Default: 5
+;# 15 (REAL): Upper bound of correction A3, Default: 5
+;# 16 (REAL): Upper bound of correction A4, Default: 5
+;# 17 (REAL): Upper bound of correction A5, Default: 5
+;# 18 (REAL): Upper bound of correction A6, Default: 5
+;# 19 (REAL): Upper bound of correction E1, Default: 5
+;# 20 (REAL): Upper bound of correction E2, Default: 5
+;# 21 (REAL): Upper bound of correction E3, Default: 5
+;# 22 (REAL): Upper bound of correction E4, Default: 5
+;# 23 (REAL): Upper bound of correction E5, Default: 5
+;# 24 (REAL): Upper bound of correction E6, Default: 5
+;#
+;# Object Inputs:
+;# 1 (REAL): A1 correction
+;# 2 (REAL): A2 correction
+;# 3 (REAL): A3 correction
+;# 4 (REAL): A4 correction
+;# 5 (REAL): A5 correction
+;# 6 (REAL): A6 correction
+;# 7 (REAL): E1 correction
+;# ...
+;# 12(REAL): E12 angle correction
+;#
+;# Object Outputs:
+;# 1 (INT): Correction active signal
+;# -> 0: Interpolator not active
+;# -> 1: Correction active
+;# -> 2: Correction out of range
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_AXISCORR(OBJID:OUT,CONTID:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlAxisCorr"
+msgTxt[]="ST_AXISCORR -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_MONITOR
+;#
+;# Description:
+;# Creates a RSI object to send RSI signal data via TCP/IP 
+;# the corresponding server application RSIMonitor.exe. 
+;# When the optional input is connected the object is only 
+;# sending when the input signal is TRUE.
+;# Linkage to this object has to be done with RSI_NEWLINK().
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_MONITOR(OBJID:OUT,CONTID:IN,ip[]:OUT,channel:IN,refresh:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT):    ID of the created RSI object      
+;# IN  CONTID  (INT):    ID of container for the new object
+;# IN  ip[]    (CHAR[]): Target IP address - Default: 192.168.0.1
+;# IN  channelP (INT):   Target channel or port - Default: 1
+;# IN  refresh (INT):    Send cycle in multiples of sensor cycle - Default: 1
+;#
+;# Object Parameters:
+;# 1 refresh (INT): see parameter refresh
+;#
+;# Object Inputs:
+;# 1  (REAL): Data channel 1
+;# ...
+;# 24 (REAL): Data channel 24
+;#
+;# Object Outputs:
+;# No
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIINVPARAM:     Invalid parameter
+;#
+
+GLOBAL DEFFCT RSIERR ST_MONITOR(OBJID:OUT,CONTID:IN,ip[]:OUT,channelP:IN,refresh:IN)
+INT OBJID,CONTID,channelP,refresh
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+CHAR ip[]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+IF (VARSTATE("ip[]") == #DECLARED) THEN
+IP[]="192.168.0.1"
+ENDIF
+IF (VARSTATE("channelP") == #DECLARED) THEN
+channelP=1
+ENDIF
+IF (VARSTATE("refresh") == #DECLARED) THEN
+refresh=1
+ENDIF
+fctName[]="EFC_rsi_krlMonitor"
+msgTxt[]="ST_MONITOR -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ip[],channelP,refresh)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_POW
+;#
+;# Description:
+;# Creates a RSI object to compute the signal input raised 
+;# to a specific power.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_POW(OBJID:OUT,CONTID:IN,ID:IN,IDX,EXP:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;# IN  EXP   (REAL): Exponent
+;#
+;# Object Parameters:
+;# 1 (REAL): see parameter EXP
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_POW(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,exp:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL exp
+
+fctName[]="EFC_rsi_krlPow"
+msgTxt[]="ST_POW -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,exp)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_SIN
+;#
+;# Description:
+;# Creates a RSI object to compute a sine. The input signal 
+;# input is interpreted as angle in degree.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_SIN(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_SIN(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlSin"
+msgTxt[]="ST_SIN -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_COS
+;#
+;# Description:
+;# Creates a RSI object to compute a cosine. The input 
+;# signal is interpreted as angle in degree.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_COS(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_COS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlCos"
+msgTxt[]="ST_COS -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_TAN
+;#
+;# Description:
+;# Creates a RSI object to compute a tangent. The input 
+;# signal is interpreted as angle in degree.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_TAN(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_TAN(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlTan"
+msgTxt[]="ST_TAN -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_ASIN
+;#
+;# Description:
+;# Creates a RSI object to compute an arc sine. The input 
+;# signal has to be in a range from -1 to 1. The output is 
+;# in a range from -90 to 90 degrees.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ASIN(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_ASIN(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlASin"
+msgTxt[]="ST_ASIN -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+
+;# Function:
+;# ST_ACOS
+;#
+;# Description:
+;# Creates a RSI object to compute an arc cosine. The input 
+;# signal has to be in a range from -1 to 1. The output is 
+;# in a range from 0 to 180 degrees.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ACOS(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_ACOS(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlACos"
+msgTxt[]="ST_ACOS -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_ATAN
+;#
+;# Description:
+;# Creates a RSI object to compute an arc tangent. The output 
+;# is in a range from -90 to 90 degrees.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ATAN(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_ATAN(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlATan"
+msgTxt[]="ST_ATAN -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_EXP
+;#
+;# Description:
+;# Creates a RSI object to compute an exponential value. 
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_EXP(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_EXP(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlExp"
+msgTxt[]="ST_EXP -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_LOG
+;#
+;# Description:
+;# Creates a RSI object to compute a natural logarithm. 
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_LOG(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_LOG(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlLog"
+msgTxt[]="ST_LOG -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_CEIL
+;#
+;# Description:
+;# Creates a RSI object to compute the smallest integer 
+;# greater than or equal to the input signal.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_CEIL(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_CEIL(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlCeil"
+msgTxt[]="ST_CEIL -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_FLOOR
+;#
+;# Description:
+;# Creates a RSI object to compute the largest integer 
+;# less than or equal to the input signal.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_FLOOR(OBJID:OUT,CONTID:IN,ID:IN,IDX)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_FLOOR(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN)
+INT OBJID,CONTID,ID1,IDX1
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlFloor"
+msgTxt[]="ST_FLOOR -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_ROUND
+;#
+;# Description:
+;# Creates a RSI object to compute the nearest integer. 
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ROUND(OBJID:OUT,CONTID:IN,ID:IN,IDX:IN,NDIG:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID     (INT): ID of the object to link to input
+;# IN  IDX    (INT): Output index of ID to link to input
+;# IN  NDIG   (INT): Number of digits
+;#
+;# Object Parameters:
+;# 1: NDIG (INT): see parameter NDIG
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_ROUND(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,NDIG:IN)
+INT OBJID,CONTID,ID1,IDX1,NDIG
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlRound"
+msgTxt[]="ST_ROUND -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,ID1,IDX1,NDIG)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_ATAN2
+;#
+;# Description:
+;# Creates a RSI object to compute the arc tangent of 
+;# input 1 / input 2. The routine uses the signs of both  
+;# arguments to determine the quadrant of the return value. 
+;# The range of the result is between -180 and +180 degrees.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ATAN2(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+;#
+;# Parameters:
+;# OUT OBJID  (INT): ID of the created RSI object
+;# IN  CONTID (INT): ID of container for the new object
+;# IN  ID1    (INT): ID of the object to link to input 1
+;# IN  IDX1   (INT): Output index of ID1 to link to input 1
+;# IN  ID2    (INT): ID of the object to link to input 2
+;# IN  IDX2   (INT): Output index of ID2 to link to input 2
+;#
+;# Object Parameters:
+;# No
+;#
+;# Object Inputs:
+;# 1 (REAL): Input signal 1
+;# 2 (REAL): Input signal 2
+;#
+;# Object Outputs:
+;# 1 (REAL): Output signal
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;#
+
+GLOBAL DEFFCT RSIERR ST_ATAN2(OBJID:OUT,CONTID:IN,ID1:IN,IDX1:IN,ID2:IN,IDX2:IN)
+INT OBJID,CONTID,ID1,IDX1,ID2,IDX2
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+INT arrID[2]
+INT arrIDX[2]
+
+arrID[1]=ID1
+arrID[2]=ID2
+arrIDX[1]=IDX1
+arrIDX[2]=IDX2
+
+fctName[]="EFC_rsi_krlATan2"
+msgTxt[]="ST_ATAN2 -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,arrID[],arrIDX[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN  #RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_NEWLINK
+;#
+;# Description:
+;# Links a signal from an output of a RSI object to an 
+;# optional input of another RSI object. This command is 
+;# only usable to link optional inputs. All mandatory 
+;# inputs are linked with the creation of the RSI Object.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR RSI_NEWLINK(outID:IN,outIDX:IN,inID:IN,inIDX:IN)
+;#
+;# Parameters:
+;# IN outID  (INT): ID of source RSI object
+;# IN outIDX (INT): Output index of source RSI object
+;# IN inID   (INT): ID of target RSI object
+;# IN inIDX  (INT): Input index of target RSI object
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:        Successful
+;# RSILNKOUTOBJ: Invalid source ID
+;# RSILNKINOBJ:  Invalid target ID
+;# RSILNKOUTID:  Invalid source index
+;# RSILNKINID:   Invalid target index
+;# RSILNKSIGNAL: Signal check error
+;#
+
+GLOBAL DEFFCT RSIERR RSI_NEWLINK(outID:IN,outIDX:IN,inID:IN,inIDX:IN)
+INT outID,outIDX,inID,inIDX
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlNewLink"
+msgTxt[]="RSI_NEWLINK -> "
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],outID,outIDX,inID,inIDX)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_DELLINK
+;#
+;# Description:
+;# Deletes an optional signal link. This command is only 
+;# usable to delete links to optional inputs. All mandatory 
+;# links can not be deleted.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR RSI_DELLINK(outID:IN,outIDX:IN,inID:IN,inIDX:IN)
+;#
+;# Parameters:
+;# IN outID  (INT): ID of source RSI object          
+;# IN outIDX (INT): Output index of source RSI object
+;# IN inID   (INT): ID of target RSI object          
+;# IN inIDX  (INT): Input index of target RSI object 
+;#
+;# Return Values:
+;# RSIOK:        Successful
+;# RSIINVINPID:  Invalid target ID
+;# RSIINVOUTID:  Invalid source ID
+;# RSIINVINPIND: Invalid target index
+;# RSIINVOUTIND: Invalid target index
+;# RSIINVLNK:    Invalid linkage
+;#
+
+GLOBAL DEFFCT RSIERR RSI_DELLINK(outID:IN,outIDX:IN,inID:IN,inIDX:IN)
+INT outID,outIDX,inID,inIDX
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+
+fctName[]="EFC_rsi_krlDelLink"
+msgTxt[]="RSI_DELLINK -> "
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],outID,outIDX,inID,inIDX)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_SETPARAM
+;#
+;# Description:
+;# Sets the RSI object parameter with the specified 
+;# parameter ID.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR RSI_SETPARAM(OBJID:IN,paramID:IN,value:IN)
+;#
+;# Parameters:
+;# IN OBJID   (INT): Object ID
+;# IN paramID (INT): Parameter ID
+;# IN value  (REAL): Parameter value to set
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:         Successful
+;# RSIINVOBJID:   Invalid object ID
+;# RSIINVPARAMID: Invalid parameter ID
+;# RSIINVPARAM:   Invalid parameter value to set
+;#
+
+GLOBAL DEFFCT RSIERR RSI_SETPARAM(OBJID:IN,paramID:IN,value:IN)
+INT OBJID,paramID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL value
+
+fctName[]="EFC_rsi_krlSetParam"
+msgTxt[]="RSI_SETPARAM -> "
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,paramID,value)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_GETPARAM
+;#
+;# Description:
+;# Gets the parameter with the specified parameter ID from 
+;# a RSI object. Use this function if the requested
+;# parameter has the data type REAL. 
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR RSI_GETPARAM(value:OUT,OBJID:IN,paramID:IN)
+;#
+;# Parameters:
+;# OUT value  (REAL): Returns the desired parameter
+;# IN  OBJID   (INT): Object ID
+;# IN  paramID (INT): Parameter ID
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:        Successful
+;# RSIINVOBJID:  Invalid object ID
+;# RSIINPARAMID: Invalid parameter ID
+;#
+
+GLOBAL DEFFCT RSIERR RSI_GETPARAM(value:OUT,OBJID:IN,paramID:IN)
+INT OBJID,paramID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+REAL value
+
+fctName[]="EFC_rsi_krlGetParam"
+msgTxt[]="RSI_GETPARAM -> "
+mod=#SYNC
+value=0.0
+CWRITE($FCT_CALL,stat,mod,fctName[],value,OBJID,paramID)
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_GETPARAMINT
+;#
+;# Description:
+;# Gets the parameter with the specified paramenter ID from 
+;# a RSI object. Use this function if the requested 
+;# parameter has the data type INT. 
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR RSI_GETPARAMINT(value:OUT,OBJID:IN,paramID:IN)
+;#
+;# Parameters:
+;# OUT value   (INT): Returns the desired parameter
+;# IN  OBJID   (INT): Object ID
+;# IN  paramID (INT): Parameter ID
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:        Successful
+;# RSIINVOBJID:  Invalid object ID
+;# RSIINPARAMID: Invalid parameter ID
+;#
+
+GLOBAL DEFFCT RSIERR RSI_GETPARAMINT(value:OUT,OBJID:IN,paramID:IN)
+INT value,OBJID,paramID
+REAL paramTmp
+DECL RSIERR err
+
+err=RSI_GETPARAM(paramTmp,OBJID,paramID)
+value=paramTmp
+
+RETURN err
+ENDFCT
+
+;# Function:
+;# ST_ETHERNET
+;#
+;# Description:
+;# Creates a RSI object to communicate over Ethernet. The 
+;# object inputs, outputs and socket configuration are user 
+;# defined by a self named configuration file. The file must 
+;# be created in the directory C:\KRC\ROBOTER\INIT\. 
+;# 
+;# Declaration:
+;# GLOBAL DEFFCT RSIERR ST_ETHERNET(OBJID:OUT,CONTID:IN,FILENAME:IN)
+;#
+;# Parameters:
+;# OUT OBJID   (INT): ID of the created RSI object
+;# IN  CONTID  (INT): ID of container for the new object
+;# IN  FILENAME    (CHAR): Name of configurationfile
+;#
+;# Object Parameters:
+;# 1: Total limit of timeout in Ipocycles
+;#    -> Range: 1-65000
+;#    -> 10: default
+;# 2: Quality of communication, value in percent output: RSIWARNING
+;#    -> Range: 1-65000
+;#    -> 10: default  
+;# 3: Window size of quality check
+;#    -> Range: 1-65000
+;#    -> 1000: default
+;# 4: $FLAG[par] will be TRUE if communication lost
+;#    -> par: 1-999
+;#    -> default: no index
+;# 5: not used
+;# 6: not used
+;# 7: TRUE: fast communicate 2ms 
+;#    -> Range: TRUE;FALSE
+;#    -> FALSE: default
+;# 8: decimal places
+;#    -> Range: 0-32
+;#    -> default: 4
+;# 
+;# Object Inputs:
+;# 1-64 type defined by user
+;# 
+;# Object Outputs:
+;# 1-64 type defined by user
+;#
+;# Return Type:
+;# RSIERR
+;#
+;# Return Values:
+;# RSIOK:           Successful
+;# RSIINVCONT:      Invalid container
+;# RSIBAD:          Error while create object
+;#
+
+GLOBAL DEFFCT RSIERR ST_ETHERNET(OBJID:OUT, CONTID:IN, cFILENAME[]:IN)
+INT OBJID,CONTID
+CHAR fctName[20]
+CHAR msgTxt[20]
+CHAR errMsg[100]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSIERR ret
+CHAR cFILENAME[]       
+
+fctName[]="EFC_rsi_krlEthernet"
+msgTxt[]="ST_ETHERNET -> "
+mod=#SYNC
+OBJID=0
+CWRITE($FCT_CALL,stat,mod,fctName[],OBJID,CONTID,cFILENAME[])
+IF stat.Msg_No <> 0 THEN
+ ret=RSIErrCast(-stat.Msg_No,errMsg[])
+ RSIErrorMsg(-stat.Msg_No,msgTxt[],errMsg[])
+ return ret;
+ENDIF
+
+RETURN #RSIOK
+ENDFCT
+
+;# Function:
+;# ST_ON
+;#
+;# Description:
+;# Command is replaced with with <a href="RSI_ON.htm">RSI_ON</a>
+;#
+
+;# Function:
+;# ST_ON1
+;#
+;# Description:
+;# Command is replaced with with <a href="RSI_ON.htm">RSI_ON</a>
+;#
+
+;# Function:
+;# ST_OFF
+;#
+;# Description:
+;# Command is replaced with with <a href="RSI_OFF.htm">RSI_OFF</a>
+;#
+    
+;# Function:
+;# ST_ANAIN
+;#
+;# Description:
+;# Command is replaced with <a href="ST_ANIN.htm">ST_ANIN</a>
+;#
+
+;# Function:
+;# ST_PATHCORR
+;#
+;# Description:
+;# Command is replaced with <a href="ST_POSCORR.htm">ST_POSCORR</a>
+;#
+
+;# Function:
+;# ST_VEL
+;#
+;# Description:
+;# Command is replaced with <a href="ST_MAP2OV_PRO.htm">ST_MAP2OV_PRO</a>
+;#
+
+;# Function:
+;# ST_ENABLE
+;#
+;# Description:
+;# Command is replaced with <a href="RSI_ENABLE.htm">RSI_ENABLE</a>
+;#
+
+;# Function:
+;# ST_DISABLE
+;#
+;# Description:
+;# Command is replaced with <a href="RSI_DISABLE.htm">RSI_DISABLE</a>
+;#
+
+;# Function:
+;# ST_MOVESENS
+;#
+;# Description:
+;# Command is replaced with <a href="RSI_MOVECORR.htm">RSI_MOVECORR</a>
+;#
+
+;# Function:
+;# ST_SETPARAM
+;#
+;# Description:
+;# Command is replaced with <a href="RSI_SETPARAM.htm">RSI_SETPARAM</a>
+;#
+
+;# Function:
+;# ST_GETPARAM
+;#
+;# Description:
+;# Command is replaced with <a href="RSI_GETPARAM.htm">RSI_GETPARAM</a>
+;#
+
+;# Function:
+;# ST_NEWLINK
+;#
+;# Description:
+;# Command is replaced with <a href="RSI_NEWLINK.htm">RSI_NEWLINK</a>
+;#
+
+;# Function:
+;# ST_DELLINK
+;#
+;# Description:
+;# Command is replaced with <a href="RSI_DELLINK.htm">RSI_DELLINK</a>
+;#
+
+; Helper functions to handle break of movements
+; PTPBREAKSUB (E6P:IN)
+; PTPRELBREAKSUB (E6P:IN)
+; LINBREAKSUB (E6P:IN)
+; LINRELBREAKSUB (E6P:IN)
+; CIRCBREAKSUB (E6P:IN, E6P2:IN)
+; CIRCRELBREAKSUB (E6P:IN, E6P2:IN)
+; MOVERET()
+; MOVESKIP(BINT:IN)
+
+; Function:
+; PTPBREAKSUB
+; Description:
+; Subroutine invokes a LIN movement that can be interrupted
+
+GLOBAL DEF  PTPBREAKSUB (E6P :IN)
+DECL E6POS E6P
+
+$OUT[RSIBREAK]=FALSE
+INTERRUPT ON RSIINTERRUPTIDX
+PTP E6P
+WAIT SEC 0; Vorlaufstop
+INTERRUPT OFF RSIINTERRUPTIDX
+END
+
+; Function:
+; PTPBREAKSUB
+; Description:
+; Subroutine invokes a PTP_REL movement that can be interrupted
+
+GLOBAL DEF  PTPRELBREAKSUB (E6P :IN)
+DECL E6POS E6P
+
+$OUT[RSIBREAK]=FALSE
+INTERRUPT ON RSIINTERRUPTIDX
+PTP_REL E6P
+WAIT SEC 0; Vorlaufstop
+INTERRUPT OFF RSIINTERRUPTIDX
+END
+
+; Function:
+; LINBREAKSUB
+; Description:
+; Subroutine invokes a LIN movement that can be interrupted
+
+GLOBAL DEF  LINBREAKSUB (E6P :IN)
+DECL E6POS E6P
+
+$OUT[RSIBREAK]=FALSE
+INTERRUPT ON RSIINTERRUPTIDX
+LIN E6P
+WAIT SEC 0; Vorlaufstop
+INTERRUPT OFF RSIINTERRUPTIDX
+END
+
+; Function:
+; LINRELBREAKSUB
+; Description:
+; Subroutine invokes a LIN_REL movement that can be interrupted
+
+GLOBAL DEF  LINRELBREAKSUB (E6P :IN)
+DECL E6POS E6P
+
+$OUT[RSIBREAK]=FALSE
+INTERRUPT ON RSIINTERRUPTIDX
+LIN_REL E6P
+WAIT SEC 0; Vorlaufstop
+INTERRUPT OFF RSIINTERRUPTIDX
+END
+
+; Function:
+; CIRCBREAKSUB
+; Description:
+; Subroutine invokes a CIRC movement that can be interrupted
+
+GLOBAL DEF  CIRCBREAKSUB (E6P :IN,E6P2 :IN)
+DECL E6POS E6P,E6P2
+
+$OUT[RSIBREAK]=FALSE
+INTERRUPT ON RSIINTERRUPTIDX
+CIRC E6P,E6P2
+WAIT SEC 0; Vorlaufstop
+INTERRUPT OFF RSIINTERRUPTIDX
+END
+
+; Function:
+; CIRCRELBREAKSUB
+; Description:
+; Subroutine invokes a CIRC_REL movement that can be interrupted
+
+GLOBAL DEF  CIRCRELBREAKSUB (E6P :IN,E6P2 :IN)
+DECL E6POS E6P,E6P2
+
+$OUT[RSIBREAK]=FALSE
+INTERRUPT ON RSIINTERRUPTIDX
+CIRC_REL E6P,E6P2
+WAIT SEC 0; Vorlaufstop
+INTERRUPT OFF RSIINTERRUPTIDX
+END
+
+; Function:
+; MOVERET
+; Description:
+; Interrupt routine to break a ST_.. movement
+; Robot returns to startpoint of movement
+; Interpreter continues with next command
+
+GLOBAL DEF MOVERET()
+INTERRUPT OFF RSIINTERRUPTIDX
+BRAKE
+LIN  $POS_BACK
+$OUT[RSIBREAK]=FALSE
+RESUME
+END
+
+; Function:
+; MOVESKIP
+; Description:
+; Interrupt routine to break a ST_.. movement.
+; Interpreter continues with next command
+
+GLOBAL DEF MOVESKIP(BINT:IN)
+BOOL BINT
+INTERRUPT OFF RSIINTERRUPTIDX
+BRAKE
+IF BINT THEN
+ LIN $POS_INT
+ENDIF
+$OUT[RSIBREAK]=FALSE
+RESUME
+END
+
+; Function:
+; IRSENSMOVE
+; Description:
+; Interrupt routine to break a ST_MOVESENS movement
+; Interpreter continues with next command
+; Parameters:
+; IN  (INT): Mode
+;            0: Continue
+;            1: Continue on IR
+;            2: Continue on start
+GLOBAL DEF IRSENSMOVE(Mode :IN)
+INT Mode
+INTERRUPT OFF RSIINTERRUPTIDX
+BRAKE
+$OV_PRO=OV_RSI
+SWITCH Mode
+CASE 1
+LIN $POS_INT
+CASE 2
+LIN $POS_RET
+ENDSWITCH
+$OUT[RSIBREAK]=FALSE
+RESUME
+END
+
+; Function:
+; SENSBREAKSUB
+; Description:
+; Subroutine invokes a SENS movement that can be interrupted
+GLOBAL DEF SENSBREAKSUB()
+$OUT[RSIBREAK]=FALSE
+OV_RSI=$OV_PRO
+$OV_PRO=0
+INTERRUPT ON RSIINTERRUPTIDX
+LIN_REL {X 0.1}
+WAIT SEC 0; Vorlaufstop
+INTERRUPT OFF RSIINTERRUPTIDX
+END
+
+GLOBAL DEF RSIErrorMsg(errNo:IN,Txt1:IN,Txt2:IN,Txt3:IN)
+DECL CHAR Txt1[]
+DECL CHAR Txt2[]
+DECL CHAR Txt3[]
+DECL KRLMSG_T msg
+DECL KRLMSGPAR_T par[3]
+DECL KRLMSGOPT_T opt
+INT hMsg,errNo,i
+DECL RSIERR ret
+IF NOT RSIERRMSG THEN
+ RETURN
+ENDIF
+msg={Modul[] "RSI",Nr 0,Msg_txt[] " "}
+msg.Nr=errNo
+IF (VARSTATE("Txt1[]")==#INITIALIZED) THEN
+ i=StrAdd(msg.Msg_txt[],Txt1[])
+ENDIF
+IF (VARSTATE("Txt2[]")==#INITIALIZED) THEN
+ i=StrAdd(msg.Msg_txt[],Txt2[])
+ENDIF
+IF (VARSTATE("Txt3[]")==#INITIALIZED) THEN
+ i=StrAdd(msg.Msg_txt[],Txt3[])
+ENDIF
+opt={VL_Stop TRUE,Clear_P_Reset TRUE,Log_To_DB FALSE}
+hMsg=SET_KRLMSG(#QUIT,msg,par[],opt)
+WHILE(EXISTS_KRLMSG(hMsg))
+ WAIT SEC 0.1
+ENDWHILE
+END
+
+DEFFCT RSIERR RSIErrCast(intErr :IN, errStr :OUT)
+INT intErr
+CHAR errStr[]
+BOOL ret
+SWITCH intErr
+ CASE 0
+  ret=STRCOPY(errStr[],"Ok") 
+  RETURN #RSIOK
+ CASE 1
+  ret=STRCOPY(errStr[],"General error") 
+  RETURN #RSIBAD
+ CASE 2
+  ;Invalid argument
+  ret=STRCOPY(errStr[],"Invalid argument") 
+  RETURN #RSIINVARG
+ CASE 3
+  ;No implemented
+  ret=STRCOPY(errStr[],"Not implemented") 
+  RETURN #RSINOTIMPL
+ CASE 4
+  ;No memory
+  ret=STRCOPY(errStr[],"No memory") 
+  RETURN #RSINOMEMORY
+ CASE 5
+  ;Invalid container
+  ret=STRCOPY(errStr[],"Invalid container") 
+  RETURN #RSIINVCONT
+ CASE 6
+  ;Invalid file
+  ret=STRCOPY(errStr[],"Invalid file") 
+  RETURN #RSIINVFILE
+ CASE 7
+  ;Invalid parameter ID
+  ret=STRCOPY(errStr[],"Invalid parameter ID") 
+  RETURN #RSIINVPARAMID
+ CASE 8
+  ;Invalid parameter
+  ret=STRCOPY(errStr[],"Invalid parameter") 
+  RETURN #RSIINVPARAM
+ CASE 9
+  ;Invalid object ID
+  ret=STRCOPY(errStr[],"Invalid object ID") 
+  RETURN #RSIINVOBJID
+ CASE 10
+  ;Invalid input index
+  ret=STRCOPY(errStr[],"Invalid input index") 
+  RETURN #RSIINVINPIDX
+ CASE 11
+  ;Invalid output index
+  ret=STRCOPY(errStr[],"Invalid output index") 
+  RETURN #RSIINVoutIDX
+ CASE 12
+  ;Object has successor
+  ret=STRCOPY(errStr[],"Object has successor") 
+  RETURN #RSIHASSUCC
+ CASE 13
+  ;Invalid input OBJID of a link
+  ret=STRCOPY(errStr[],"Invalid input OBJID of a link") 
+  RETURN #RSILNKINPOBJID
+ CASE 14
+  ;Invalid output OBJID of a link
+  ret=STRCOPY(errStr[],"Invalid output OBJID of link") 
+  RETURN #RSILNKOUTOBJID
+ CASE 15
+  ;Invalid input index of link
+  ret=STRCOPY(errStr[],"Invalid input index of link") 
+  RETURN #RSILNKINPIDX
+ CASE 16
+  ;Invalid output index of link
+  ret=STRCOPY(errStr[],"Invalid output index of link") 
+  RETURN #RSILNKoutIDX
+ CASE 17
+  ;Input is already linked
+  ret=STRCOPY(errStr[],"Input is already linked") 
+  RETURN #RSILNKOCCUP
+ CASE 18
+  ;Invalid signals
+  ret=STRCOPY(errStr[],"Invalid signals") 
+  RETURN #RSILNKSIGNAL
+ CASE 19
+  ;Object doesnot support linkage
+  ret=STRCOPY(errStr[],"Object doesnot support linkage") 
+  RETURN #RSINOLNKOBJ
+ CASE 20
+  ;Circle link
+  ret=STRCOPY(errStr[],"Link circle") 
+  RETURN #RSILNKCIRCLE
+ CASE 22
+  ;Object not linked
+  ret=STRCOPY(errStr[],"Object not linked") 
+  RETURN #RSINOTLINKED
+ CASE 23
+  ;Link is needed
+  ret=STRCOPY(errStr[],"Link is needed") 
+  RETURN #RSILNKNEEDED
+ CASE 24
+  ;Output object of link is disabled
+  ret=STRCOPY(errStr[],"Output object of link is disabled") 
+  RETURN #RSILNKOUTDISABLED
+ CASE 25
+  ;Object has a disabled predecessor
+  ret=STRCOPY(errStr[],"Object has a disabled predessesor") 
+  RETURN #RSIDISPREDECESSOR
+ CASE 27
+  ;File not found
+  ret=STRCOPY(errStr[],"File not found") 
+  RETURN #RSIFILENOTFOUND
+ CASE 28
+  ;Enabled successor
+  ret=STRCOPY(errStr[],"Object has enabled successor") 
+  RETURN #RSIENASUCCESSOR
+  CASE 29
+  ;Bad cast
+  ret=STRCOPY(errStr[],"Bad cast") 
+  RETURN #RSIENASUCCESSOR
+ CASE 30
+  ;RSI already running
+  ret=STRCOPY(errStr[],"RSI already running") 
+  RETURN #RSIALREADYON
+ CASE 31
+  ;RSI is not running
+  ret=STRCOPY(errStr[],"RSI is not running") 
+  RETURN #RSINOTRUNNING
+ CASE 100
+  ;User error
+  ret=STRCOPY(errStr[],"User error") 
+  RETURN #RSIUNKOWNERR
+ENDSWITCH
+ENDFCT
+  

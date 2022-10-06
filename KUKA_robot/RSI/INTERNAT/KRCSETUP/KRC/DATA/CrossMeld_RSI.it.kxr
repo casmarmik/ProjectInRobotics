@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="it" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} temperatura complessiva consentita superata: RSI viene fermato</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} correzione esterna al range ammesso: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>Flusso di segnale ({0}): oggetto {1} fornisce errore {2}</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>Reset di correzione necessario</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>Errore interno RSI </text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>RSI non può stabilire uscite a causa di protezione utente</text>
+    </message>
+    <message key="M_29006" number="29006">
+      <text>RSI: timeout del calcolo del segnale {0} usec</text>
+    </message>
+  </module>
+</resources>

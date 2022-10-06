@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>7.1.6 RSI_MOVECORR()RSI_MOVECORR()</title>
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+    <meta name="DC.language" content="en">
+    <meta name="DC.title" content="KUKA.RobotSensorInterface 3.3">
+    <meta name="DC.creator" content="PS5">
+    <meta name="DC.subject" content="Issued: 19.11.2014 Version: KST RSI 3.3 V2">
+    <meta name="DC.description" content=" ">
+    <meta name="DC.publisher" content="RobotSensorInterface_V3.3">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <style type="text/css">
+      body {background-color:white; font-family:Tahoma;}
+	    td p {margin:0px;}
+	  </style>
+  </head>
+  <body style="margin:1px; padding:1px; overflow-x: hidden;">
+    <div id="idIntermediateDocument9" style="margin:0pt;padding:0pt;">
+      <div id="idPageSequence8">
+        <div>
+          <div id="idSection34">
+            <div id="idSection40">
+              <p id="sec-0-7eb6e2b5-7ea9-4faf-b0a9-a0082728d2dd" style="font-family:'Tahoma';page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0mm;margin-right:0mm;margin-top:1pt;margin-bottom:2pt;text-indent:0mm;">7.1.6        RSI_MOVECORR()</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Description</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">RSI_MOVECORR() activates the sensor-guided motion. The robot is controlled purely by means of corrections on the basis of sensor data, i.e. with the correction values of the RSI objects POSCORR or AXISCORR.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">A sensor-guided motion can be terminated by means of the RSI object STOP.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Syntax</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">RSI_MOVECORR(&lt;<span style="font-family:'Tahoma';font-style:italic;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;">Stop mode:IN</span>&gt;)</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Explanation of the syntax</p>
+              <table style="padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;border-collapse:collapse;margin-bottom:10pt;width:98%;">
+                <col width="25%">
+                <col width="75%">
+                <thead>
+                  <tr>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Element</p>
+                    </td>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Description</p>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-style:italic;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;">Stop mode</span></p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Type: ENUM</p>
+                      <p style="font-family:'Tahoma';page-break-after:avoid;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Behavior after termination of the motion:</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">#RSIBRAKE: Robot resumes motion directly from the stopping point.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">#RSIBRAKERET: Robot returns to the point on the path at which the stop signal was received.</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Default: RSIBRAKE</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="footnotes"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

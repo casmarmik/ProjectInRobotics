@@ -1,0 +1,357 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>7.4.2 XML structure for data transmission</title>
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+    <meta name="DC.language" content="en">
+    <meta name="DC.title" content="KUKA.RobotSensorInterface 3.3">
+    <meta name="DC.creator" content="PS5">
+    <meta name="DC.subject" content="Issued: 19.11.2014 Version: KST RSI 3.3 V2">
+    <meta name="DC.description" content=" ">
+    <meta name="DC.publisher" content="RobotSensorInterface_V3.3">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <style type="text/css">
+      body {background-color:white; font-family:Tahoma;}
+	    td p {margin:0px;}
+	  </style>
+  </head>
+  <body style="margin:1px; padding:1px; overflow-x: hidden;">
+    <div id="idIntermediateDocument9" style="margin:0pt;padding:0pt;">
+      <div id="idPageSequence8">
+        <div>
+          <div id="idSection53">
+            <div id="idSection55">
+              <p id="sec-0-2a5df0c8-d04b-4d4b-bab7-b3cfe25fc456" style="font-family:'Tahoma';page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0mm;margin-right:0mm;margin-top:1pt;margin-bottom:2pt;text-indent:0mm;">7.4.2        XML structure for data transmission</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Description</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">The signals from the RSI context that arrive at the inputs of the ETHERNET object and are sent to the sensor system are defined here.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">The ETHERNET object also has a read function that can be used to read system information from the robot controller and send it to the sensor system. The read function is activated using keywords.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">From the configured XML structure, RobotSensorInterface automatically creates the XML document that the robot controller transmits.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Signal inputs</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Definition of the signal inputs in the XML structure:</p>
+              <table style="padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;border-collapse:collapse;margin-bottom:10pt;width:98%;">
+                <col width="25%">
+                <col width="75%">
+                <thead>
+                  <tr>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Attribute</p>
+                    </td>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Description</p>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">TAG</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Name of the element</p>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">The XML structure for data transmission is defined here (XML schema).</p>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"> (<span style="font-family:'Tahoma';font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#EB6909;text-decoration:none;">&gt;&gt;&gt; </span><a href="idSection57.htm#sec-0-f59c4b2a-050f-40c4-a322-6126b26b6951">7.4.4 "Configuration according to XML schema"</a>)</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">TYPE</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Data type of the element</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">BOOL</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">DOUBLE</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">LONG</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">INDX</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Number of the ETHERNET object input</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-weight:bold;">1 … 64</span></p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-weight:bold;">Note</span>: The object inputs must be numbered consecutively.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Example of signal inputs</p>
+              <div>
+                <table>
+                  <tr>
+                    <td style="vertical-align:top;">
+                      <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                    </td>
+                    <td>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Configured XML structure for data transmission:</p>
+                      <table style="margin-bottom:10pt;border-color:#EB6909;border-style:solid;border-width:0.3pt;border-collapse:collapse;width:98%;">
+                        <col width="*">
+                        <tbody>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">&lt;SEND&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;ELEMENTS&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="Out.01" TYPE="BOOL" INDX="1" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="Out.02" TYPE="BOOL" INDX="2" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="Out.03" TYPE="BOOL" INDX="3" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="Out.04" TYPE="BOOL" INDX="4" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="Out.05" TYPE="BOOL" INDX="5" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="FTC.Fx" TYPE="DOUBLE" INDX="6" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="FTC.Fy" TYPE="DOUBLE" INDX="7" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="FTC.Fz" TYPE="DOUBLE" INDX="8" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="FTC.Mx" TYPE="DOUBLE" INDX="9" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="FTC.My" TYPE="DOUBLE" INDX="10" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="FTC.Mz" TYPE="DOUBLE" INDX="11" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="Override" TYPE="LONG" INDX="12" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;/ELEMENTS&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">&lt;/SEND&gt;</span></p>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="vertical-align:top;">
+                      <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                    </td>
+                    <td>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">XML document transmitted by the robot controller:</p>
+                      <table style="margin-bottom:10pt;border-color:#EB6909;border-style:solid;border-width:0.3pt;border-collapse:collapse;width:98%;">
+                        <col width="*">
+                        <tbody>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">&lt;Rob TYPE="KUKA"&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;Out 01="0" 02="1" 03="1" 04="0" 05="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;FTC Fx="1.234" Fy="54.75" Fz="345.7</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">      Mx="2346.6" My="12.0" Mz="3546" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;Override&gt;90&lt;/Override&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;IPOC&gt;123645634563&lt;/IPOC&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">&lt;/Rob&gt;</span></p>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <table style="width:98%;">
+                <col width="0">
+                <tbody>
+                  <tr>
+                    <td style="vertical-align:middle;background-color:#FFFFFF;border-color:#000000;border-width:1pt;border-style:solid;padding-top:2pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><img src="Images\66364f97-6b3a-4384-8fe6-15da0f226c52.gif" alt="66364f97-6b3a-4384-8fe6-15da0f226c52.gif" style="border-width:0.5pt;placement:para;alignment:left;margin:0pt;margin-right:2pt;float:left;">The keyword IPOC sends a time stamp and is generated automatically.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Read function</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Activation of the read function in the XML structure:</p>
+              <table style="padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;border-collapse:collapse;margin-bottom:10pt;width:98%;">
+                <col width="25%">
+                <col width="75%">
+                <thead>
+                  <tr>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Attribute</p>
+                    </td>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Description</p>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">TAG</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Name of the element</p>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">A keyword specifies which system information is read.</p>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"> (<span style="font-family:'Tahoma';font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#EB6909;text-decoration:none;">&gt;&gt;&gt; </span><a href="idSection58.htm#sec-0-c78e0844-545a-4770-a50b-229339cdf587">7.4.5 "Keywords – reading data"</a>)</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">TYPE</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Data type of the element</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">DOUBLE</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">LONG</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">INDX</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Keyword for reading the system information</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">INTERNAL</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Example of read function</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;"> (<span style="font-family:'Tahoma';font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#EB6909;text-decoration:none;">&gt;&gt;&gt; </span><a href="idSection58.htm#inf-0-6c38b4aa-0d2b-47fa-9d44-4ebc11ec56fa"> "Example of read function"</a>)</p>
+            </div>
+          </div>
+          <div class="footnotes"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

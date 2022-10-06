@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="es" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="RSIMonitor">
+    <uiText key="SetupButton">
+      <text>Setup</text>
+    </uiText>
+    <uiText key="FileButton">
+      <text>Fichero</text>
+    </uiText>
+    <uiText key="ZoomButton">
+      <text>Zoom</text>
+    </uiText>
+    <uiText key="ConfigButton">
+      <text>Ajuste</text>
+    </uiText>
+    <uiText key="LoadButton">
+      <text>Cargar</text>
+    </uiText>
+    <uiText key="SaveButton">
+      <text>Guardar</text>
+    </uiText>
+    <uiText key="SaveMeasurementLabel">
+      <text>Guardar fichero</text>
+    </uiText>
+    <uiText key="LoadMeasurementLabel">
+      <text>Cargar fichero</text>
+    </uiText>
+    <uiText key="SaveMeasurementDefText">
+      <text>Medición</text>
+    </uiText>
+    <uiText key="SetupSignalproperties">
+      <text>Propiedades de la señal</text>
+    </uiText>
+    <uiText key="SetupSecondaryOrdninateR">
+      <text>A la derecha</text>
+    </uiText>
+    <uiText key="SetupSecondaryOrdninateL">
+      <text>A la izquierda</text>
+    </uiText>
+    <uiText key="SetupReset">
+      <text>Restablecer todo</text>
+    </uiText>
+    <uiText key="SetupResetScroll">
+      <text>Restablecer el área de registro</text>
+    </uiText>
+    <uiText key="SetupActiveAll">
+      <text>Activar todos</text>
+    </uiText>
+    <uiText key="SetupResetLine">
+      <text>Restablecer la intensidad</text>
+    </uiText>
+    <uiText key="Setup_NotActiveAll">
+      <text>Desactivar todos</text>
+    </uiText>
+    <uiText key="SetupResetColor">
+      <text>Restablecer colores</text>
+    </uiText>
+    <uiText key="SetupSignal">
+      <text>Señal:</text>
+    </uiText>
+    <uiText key="SetupThickness">
+      <text>Intensidad de línea</text>
+    </uiText>
+    <uiText key="ConfigChannel">
+      <text>Canal RSI</text>
+    </uiText>
+    <uiText key="ConfigPersistent">
+      <text>Conexión</text>
+    </uiText>
+    <uiText key="ConfigPersistentCB">
+      <text>Parada</text>
+    </uiText>
+    <uiText key="ZoomVisibleperiod">
+      <text>Periodo de tiempo visible:</text>
+    </uiText>
+    <uiText key="Zoomsec">
+      <text>s.</text>
+    </uiText>
+    <uiText key="DialogName">
+      <text>Monitor RSI: Guardar fichero</text>
+    </uiText>
+    <uiText key="DialogNameFull">
+      <text>Monitor RSI: Guardar puntos de datos</text>
+    </uiText>
+    <message key="DialogMessageSaveOverwrite">
+      <text>Ya existe un archivo con este nombre. ¿Desea sustituir el archivo?</text>
+    </message>
+    <message key="DialogMessageFull">
+      <text>Límite de memoria alcanzado. Se ignoran otros puntos de datos.</text>
+    </message>
+  </module>
+</resources>

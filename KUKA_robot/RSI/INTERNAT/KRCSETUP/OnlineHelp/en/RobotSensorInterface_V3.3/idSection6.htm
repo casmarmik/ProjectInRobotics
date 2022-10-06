@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>2.1 RobotSensorInterface overviewOverview, RobotSensorInterfaceRobotSensorInterface, overview</title>
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+    <meta name="DC.language" content="en">
+    <meta name="DC.title" content="KUKA.RobotSensorInterface 3.3">
+    <meta name="DC.creator" content="PS5">
+    <meta name="DC.subject" content="Issued: 19.11.2014 Version: KST RSI 3.3 V2">
+    <meta name="DC.description" content=" ">
+    <meta name="DC.publisher" content="RobotSensorInterface_V3.3">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <style type="text/css">
+      body {background-color:white; font-family:Tahoma;}
+	    td p {margin:0px;}
+	  </style>
+  </head>
+  <body style="margin:1px; padding:1px; overflow-x: hidden;">
+    <div id="idIntermediateDocument4" style="margin:0pt;padding:0pt;">
+      <div id="idPageSequence3">
+        <div>
+          <div id="idSection6">
+            <p id="sec-0-3a0ad25d-188c-40ad-9da9-b9914c273417" style="font-family:'Tahoma';page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:11pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0mm;margin-right:0mm;margin-top:1pt;margin-bottom:2pt;text-indent:0mm;">2.1        RobotSensorInterface overview</p>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Functions<a id="idx-functions"></a></p>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:6pt;margin-bottom:6pt;page-break-after:avoid;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">RobotSensorInterface is an add-on technology package with the following functions:</p>
+            <div>
+              <table>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Data exchange between robot controller and sensor system.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Data exchange via Ethernet or the I/O system of the robot controller.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Cyclical signal processing and evaluation at the sensor cycle rate.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Influence on the robot motion or program execution by processing sensor signals.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Configuration of the signal flow (RSI context) with the graphical editor RSI Visual.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Library with RSI objects for configuration of the signal flow (RSI context). </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Online visualization of the RSI signals (RSI monitor).</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Communication<a id="idx-communication"></a></p>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">The robot controller can communicate with the sensor system via the I/O system or via Ethernet.</p>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:6pt;margin-bottom:6pt;page-break-after:avoid;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Data exchange via the I/O system:</p>
+            <div>
+              <table>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">The data and signals of the sensor system are read and written via the I/O system. RobotSensorInterface accesses the data and signals and processes them.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <table style="width:98%;">
+              <col width="0">
+              <tbody>
+                <tr>
+                  <td style="background-color:#FFFFFF;border-color:#000000;border-width:1pt;border-style:solid;padding-top:2pt;">
+                    <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:0pt;margin-bottom:0pt;widows:2;orphans:2;line-height:2pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;"><img src="Images\66364f97-6b3a-4384-8fe6-15da0f226c52.gif" alt="66364f97-6b3a-4384-8fe6-15da0f226c52.gif" style="placement:para;alignment:left;margin:0pt;margin-right:2pt;border-width:0.5pt;float:left;"></p>
+                    <p style="font-family:'Tahoma';page-break-after:avoid;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Signals are linked via a bus system to the I/O system of the robot controller:</p>
+                    <div>
+                      <table>
+                        <tr>
+                          <td style="vertical-align:top;">
+                            <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                          </td>
+                          <td>
+                            <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">General information about bus management and I/O mapping can be found in the WorkVisual documentation.</p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="vertical-align:top;">
+                            <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                          </td>
+                          <td>
+                            <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Detailed information about bus configuration can be found in the bus system documentation.</p>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:6pt;margin-bottom:6pt;page-break-after:avoid;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Data exchange via Ethernet:</p>
+            <div>
+              <table>
+                <tr>
+                  <td style="vertical-align:top;">
+                    <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                  </td>
+                  <td>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">The robot controller communicates with the sensor system via a real-time-capable network connection. The data are transmitted via the Ethernet UDP/IP protocol. No fixed data frame is specified. The user must configure the data set in an XML file.</p>
+                    <p style="font-family:'Tahoma';page-break-after:avoid;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Characteristics:</p>
+                    <div>
+                      <table>
+                        <tr>
+                          <td style="vertical-align:top;">
+                            <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                          </td>
+                          <td>
+                            <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Cyclical data transmission from the robot controller to a sensor system parallel to program execution (e.g. position data, axis angles, operating mode, etc.)</p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="vertical-align:top;">
+                            <p style="font-size:12pt;color:#EC6A0A;margin-top:-3pt;">■</p>
+                          </td>
+                          <td>
+                            <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Cyclical data transmission from a sensor system to the robot controller parallel to program execution (e.g. sensor data)</p>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <table style="width:98%;">
+              <col width="0">
+              <tbody>
+                <tr>
+                  <td style="background-color:#FFFFFF;border-color:#000000;border-width:1pt;border-style:solid;padding-top:2pt;vertical-align:middle;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><img src="Images\66364f97-6b3a-4384-8fe6-15da0f226c52.gif" alt="66364f97-6b3a-4384-8fe6-15da0f226c52.gif" style="placement:para;alignment:left;margin:0pt;margin-right:2pt;border-width:0.5pt;float:left;">UDP is a connectionless network protocol for exchanging data packets. Data exchange via UDP is not reliable and not secure. It cannot be guaranteed, for example, that sent packets arrive reliably or in the order in which they were sent.</p>
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Data exchange via Ethernet is appropriate for applications that do not react adversely to packets being lost or received in the incorrect order. If an application cannot tolerate this, the programmer must take appropriate measures (for example, checking in the program to determine all packets have been received and, if necessary, requesting the packets again). </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="footnotes"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

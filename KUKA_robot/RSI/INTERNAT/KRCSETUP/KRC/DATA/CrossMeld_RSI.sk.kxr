@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="sk" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} Prípustná celková korektúra prekročená: RSI sa zastaví</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} Oprava mimo prípustnej oblasti: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>Tok signálov ({0}): Objekt {1} dodáva chybu {2}</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>Opravný reset nutný</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>Interná chyba RSI</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>RSI nemôže nastaviť výstupy kvôli ochrane obsluhy</text>
+    </message>
+  </module>
+</resources>

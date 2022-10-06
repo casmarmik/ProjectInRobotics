@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="tr" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} Müsaade edilen toplam düzeltme aşıldı: RSI durdurulur</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} Düzeltme, müsaade edilen alanın dışında: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>Sinyal akışı ({0}): Nesne {1}, hata {2} gönderiyor</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>Düzeltme sıfırlaması gerekli</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>Dahili RSI hatası</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>RSI, kullanıcı koruması nedeniyle çıkış ayarlayamıyor</text>
+    </message>
+  </module>
+</resources>

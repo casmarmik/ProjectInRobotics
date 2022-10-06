@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSIObjects xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/RSIContext.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <RSIObject ObjType="POSACT" ObjTypeID="24" ObjID="POSACT1">
+    <Parameters>
+      <Parameter Name="Type" ParamID="1" ParamValue="0" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="POSCORR" ObjTypeID="27" ObjID="POSCORR1">
+    <Inputs>
+      <Input InIdx="2" OutObjID="DELAY1" OutIdx="1" />
+      <Input InIdx="3" OutObjID="SOURCE1" OutIdx="1" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="LowerLimX" ParamID="1" ParamValue="0" />
+      <Parameter Name="LowerLimY" ParamID="2" ParamValue="-5.1" />
+      <Parameter Name="LowerLimZ" ParamID="3" ParamValue="-5.1" />
+      <Parameter Name="UpperLimX" ParamID="4" ParamValue="0" />
+      <Parameter Name="UpperLimY" ParamID="5" ParamValue="5.1" />
+      <Parameter Name="UpperLimZ" ParamID="6" ParamValue="5.1" />
+      <Parameter Name="MaxRotAngle" ParamID="7" ParamValue="0" />
+      <Parameter Name="RefCorrSys" ParamID="1" ParamValue="1" IsRuntime="false" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="POSCORRMON" ObjTypeID="81" ObjID="POSCORRMON1">
+    <Parameters>
+      <Parameter Name="MaxTrans" ParamID="1" ParamValue="6.0" />
+      <Parameter Name="MaxRotAngle" ParamID="2" ParamValue="0" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="STOP" ObjTypeID="18" ObjID="STOP1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="TIMER1" OutIdx="1" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Mode" ParamID="1" ParamValue="4" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="SOURCE" ObjTypeID="45" ObjID="SOURCE1">
+    <Parameters>
+      <Parameter Name="Type" ParamID="1" ParamValue="1" />
+      <Parameter Name="Offset" ParamID="2" ParamValue="0" />
+      <Parameter Name="Amplitude" ParamID="3" ParamValue="5.0" IsPublic="true" />
+      <Parameter Name="Period" ParamID="4" ParamValue="10" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="DELAY" ObjTypeID="50" ObjID="DELAY1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="SOURCE1" OutIdx="1" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="DelayTime" ParamID="1" ParamValue="2.5" IsRuntime="false" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="TIMER" ObjTypeID="40" ObjID="TIMER1">
+    <Parameters>
+      <Parameter Name="Reset" ParamID="1" ParamValue="False" />
+      <Parameter Name="Time" ParamID="2" ParamValue="22.5" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="MONITOR" ObjTypeID="55" ObjID="MONITOR1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="POSACT1" OutIdx="2" />
+      <Input InIdx="2" OutObjID="POSACT1" OutIdx="3" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Refresh" ParamID="1" ParamValue="1" />
+      <Parameter Name="IP" ParamID="1" ParamValue="192.168.0.1" IsRuntime="false" />
+      <Parameter Name="Channel" ParamID="2" ParamValue="1" IsRuntime="false" />
+    </Parameters>
+  </RSIObject>
+</RSIObjects>

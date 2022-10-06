@@ -1,0 +1,410 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>8.1.4 Exemple de correction cartésienne via Ethernet</title>
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+    <meta name="DC.language" content="fr">
+    <meta name="DC.title" content="KUKA.RobotSensorInterface 3.3">
+    <meta name="DC.creator" content="PS5">
+    <meta name="DC.subject" content="Edition: 05.12.2014 Version: KST RSI 3.3 V2">
+    <meta name="DC.description" content=" ">
+    <meta name="DC.publisher" content="RobotSensorInterface_V3.3">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <style type="text/css">
+      body {background-color:white; font-family:Tahoma;}
+	    td p {margin:0px;}
+	  </style>
+  </head>
+  <body style="margin:1px; padding:1px; overflow-x: hidden;">
+    <div id="idIntermediateDocument10" style="margin:0pt;padding:0pt;">
+      <div id="idPageSequence9">
+        <div>
+          <div id="idSection60">
+            <div id="idSection64">
+              <p id="sec-0-72804fc6-55c7-4081-8755-53557c19d1b2" style="font-family:'Tahoma';page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0mm;margin-right:0mm;margin-top:1pt;margin-bottom:2pt;text-indent:0mm;">8.1.4        Exemple de correction cartésienne via Ethernet</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Le contrôleur du robot reçoit des données de correction cartésiennes d'un capteur et les transmet au robot. Le robot est uniquement déplacé selon la commande de correction sur la base de valeurs de correction relatives. Le système de coordonnées de référence pour l'activation de la correction est le système de coordonnées BASE.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Programme</p>
+              <table style="margin-bottom:10pt;border-color:#EB6909;border-style:solid;border-width:0.3pt;border-collapse:collapse;width:98%;">
+                <col width="*">
+                <tbody>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 1  DEF RSI_Ethernet( )</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 2  ; =============================================</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 3  ; </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 4  ; RSI EXAMPLE: ETHERNET communication</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 5  ; Realtime UDP data exchange with server application</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 6  ;</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 7  ; =============================================</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 8  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> 9  ; Declaration of KRL variables</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">10  DECL INT ret        ; Return value for RSI commands</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">11  DECL INT CONTID        ; ContainerID</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">12  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">13  INI</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">14  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">15  ; Move to start position</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">16  PTP {A1 0, A2 -90, A3 90, A4 0, A5 90, A6 0}</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">17  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">18  ; Create RSI Context </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">19  ret = RSI_CREATE("RSI_Ethernet.rsi",CONTID,TRUE)</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">20  IF (ret &lt;&gt; RSIOK) THEN</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">21    HALT</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">22  ENDIF</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">23  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">24  ; Start RSI execution</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">25  ret = RSI_ON(#RELATIVE)</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">26  IF (ret &lt;&gt; RSIOK) THEN</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">27    HALT</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">28  ENDIF</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">29  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">30  ; Sensor guided movement</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">31  RSI_MOVECORR()</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">32  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">33  ; Turn off RSI </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">34  ret = RSI_OFF()</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">35  IF (ret &lt;&gt; RSIOK) THEN</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">36    HALT</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">37  ENDIF</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">38  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">39  PTP {A1 0, A2 -90, A3 90, A4 0, A5 90, A6 0}</span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">40  </span></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                      <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">41  END</span></p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <table style="padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;border-collapse:collapse;margin-bottom:10pt;width:98%;">
+                <col width="16.667%">
+                <col width="83.333%">
+                <thead>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Ligne</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Description</p>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">16</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Position de départ du mouvement guidé par capteur</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">19</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">RSI_CREATE() charge la configuration du flux de signaux dans un conteneur RSI.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">25</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">RSI_ON() active le traitement du signal.</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Mode de correction : Correction relative</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">31</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">RSI_MOVECORR() active le mouvement guidé par capteur.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">34</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">RSI_OFF() désactive le traitement du signal.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">39</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Retour à la position de départ</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Configuration du flux de signaux</p>
+              <table style="border-collapse:collapse;margin-bottom:10pt;width:98%;">
+                <col width="100%">
+                <tbody>
+                  <tr style="page-break-after:avoid;">
+                    <td style="padding-left:0pt;padding-top:3pt;padding-right:0pt;padding-bottom:3pt;background-color:transparent;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:italic;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><img src="Images\853bd2e2-9ff0-4a7f-95a3-0637ba7769c4.gif" alt="853bd2e2-9ff0-4a7f-95a3-0637ba7769c4.gif" style="border-width:0.5pt;max-width:300pt;"></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding-left:0pt;padding-top:3pt;padding-right:0pt;padding-bottom:3pt;background-color:transparent;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Fig. 8-3: Flux de signaux - Correction cartésienne via Ethernet</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <table style="padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;border-collapse:collapse;margin-bottom:10pt;width:98%;">
+                <col width="25%">
+                <col width="75%">
+                <thead>
+                  <tr>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Objet RSI</p>
+                    </td>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Description</p>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">DIGIN1</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Lit les données de capteurs via 8 entrées digitales et les transmet à l'interface Ethernet (entrée 1).</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">DIGOUT1 … DIGOUT3</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Lit les données du robot via 3 sorties digitales et les transmet à l'interface Ethernet (entrées 2 ... 4).</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">SOURCE1</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Délivre périodiquement un signal sinusoïdal d'une amplitude de 50 toutes les 5 s.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">ETHERNET1</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Transmet les signaux entrants au système de capteurs via les entrées 2 ... 5 et reçoit les données de capteurs en retour via l'entrée 1. Les données de capteurs sont disponibles sur les sorties 1 ... 6 pour un traitement ultérieur.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">POSCORR1</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Lit les données de capteurs disponibles sur les entrées 1 ... 6 de l'interface Ethernet et détermine les données de correction cartésiennes.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">MAP2SEN_PREA1 … MAP2SEN_PREA3</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Ecrit les données de correction cartésiennes dans la variable système $SEN_PREA.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">MAP2DIGOUT1</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Accède aux signaux de traitement et active 16 sorties digitales.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="footnotes"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="fr" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="RSI">
+    <message key="rsi0">
+      <text>{0}Ok{1}</text>
+    </message>
+    <message key="rsi1">
+      <text>{0}Défaut général {1}</text>
+    </message>
+    <message key="rsi2">
+      <text>{0}Argument non valide {1}</text>
+    </message>
+    <message key="rsi3">
+      <text>{0}Non implémenté {1}</text>
+    </message>
+    <message key="rsi4">
+      <text>{0}Pas de mémoire libre {1}</text>
+    </message>
+    <message key="rsi5">
+      <text>{0}Conteneur RSI inconnu {1}</text>
+    </message>
+    <message key="rsi6">
+      <text>{0}Fichier non valide {1}</text>
+    </message>
+    <message key="rsi7">
+      <text>{0}ID de paramètre non valide</text>
+    </message>
+    <message key="rsi8">
+      <text>{0}Paramètre non valide</text>
+    </message>
+    <message key="rsi9">
+      <text>{0}ID d'objet non valide {1}</text>
+    </message>
+    <message key="rsi10">
+      <text>{0}Index d'entrée non valide {1}</text>
+    </message>
+    <message key="rsi11">
+      <text>{0}Index de sortie non valide {1}</text>
+    </message>
+    <message key="rsi12">
+      <text>{0}L'objet a un successeur {1}</text>
+    </message>
+    <message key="rsi13">
+      <text>{0}Objet non valide - Signal entrée {1}</text>
+    </message>
+    <message key="rsi14">
+      <text>{0}Objet non valide - Signal sortie {1}</text>
+    </message>
+    <message key="rsi15">
+      <text>{0}Index non valide - Entrée de signal {1}</text>
+    </message>
+    <message key="rsi16">
+      <text>{0}Index non valide - Sortie de signal {1}</text>
+    </message>
+    <message key="rsi17">
+      <text>{0}Entrée déjà reliée {1}</text>
+    </message>
+    <message key="rsi18">
+      <text>{0}Signal non valide {1}</text>
+    </message>
+    <message key="rsi19">
+      <text>{0}L'objet ne prend pas de liaison en charge {1}</text>
+    </message>
+    <message key="rsi20">
+      <text>{0}Liaison circulaire {1}</text>
+    </message>
+    <message key="rsi21">
+      <text>{0}Unused21 {1}</text>
+    </message>
+    <message key="rsi22">
+      <text>{0}Objet non relié {1}</text>
+    </message>
+    <message key="rsi23">
+      <text>{0}Liaison nécessaire {1}</text>
+    </message>
+    <message key="rsi24">
+      <text>{0}Objet désactivé - Sortie de signal {1}</text>
+    </message>
+    <message key="rsi25">
+      <text>{0}Objet avec prédécesseur désactivé {1}</text>
+    </message>
+    <message key="rsi26">
+      <text>{0}Objet RSI inconnu {1}</text>
+    </message>
+    <message key="rsi27">
+      <text>{0}Fichier non trouvé {1}</text>
+    </message>
+    <message key="rsi28">
+      <text>{0}Objet avec successeur activé {1}</text>
+    </message>
+    <message key="rsi29">
+      <text>{0}Conversion de type non valide {1}</text>
+    </message>
+    <message key="rsi30">
+      <text>{0}RSI déjà activée {1}</text>
+    </message>
+    <message key="rsi31">
+      <text>{0}RSI est désactivée {1}</text>
+    </message>
+    <message key="rsi32">
+      <text>{0}Bibliothèque RSI non trouvée {1}</text>
+    </message>
+    <message key="rsi33">
+      <text>{0}Défaut de liaison {1}</text>
+    </message>
+    <message key="rsi34">
+      <text>{0}Timeout {1}</text>
+    </message>
+    <message key="rsi35">
+      <text>{0}Impossible sans contexte RSI actif</text>
+    </message>
+    <message key="rsi36">
+      <text>{0}Sortie réservée par le système {1}</text>
+    </message>
+    <message key="rsi100">
+      <text>{0}Défaut d'utilisateur {1}</text>
+    </message>
+    <message key="rsi998">
+      <text>Paramètre TSYS uniquement pris en charge en mode IPO</text>
+    </message>
+    <message key="rsi999">
+      <text>!!! Attention - la correction de capteur est activée !!!</text>
+    </message>
+  </module>
+</resources>

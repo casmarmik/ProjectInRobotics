@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="de" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="RSIMonitor">
+    <uiText key="SetupButton">
+      <text>Setup</text>
+    </uiText>
+    <uiText key="FileButton">
+      <text>Datei</text>
+    </uiText>
+    <uiText key="ZoomButton">
+      <text>Zoom</text>
+    </uiText>
+    <uiText key="ConfigButton">
+      <text>Einstellung</text>
+    </uiText>
+    <uiText key="LoadButton">
+      <text>Laden</text>
+    </uiText>
+    <uiText key="SaveButton">
+      <text>Speichern</text>
+    </uiText>
+    <uiText key="SaveMeasurementLabel">
+      <text>Datei speichern</text>
+    </uiText>
+    <uiText key="LoadMeasurementLabel">
+      <text>Datei laden</text>
+    </uiText>
+    <uiText key="SaveMeasurementDefText">
+      <text>Messung</text>
+    </uiText>
+    <uiText key="SetupSignalproperties">
+      <text>Signaleigenschaften</text>
+    </uiText>
+    <uiText key="SetupSecondaryOrdninateR">
+      <text>Rechts</text>
+    </uiText>
+    <uiText key="SetupSecondaryOrdninateL">
+      <text>Links</text>
+    </uiText>
+    <uiText key="SetupReset">
+      <text>Alles Zurücksetzen</text>
+    </uiText>
+    <uiText key="SetupResetScroll">
+      <text>Zeichnungsfläche zurücksetzen</text>
+    </uiText>
+    <uiText key="SetupActiveAll">
+      <text>Alle aktivieren</text>
+    </uiText>
+    <uiText key="SetupResetLine">
+      <text>Stärke zurücksetzen</text>
+    </uiText>
+    <uiText key="Setup_NotActiveAll">
+      <text>Alle deaktivieren</text>
+    </uiText>
+    <uiText key="SetupResetColor">
+      <text>Farben zurücksetzen</text>
+    </uiText>
+    <uiText key="SetupSignal">
+      <text>Signal:</text>
+    </uiText>
+    <uiText key="SetupThickness">
+      <text>Linienstärke</text>
+    </uiText>
+    <uiText key="ConfigChannel">
+      <text>RSI Kanal</text>
+    </uiText>
+    <uiText key="ConfigPersistent">
+      <text>Verbindung</text>
+    </uiText>
+    <uiText key="ConfigPersistentCB">
+      <text>Halten</text>
+    </uiText>
+    <uiText key="ZoomVisibleperiod">
+      <text>Sichtbarer Zeitabschnitt:</text>
+    </uiText>
+    <uiText key="Zoomsec">
+      <text>sek.</text>
+    </uiText>
+    <uiText key="DialogName">
+      <text>RSI Monitor: Datei speichern</text>
+    </uiText>
+    <uiText key="DialogNameFull">
+      <text>RSI Monitor: Datenpunkte speichern</text>
+    </uiText>
+    <message key="DialogMessageSaveOverwrite">
+      <text>Eine Datei mit diesem Namen ist schon vorhanden. Wollen Sie die Datei ersetzen?</text>
+    </message>
+    <message key="DialogMessageFull">
+      <text>Speichergrenze erreicht. Weitere Datenpunkte werden ignoriert.</text>
+    </message>
+  </module>
+</resources>

@@ -1,0 +1,448 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>7.4.3 Structure XML de la réception de données</title>
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+    <meta name="DC.language" content="fr">
+    <meta name="DC.title" content="KUKA.RobotSensorInterface 3.3">
+    <meta name="DC.creator" content="PS5">
+    <meta name="DC.subject" content="Edition: 05.12.2014 Version: KST RSI 3.3 V2">
+    <meta name="DC.description" content=" ">
+    <meta name="DC.publisher" content="RobotSensorInterface_V3.3">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <style type="text/css">
+      body {background-color:white; font-family:Tahoma;}
+	    td p {margin:0px;}
+	  </style>
+  </head>
+  <body style="margin:1px; padding:1px; overflow-x: hidden;">
+    <div id="idIntermediateDocument9" style="margin:0pt;padding:0pt;">
+      <div id="idPageSequence8">
+        <div>
+          <div id="idSection53">
+            <div id="idSection56">
+              <p id="sec-0-582cd641-b6f7-42a8-a5ee-b378025c7812" style="font-family:'Tahoma';page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0mm;margin-right:0mm;margin-top:1pt;margin-bottom:2pt;text-indent:0mm;">7.4.3        Structure XML de la réception de données</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Description</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Là sont définis les signaux reçus par le système de capteurs sur les sorties de l'objet ETHERNET et transmis au contrôleur du robot dans le contexte RSI.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">L'objet ETHERNET dispose en outre d'une fonction d'écriture qui permet d'écrire des informations dans le contrôleur du robot, ou de sortir des messages sur le SmartHMI. La fonction d'écriture est activée par un mot clé.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">RobotSensorInterface crée automatiquement le document XML attendu par le contrôleur du robot à partir de la structure XML configurée.</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Sorties de signaux</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Définition des sorties de signaux dans la structure XML :</p>
+              <table style="padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;border-collapse:collapse;margin-bottom:10pt;width:98%;">
+                <col width="25%">
+                <col width="75%">
+                <thead>
+                  <tr>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Attribut</p>
+                    </td>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Description</p>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">TAG</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Nom de l'élément</p>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">La structure XML est ici définie pour la réception des données (schéma XML).</p>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"> (<span style="font-family:'Tahoma';font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#EB6909;text-decoration:none;">&gt;&gt;&gt; </span><a href="idSection57.htm#sec-0-f59c4b2a-050f-40c4-a322-6126b26b6951">7.4.4 "Configuration selon le schéma XML"</a>)</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">TYPE</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Type de données de l'élément</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">BOOL</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">DOUBLE</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">LONG</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">INDX</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Numéro de la sortie d'objet ETHERNET</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-weight:bold;">1 … 64</span></p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-weight:bold;">Remarque</span> : Les sorties d'objets doivent être numérotées en continu.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">HOLDON</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Comportement de la sortie d'objet retenue dans le cas de l'arrivée tardive de paquets de données</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-weight:bold;">0</span> : la sortie est réinitialisée.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-weight:bold;">1</span> : la dernière valeur valide entrée s'arrête à la sortie.</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Exemple de sorties de signaux</p>
+              <div>
+                <table>
+                  <tr>
+                    <td style="vertical-align:top;">
+                      <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                    </td>
+                    <td>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Structure XML configurée pour la réception de données :</p>
+                      <table style="margin-bottom:10pt;border-color:#EB6909;border-style:solid;border-width:0.3pt;border-collapse:collapse;width:98%;">
+                        <col width="*">
+                        <tbody>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">&lt;RECEIVE&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;ELEMENTS&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="RKorr.X" TYPE="DOUBLE" INDX="1" HOLDON="1" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="RKorr.Y" TYPE="DOUBLE" INDX="2" HOLDON="1" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="RKorr.Z" TYPE="DOUBLE" INDX="3" HOLDON="1" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="RKorr.A" TYPE="DOUBLE" INDX="4" HOLDON="1" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="RKorr.B" TYPE="DOUBLE" INDX="5" HOLDON="1" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="RKorr.C" TYPE="DOUBLE" INDX="6" HOLDON="1" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="AK.A1" TYPE="DOUBLE" INDX="7" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="AK.A2" TYPE="DOUBLE" INDX="8" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="AK.A3" TYPE="DOUBLE" INDX="9" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="AK.A4" TYPE="DOUBLE" INDX="10" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="AK.A5" TYPE="DOUBLE" INDX="11" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="AK.A6" TYPE="DOUBLE" INDX="12" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="EK.E1" TYPE="DOUBLE" INDX="13" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="EK.E2" TYPE="DOUBLE" INDX="14" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="EK.E3" TYPE="DOUBLE" INDX="15" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="EK.E4" TYPE="DOUBLE" INDX="16" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="EK.E5" TYPE="DOUBLE" INDX="17" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="EK.E6" TYPE="DOUBLE" INDX="18" HOLDON="0" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">  &lt;ELEMENT TAG="DiO" TYPE="LONG" INDX="19" HOLDON="1" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;/ELEMENTS&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">&lt;/RECEIVE&gt;</span></p>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="vertical-align:top;">
+                      <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                    </td>
+                    <td>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">Document XML reçu par le système de capteurs :</p>
+                      <table style="margin-bottom:10pt;border-color:#EB6909;border-style:solid;border-width:0.3pt;border-collapse:collapse;width:98%;">
+                        <col width="*">
+                        <tbody>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">&lt;Sen Type="ImFree"&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;RKorr X="4" Y="7" Z="32" A="6" B="" C="6" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;AK A1="2" A2="54" A3="35" A4="76" A5="567" A6="785" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;EK E1="67" E2="67" E3="678" E4="3" E5="3" E6="7" /&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;DiO&gt;123&lt;/DiO&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;"> &lt;IPOC&gt;123645634563&lt;/IPOC&gt;</span></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="background-color:#DFDFDF;margin:0pt;padding:0mm;padding-left:5pt;">
+                              <p style="widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;font-family:'Courier New';text-indent:0mm;white-space:normal;margin:0mm;padding:0mm;"><span style="font-family:'Courier New';color:#000000;">&lt;/Sen&gt;</span></p>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <table style="width:98%;">
+                <col width="98%">
+                <tbody>
+                  <tr>
+                    <td style="vertical-align:middle;background-color:#FFFFFF;border-color:#000000;border-width:1pt;border-style:solid;padding-top:2pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><img src="Images\66364f97-6b3a-4384-8fe6-15da0f226c52.gif" alt="66364f97-6b3a-4384-8fe6-15da0f226c52.gif" style="border-width:0.5pt;placement:para;alignment:left;margin:0pt;margin-right:2pt;float:left;">L'horodatage accompagné du mot clé IPOC est contrôlé. Le paquet de données n'est valide que si l'horodatage correspond à l'horodatage transmis auparavant.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Fonction d'écriture</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Archivage de la fonction d'écriture dans la structure XML :</p>
+              <table style="padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;border-collapse:collapse;margin-bottom:10pt;width:98%;">
+                <col width="25%">
+                <col width="75%">
+                <thead>
+                  <tr>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Attribut</p>
+                    </td>
+                    <td style="vertical-align:middle;border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;background-color:#BFBFBF;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:2pt;margin-right:0pt;margin-bottom:2pt;text-indent:0mm;">Description</p>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">TAG</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Nom de l'élément</p>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Un mot clé indique l'information qui sera écrite dans le contrôleur du robot, ou si un message sera sorti sur le smartHMI.</p>
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"> </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">TYPE</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Type de données de l'élément</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">DOUBLE</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">STRING</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">INDX</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Mot clé permettant d'écrire d'information</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;">INTERNAL</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">HOLDON</p>
+                    </td>
+                    <td style="border-collapse:collapse;padding:1pt;margin:0pt;border-color:#000000;border-style:solid;border-width:1pt;">
+                      <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Comportement de la sortie d'objet retenue dans le cas de l'arrivée tardive de paquets de données</p>
+                      <div>
+                        <table>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-weight:bold;">0</span> : la sortie est réinitialisée.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:top;">
+                              <p style="margin-top:-3pt;font-size:12pt;color:#EC6A0A;">■</p>
+                            </td>
+                            <td>
+                              <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;font-size:10pt;margin-bottom:1pt;margin-top:0pt;margin-left:0pt;margin-right:0pt;text-indent:0mm;"><span style="font-family:'Tahoma';font-weight:bold;">1</span> : la dernière valeur valide entrée s'arrête à la sortie.</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Exemple de fonction d'écriture</p>
+              <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;"> </p>
+            </div>
+          </div>
+          <div class="footnotes"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

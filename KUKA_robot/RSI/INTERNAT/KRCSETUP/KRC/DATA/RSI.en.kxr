@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="en" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="RSI">
+    <message key="rsi0">
+      <text>{0}OK{1}</text>
+    </message>
+    <message key="rsi1">
+      <text>{0}General error {1}</text>
+    </message>
+    <message key="rsi2">
+      <text>{0}Invalid argument {1}</text>
+    </message>
+    <message key="rsi3">
+      <text>{0}Not implemented {1}</text>
+    </message>
+    <message key="rsi4">
+      <text>{0}No free memory {1}</text>
+    </message>
+    <message key="rsi5">
+      <text>{0}Unknown RSI container {1}</text>
+    </message>
+    <message key="rsi6">
+      <text>{0}Invalid file {1}</text>
+    </message>
+    <message key="rsi7">
+      <text>{0}Invalid parameter ID</text>
+    </message>
+    <message key="rsi8">
+      <text>{0}Invalid parameter</text>
+    </message>
+    <message key="rsi9">
+      <text>{0}Invalid object ID {1}</text>
+    </message>
+    <message key="rsi10">
+      <text>{0}Invalid input index {1}</text>
+    </message>
+    <message key="rsi11">
+      <text>{0}Invalid output index {1}</text>
+    </message>
+    <message key="rsi12">
+      <text>{0}Object has children {1}</text>
+    </message>
+    <message key="rsi13">
+      <text>{0}Invalid object - signal input {1}</text>
+    </message>
+    <message key="rsi14">
+      <text>{0}Invalid object - signal output {1}</text>
+    </message>
+    <message key="rsi15">
+      <text>{0}Invalid index - signal input {1}</text>
+    </message>
+    <message key="rsi16">
+      <text>{0}Invalid index - signal output {1}</text>
+    </message>
+    <message key="rsi17">
+      <text>{0}Input is already linked {1}</text>
+    </message>
+    <message key="rsi18">
+      <text>{0}Invalid signal {1}</text>
+    </message>
+    <message key="rsi19">
+      <text>{0}Object does not support linking {1}</text>
+    </message>
+    <message key="rsi20">
+      <text>{0}Circular linking {1}</text>
+    </message>
+    <message key="rsi21">
+      <text>{0}Unused21 {1}</text>
+    </message>
+    <message key="rsi22">
+      <text>{0}Object not linked {1}</text>
+    </message>
+    <message key="rsi23">
+      <text>{0}Linking necessary {1}</text>
+    </message>
+    <message key="rsi24">
+      <text>{0}Object deactivated - signal output {1}</text>
+    </message>
+    <message key="rsi25">
+      <text>{0}Object with deactivated parent {1}</text>
+    </message>
+    <message key="rsi26">
+      <text>{0}Unknown RSI object {1}</text>
+    </message>
+    <message key="rsi27">
+      <text>{0}File not found {1}</text>
+    </message>
+    <message key="rsi28">
+      <text>{0}Object with activated child {1}</text>
+    </message>
+    <message key="rsi29">
+      <text>{0}Invalid type conversion {1}</text>
+    </message>
+    <message key="rsi30">
+      <text>{0}RSI already activated {1}</text>
+    </message>
+    <message key="rsi31">
+      <text>{0}RSI is deactivated {1}</text>
+    </message>
+    <message key="rsi32">
+      <text>{0}External RSI library not found {1}</text>
+    </message>
+    <message key="rsi33">
+      <text>{0}Connection error {1}</text>
+    </message>
+    <message key="rsi34">
+      <text>{0}Timeout {1}</text>
+    </message>
+    <message key="rsi35">
+      <text>{0}Not possible without active RSI context</text>
+    </message>
+    <message key="rsi36">
+      <text>{0}Output reserved by system {1}</text>
+    </message>
+    <message key="rsi100">
+      <text>{0}User error {1}</text>
+    </message>
+    <message key="rsi998">
+      <text>TSYS parameter is only supported in IPO_FAST mode</text>
+    </message>
+    <message key="rsi999">
+      <text>!!! Caution - sensor correction is activated!!!</text>
+    </message>
+  </module>
+</resources>

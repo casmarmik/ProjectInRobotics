@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="ru" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="Diagnose">
+    <uiText key="Diagnose_Name9001">
+      <text>Robot Sensor Interface</text>
+    </uiText>
+    <uiText key="Diagnose_Description9001">
+      <text>Диагностика Robot Sensor Interface</text>
+    </uiText>
+    <uiText key="Diagnose_Name9004">
+      <text>Статус</text>
+    </uiText>
+    <uiText key="Diagnose_Description9004">
+      <text>Статус обработки сигнала</text>
+    </uiText>
+    <uiText key="Diagnose_Value9004_0">
+      <text>Не активно</text>
+    </uiText>
+    <uiText key="Diagnose_Value9004_1">
+      <text>Активно (IPO)</text>
+    </uiText>
+    <uiText key="Diagnose_Value9004_2">
+      <text>Активно (IPO_FAST)</text>
+    </uiText>
+    <uiText key="Diagnose_Name9005">
+      <text>Счетчик</text>
+    </uiText>
+    <uiText key="Diagnose_Description9005">
+      <text>Счетчик циклов обработки сигнала</text>
+    </uiText>
+    <uiText key="Diagnose_Name9006">
+      <text>Время выполнения (мин.)</text>
+    </uiText>
+    <uiText key="Diagnose_Description9006">
+      <text>Минимальное время выполнения</text>
+    </uiText>
+    <uiText key="Diagnose_Name9007">
+      <text>Время выполнения (макс.)</text>
+    </uiText>
+    <uiText key="Diagnose_Description9007">
+      <text>Максимальное время выполнения</text>
+    </uiText>
+    <uiText key="Diagnose_Name9008">
+      <text>Время выполнения (среднее)</text>
+    </uiText>
+    <uiText key="Diagnose_Description9008">
+      <text>Среднее время выполнения</text>
+    </uiText>
+    <uiText key="Diagnose_Name9009">
+      <text>Циклы обмена данными</text>
+    </uiText>
+    <uiText key="Diagnose_Description9009">
+      <text>Количество циклов обмена данными с начала обмена данными</text>
+    </uiText>
+    <uiText key="Diagnose_Name9010">
+      <text>Общие потери</text>
+    </uiText>
+    <uiText key="Diagnose_Description9010">
+      <text>Всего потерянных пакетов</text>
+    </uiText>
+    <uiText key="Diagnose_Name9011">
+      <text>Качество связи</text>
+    </uiText>
+    <uiText key="Diagnose_Description9011">
+      <text>Качество связи в последние 5 сек.</text>
+    </uiText>
+    <uiText key="Diagnose_Name9012">
+      <text>Максимальные связанные потери</text>
+    </uiText>
+    <uiText key="Diagnose_Description9012">
+      <text>Максимальное количество последовательных потерь пакетов</text>
+    </uiText>
+    <uiText key="Diagnose_Name9013">
+      <text>Счетчик объектов</text>
+    </uiText>
+    <uiText key="Diagnose_Description9013">
+      <text>Количество созданных объектов RSI</text>
+    </uiText>
+    <uiText key="Diagnose_Name9015">
+      <text>Память</text>
+    </uiText>
+    <uiText key="Diagnose_Description9015">
+      <text>Память, доступная для RSI</text>
+    </uiText>
+    <uiText key="Diagnose_Name9016">
+      <text>Время выполнения</text>
+    </uiText>
+    <uiText key="Diagnose_Description9016">
+      <text>Время выполнения</text>
+    </uiText>
+    <uiText key="Diagnose_Name9017">
+      <text>Цикл датчика</text>
+    </uiText>
+    <uiText key="Diagnose_Description9017">
+      <text>Цикл датчика</text>
+    </uiText>
+  </module>
+</resources>

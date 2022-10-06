@@ -1,0 +1,920 @@
+&ACCESS RO
+&REL 46
+&PARAM DISKPATH = KRC:\R1\TP\RSI
+&PARAM TEMPLATE = C:\KRC\Roboter\Template\vorgabe
+&PARAM EDITMASK = *
+DEF RSI( )
+;# Library Name: RSI
+;# Version: 1.1.0
+;# Copyright (C) 2010 KUKA Roboter GmbH
+;# All rights reserved
+END
+
+;##RSI Commands
+;# RSI_CREATE
+;# RSI_DELETE
+;# RSI_ON
+;# RSI_OFF
+;# RSI_MOVECORR
+;# RSI_SETPUBLICPAR
+;# RSI_GETPUBLICPAR
+;# RSI_RESET
+;# RSI_CHECKID
+;# RSI_ENABLE
+;# RSI_DISABLE
+;##
+
+;# Function:
+;# RSI_CREATE
+;#
+;# Description:
+;# Creates an RSI container with signal processing 
+;# defined in a signal configuration file *.rsi 
+;# created with RSIVisual.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT INT RSI_CREATE(file:IN,objID:OUT,enabled:IN)
+;#
+;# Parameters:
+;# IN file (CHAR[]): 
+;# Filename of signal configuration data
+;# OUT objID (INT): Container ID
+;# IN enabled (BOOL) - Default TRUE: 
+;# Create objects enabled or disabled
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK: Successful
+;# RSIFILENOTFOUND: File not found
+;# RSIINVFILE: File validation failed
+;# RSINOMEMORY: No more RSI memory available
+;# RSIINVOBJTYPE: Unknown object in context
+;# RSIEXTLIBNOTFOUND: Exernal RSI lib not found
+;# RSINOTLINKED: Object with missing input signal
+;# RSILNKCIRCLE: Unresolvable signal circle
+;#
+
+GLOBAL DEFFCT INT RSI_CREATE(file:IN,objID:OUT,enabled:IN)
+INT objID
+CHAR fctName[21]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+CHAR file[]
+BOOL enabled
+
+WAIT SEC 0
+
+IF (VARSTATE("enabled")==#DECLARED) THEN
+   enabled=TRUE
+ENDIF
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlCreate"
+objID=0
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],file[],objID,enabled)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_CREATE: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_DELETE
+;#
+;# Description:
+;# Deletes an RSI container with all its RSI 
+;# objects.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT INT RSI_DELETE(objID:IN) 
+;#
+;# Parameters:
+;# IN objID (INT):  Container ID
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK:       Successful
+;# RSIINVOBJID: Invalid object ID
+;#
+
+GLOBAL DEFFCT INT RSI_DELETE(objID:IN)
+INT objID
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+
+WAIT SEC 0
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlDelete"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],objID)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_DELETE: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_ON
+;#
+;# Description:
+;# Starts the RSI signal processing.
+;# With RSI signal processing all active RSI 
+;# objects are executed every sensor cycle. 
+;# According to the parameter INTEG a correction is 
+;# done in absolute or relative mode. 
+;# With parameter SENMODE set to #IPO the signal 
+;# processing is running with 12 ms cycle time. 
+;# In this case parameter TSYS defines the reference 
+;# coordinate system. 
+;# In SENMODE #IPO_FAST the reference coordinate is 
+;# defined within the correction oject (POSCORR). 
+;# In operation mode T1 and T2 an acknowledge 
+;# message !!!Attention-RSI sensor mode active!!! 
+;# appears.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT INT RSI_ON(INTEG:IN,SENMODE:IN,TSYS:IN)
+;#
+;# Parameters:
+;# IN INTEG (INTEGRATION_MODE): Integration mode
+;# -> #ABSOLUTE (Default)
+;# -> #RELATIVE
+;# IN SENMODE (RSISENMODE): Sensor mode
+;# -> #IPO: 12 ms cycle with filtering ($FILTER)
+;# -> #IPO_FAST (Default): 4 ms cycle time
+;# IN TSYS (TECHSYS):
+;# Correction coordinate system - only for 12 ms!
+;# -> #BASE (Default)
+;# -> #TCP
+;# -> #TTS
+;# -> #WORLD
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK: Successful
+;# RSIALREADYON: RSI is already running
+;#
+
+GLOBAL DEFFCT INT RSI_ON(INTEG:IN,SENMODE:IN,TSYS:IN)
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL INTEGRATION_MODE INTEG
+DECL TECHSYS TSYS
+DECL RSISENMODE SENMODE
+DECL INT RET
+
+WAIT SEC 0
+
+IF (VARSTATE("INTEG") == #DECLARED) THEN
+   INTEG=#ABSOLUTE
+ENDIF
+IF (VARSTATE("SENMODE") == #DECLARED) THEN
+   SENMODE=#IPO_FAST
+ENDIF
+IF ((VARSTATE("TSYS") == #INITIALIZED) AND (SENMODE==#IPO_FAST)) THEN
+   RSI_Msg(RSITSYS,#Quit," "," ")
+   RETURN RSITSYS
+ENDIF
+IF (VARSTATE("TSYS") == #DECLARED) THEN
+   TSYS=#BASE
+ENDIF
+
+RSISPOC_MSG()
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlOnOff"
+
+mod=#SYNC
+SWITCH SENMODE
+ CASE #IPO
+  ; (tSDB)
+ CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],2)
+ CASE #IPO_FAST
+  ; (LAG_HP)
+  CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],3)
+  DEFAULT
+   HALT ; SENMODE not supported
+ ENDSWITCH
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_ON: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+SWITCH SENMODE
+ CASE #IPO 
+   $TECHSYS=TSYS
+   IF INTEG==#ABSOLUTE THEN
+      $TECHPAR[RSITECHIDX,9]=0
+   ELSE
+      $TECHPAR[RSITECHIDX,9]=1
+   ENDIF
+   $TECH[RSITECHIDX].CLASS=#DATALINK
+   $TECH[RSITECHIDX].FCTCTRL.GEOREF=#Z
+   $TECH[RSITECHIDX].MODE=#CYCLE
+ CASE #IPO_FAST
+   $CORRECTION.INT_MODE=INTEG
+   $CORRECTION.MODE=#ON
+  DEFAULT
+   HALT ; SENMODE not supporte
+ENDSWITCH
+   WAIT FOR (SENMODE == RSI_GETSENMODE())
+
+RETURN RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_OFF
+;#
+;# Description:
+;# Stops the RSI signal processing.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT INT RSI_OFF()
+;#
+;# Parameters:
+;# No
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK: Successful
+;# RSINOTRUNNING: RSI is not running
+;#
+
+GLOBAL DEFFCT INT RSI_OFF()
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+DECL RSISENMODE mode
+
+WAIT SEC 0
+
+mode = RSI_GETSENMODE()
+SWITCH (mode)
+ CASE #IPO
+  IF (($TECH[RSITECHIDX].MODE<>#OFF) AND ($TECH[RSITECHIDX].CLASS==#DATALINK)) THEN
+   $TECH[RSITECHIDX].MODE=#OFF
+  ENDIF   
+ CASE #IPO_FAST
+  IF $CORRECTION.MODE<>#OFF THEN
+   $CORRECTION.MODE=#OFF
+  ENDIF
+ENDSWITCH
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlOnOff"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],0)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_OFF: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_MOVECORR
+;#
+;# Description:
+;# Allows a pure sensor guided movement with 
+;# sensor corrections from POSCORR or AXISCORR 
+;# objects. 
+;# To stop the movement a rising edge to the 
+;# STOP objects signal input with parameter  
+;# mode set to ExitMoveCorr is used. 
+;# The behaviour in case of a stop is defined with 
+;# the parameter mode.
+;#
+;# Declaration:
+;# GLOBAL DEF RSI_MOVECORR(mode:IN)
+;#
+;# Parameters:
+;# IN mode (RSIMOVESENS_STOPMODE): Stop mode
+;# -> RSIBRAKE: (Default) Continue after brake ramp
+;# -> RSIBRAKERET: Continue after brake ramp and 
+;# move back to the position where the stop 
+;# signal occured
+;#
+
+GLOBAL DEF RSI_MOVECORR(stopMode:IN)
+DECL RSIMOVESENS_STOPMODE stopMode
+INT ret
+REAL fPosRet[6] ; X,Y,Z,A,B,C
+INT nPosRet[2] ; Status & turn
+E6POS posRet
+CHAR msgObj[26]
+
+WAIT SEC 0
+
+IF (VARSTATE("stopMode")==#DECLARED) THEN
+   stopMode=#RSIBRAKE
+ENDIF
+
+IF ((RSI_GETSENMODE() <> #IPO) AND ($CORRECTION.MODE<>#ON)) THEN   ; Bugfix CRDB56646
+   msgObj[]="RSI_MOVECORR: "
+   RSI_Msg(RSINoActiveContext, #QUIT, msgObj[], " ")
+   RETURN
+ENDIF
+
+MOVE_EMI "RSI_MOVECORR" "STAND_STILL"
+
+SWITCH stopMode
+ CASE #RSIBRAKERET
+  IF $CORRECTION.MODE == #ON THEN
+     IF (MD_CMD("RSI_MOVECORR","GET END_POS_ROB_CART",nPosRet[],fPosRet[])<>0) THEN
+      RETURN
+     ENDIF
+     posRet.X=fPosRet[1]
+     posRet.Y=fPosRet[2]
+     posRet.Z=fPosRet[3]
+     posRet.A=fPosRet[4]
+     posRet.B=fPosRet[5]
+     posRet.C=fPosRet[6]
+     posRet.S=nPosRet[1]
+     posRet.T=nPosRet[2]
+     IF (MD_CMD("RSI_MOVECORR","GET END_POS_EXT_CART",nPosRet[],fPosRet[])<>0) THEN
+      RETURN
+     ENDIF
+     posRet.E1=fPosRet[1]
+     posRet.E2=fPosRet[2]
+     posRet.E3=fPosRet[3]
+     posRet.E4=fPosRet[4]
+     posRet.E5=fPosRet[5]
+     posRet.E6=fPosRet[6]
+     $CORRECTION.MODE=#OFF
+     LIN posRet
+  ENDIF
+ ENDSWITCH
+END
+
+
+;# Function:
+;# RSI_SETPUBLICPAR
+;#
+;# Description:
+;# Sets a RSI objects parameter specified by its 
+;# container, the object name and the parameter 
+;# name.
+;#
+;# Declaration:
+;# DEFFCT INT RSI_SETPUBLICPAR(objID:IN,objName:IN,parName:IN,val:IN)
+;#
+;# Parameters:
+;# IN objID (INT): Container ID
+;# IN objName (CHAR[]): Object name
+;# IN parName (CHAR[]): Parameter name
+;# IN val (REAL): Parameter value
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK: Successful
+;# RSIINVCONT: Invalid container
+;# RSIINPARAMID: Invalid object or parmeter name or not public
+;# RSIINPARAM: Invalid parmeter value
+;#
+GLOBAL DEFFCT INT RSI_SETPUBLICPAR(objID:IN,objName:IN,parName:IN,val:IN)
+INT objID
+CHAR fctName[23]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+CHAR objName[]
+CHAR parName[]
+REAL val
+
+WAIT SEC 0
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlSetPublicPar"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],objID,objName[],parName[],val)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_SETPUBLICPAR: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_GETPUBLICPAR
+;#
+;# Description:
+;# Gets the RSI objects parameter specified by its 
+;# container, the object name and the parameter 
+;# name.
+;#
+;# Declaration:
+;# DEFFCT INT RSI_GETPUBLICPAR(objID:IN,objName:IN,parName:IN,val:OUT)
+;#
+;# Parameters:
+;# IN objID (INT): Container ID
+;# IN objName (CHAR[]): Object name
+;# IN parName (CHAR[]): Parameter name
+;# OUT val (REAL): Parameter value
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK: Successful
+;# RSIINVCONT: Invalid container
+;# RSIINPARAMID: Invalid object or parmeter name or not public
+;#
+
+GLOBAL DEFFCT INT RSI_GETPUBLICPAR(objID:IN,objName:IN,parName:IN,val:OUT)
+INT objID
+CHAR fctName[23]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+CHAR objName[]
+CHAR parName[]
+REAL val
+
+WAIT SEC 0
+
+errMsg[]=" "
+val=0
+fctName[]="EFC_rsi_krlGetPublicPar"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],objID,objName[],parName[],val)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_GETPUBLICPAR: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_RESET
+;#
+;# Description:
+;# Deletes the complete RSI signal processing with 
+;# all RSI objects.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT INT RSI_RESET()
+;#
+;# Parameters:
+;# No
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK: Successful
+;#
+
+GLOBAL DEFFCT INT RSI_RESET()
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+
+WAIT SEC 0
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlReset"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[])
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_RESET: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_CHECKID
+;#
+;# Description:
+;# Checks if a RSI Object ID references to a valid 
+;# RSI object.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT BOOL RSI_CHECKID(objID:IN)
+;#
+;# Parameters:
+;# IN objID (INT):  Object ID
+;#
+;# Return Type:
+;# BOOL
+;#
+;# Return Values:
+;# TRUE: Object exists
+;# FALSE: Invalid object ID
+;#
+
+GLOBAL DEFFCT BOOL RSI_CHECKID(objID:IN)
+INT objID
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+BOOL bExists
+
+WAIT SEC 0
+
+errMsg[]=" "
+bExists = FALSE
+fctName[]="EFC_rsi_krlTestObj"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],bExists,objID)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_CHECKID: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN FALSE;
+ENDIF
+
+RETURN bExists
+ENDFCT
+
+;# Function:
+;# RSI_ENABLE
+;#
+;# Description:
+;# Enables an RSI container.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT INT RSI_ENABLE(objID:IN)
+;#
+;# Parameters:
+;# IN objID (INT): Object ID
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK:       Successful
+;# RSIINVOBJID: Invalid object ID
+;#
+
+GLOBAL DEFFCT INT RSI_ENABLE(objID:IN)
+INT objID
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+
+WAIT SEC 0
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlEnable"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],objID)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_ENABLE: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+;# Function:
+;# RSI_DISABLE
+;#
+;# Description:
+;# Disables an RSI container.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT INT RSI_DISABLE(objID:IN)
+;#
+;# Parameters:
+;# IN objID (INT): Object ID
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK: Successful
+;# RSIINVOBJID: Invalid object ID
+;#
+
+GLOBAL DEFFCT INT RSI_DISABLE(objID:IN)
+INT objID
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+
+WAIT SEC 0
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlDisable"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],objID)
+
+IF (stat.Msg_No <> RSIOK) THEN
+ msgObj[]="RSI_DISABLE: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+;# -------------------------------------------------
+;# Internal RSI functions
+
+;# Function:
+;# RSI_LOGCONTEXT
+;#
+;# Description:
+;# Writes the actual signal processing 
+;# configuration into a XML file.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT INT RSI_LOGCONTEXT()
+;#
+;# Parameters:
+;# No
+;#
+;# Return Type:
+;# INT
+;#
+;# Return Values:
+;# RSIOK: Successful
+;#
+
+DEFFCT INT RSI_LOGCONTEXT()
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+
+WAIT SEC 0
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlLogCtxt"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[])
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ RSILOGCONTEXT=FALSE
+ msgObj[]="RSI_LOGCONTEXT: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RSILOGCONTEXT=TRUE
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+; Quit message apears in when sensor execution is started 
+; in Test Mode (T1/T2)
+DEF RSISPOC_MSG ()
+IF ($MODE_OP == #T1) OR ($MODE_OP == #T2) THEN
+   RSI_Msg(RSISPOC,#QUIT," "," ")
+ENDIF
+END
+
+GLOBAL DEF RSI_Msg(Msg_No:IN,Type:IN,cObj[]:IN,cSys[]:IN)   
+DECL KrlMsg_T name
+DECL KrlMsgPar_T params[3]
+DECL KrlMsgOpt_T options
+DECL EKrlMsgType Type
+DECL STATE_T Stat   
+DECL MODUS_T Mode   
+DECL CHAR cObj[]
+DECL CHAR cSys[]
+DECL INT Offset
+DECL INT Msg_No 
+DECL INT Handle
+ 
+IF RSILOGCONTEXT THEN
+   Handle = RSI_LOGCONTEXT()
+   IF (Handle<>RSIOK) THEN      
+      ;error of logcontext is displayed
+      ;display orignal error
+   ENDIF
+ENDIF
+
+IF RSIERRMSG==FALSE THEN
+   RETURN
+ENDIF
+   
+name={modul[] "RSI", Nr 1, msg_txt[] " "}
+name.nr = Msg_No        
+OFFSET = 0
+CONTINUE
+SWRITE(name.msg_txt[],stat,offset,"rsi%i",Msg_No)
+
+params[1] = {par_type #value, par_txt[] " "}
+OFFSET = 0
+CONTINUE
+SWRITE(params[1].par_txt[],stat,offset,"%s",cObj[])
+
+params[2] = {par_type #value, par_txt[] " "}
+OFFSET = 0
+CONTINUE
+SWRITE(params[2].par_txt[],stat,offset,"%s",cSys[])
+
+options = {vl_stop TRUE, clear_p_reset TRUE, clear_p_SAW FALSE, log_to_DB FALSE}
+
+Handle = Set_KrlMsg(Type, name, params[], options)
+       
+IF(Type==#Quit) THEN
+   WHILE(Exists_KrlMsg(Handle))
+      wait sec 0.2
+   ENDWHILE
+ENDIF 
+END
+
+;# Function:
+;# RSI_GETSENMODE
+;#
+;# Description:
+;# Returns the actual sensor mode
+;# RSI object.
+;#
+;# Declaration:
+;# GLOBAL DEFFCT RSISENMODE RSI_GETSENMODE()
+;#
+;# Return Type:
+;# RSISENMODE
+;#
+;# Return Values:
+;# #OFF: Not running
+;# #IPO: IPO Mode
+;# #IPO_FAST: IPO_FAST Mode
+;#
+
+GLOBAL DEFFCT RSISENMODE RSI_GETSENMODE()
+CHAR fctName[20]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+INT nMode
+
+WAIT SEC 0
+
+errMsg[]=" "
+nMode = 0
+fctName[]="EFC_rsi_krlGetSenMod"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],nMode)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_GETSENMODE: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ENDIF
+
+SWITCH (nMode)
+ CASE 1
+RETURN #IPO
+ CASE 2
+ RETURN #IPO_FAST
+ENDSWITCH
+RETURN #OFF
+ENDFCT
+
+GLOBAL DEFFCT INT RSI_SINGLETON(strName:IN,strCmd:IN,nPar:OUT,strType:IN)
+INT nPar
+CHAR fctName[21]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+CHAR strName[]
+CHAR strCmd[]
+CHAR strType[]
+
+WAIT SEC 0
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlSingleton"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],strName[],strCmd[],nPar,strType[])
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ msgObj[]="RSI_SINGLETON: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ RETURN -stat.Msg_No;
+ENDIF
+
+RETURN RSIOK
+ENDFCT
+
+GLOBAL DEF RSI_SETSINGLETONPAR_TR(strSName[]:IN,strSType[]:IN,objName[]:IN,parName[]:IN,val:IN)
+INT objID
+CHAR fctName[23]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+CHAR strSName[]
+CHAR strSType[]
+CHAR objName[]
+CHAR parName[]
+REAL val
+
+objID=0
+errMsg[]=" "
+fctName[]="EFC_rsi_krlSingleton"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],strSName[],"CheckType",objID,strSType[])
+
+IF ((stat.Msg_No == RSIOK) AND (objID <> 0)) THEN 
+ RSI_SETPUBLICPAR_TR(objID,objName[],parName[],val)
+ELSE
+ BRAKE
+ msgObj[]="RSI_SETSINGLETONPAR_TR: "  
+ IF ((stat.Msg_No == RSIOK) AND (objID == 0)) THEN
+  errMsg[]="Singleton parameter not found"
+  RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])
+ ENDIF
+ENDIF
+
+END
+
+GLOBAL DEF RSI_SETPUBLICPAR_TR(objID:IN,objName[]:IN,parName[]:IN,val:IN)
+INT objID
+CHAR fctName[23]
+CHAR msgObj[26]
+CHAR errMsg[26]
+DECL STATE_T stat
+DECL MODUS_T mod
+CHAR objName[]
+CHAR parName[]
+REAL val
+
+errMsg[]=" "
+fctName[]="EFC_rsi_krlSetPublicPar"
+
+mod=#SYNC
+CWRITE($FCT_CALL,stat,mod,fctName[],errMsg[],objID,objName[],parName[],val)
+
+IF (stat.Msg_No <> RSIOK) THEN 
+ BRAKE
+ msgObj[]="RSI_SETPUBLICPAR_TR: "  
+ RSI_Msg(-stat.Msg_No,RsiMsgType,msgObj[],errMsg[])   
+ENDIF
+
+END

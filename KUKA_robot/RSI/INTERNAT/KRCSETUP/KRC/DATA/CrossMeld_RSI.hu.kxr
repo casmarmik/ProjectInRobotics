@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="hu" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} Megengedett teljes korrekció túllépése: Az RSI leáll</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} Korrekció a megengedett tartományon kívül: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>Jelfolyam ({0}): A(z) {1} objektum {2} hibát jelez</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>Korrekcióresetre van szükség</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>Belső RSI hiba</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>Az RSI a kezelővédelem miatt nem tud kimenetet beállítani</text>
+    </message>
+  </module>
+</resources>

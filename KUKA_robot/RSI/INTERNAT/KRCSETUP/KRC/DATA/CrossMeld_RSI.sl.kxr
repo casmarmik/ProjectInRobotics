@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="sl" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} Dopusten skupni popravek je prekoračen: RSI se zaustavi</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} Popravek izven dovoljenega območja: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>Tok signala ({0}): Element {1} dostavlja napako {2}</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>Potrebna ponastavitev popravka</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>Interna napaka RSI</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>RSI ne more postaviti izhodov zaradi zaščite upravljavca</text>
+    </message>
+  </module>
+</resources>

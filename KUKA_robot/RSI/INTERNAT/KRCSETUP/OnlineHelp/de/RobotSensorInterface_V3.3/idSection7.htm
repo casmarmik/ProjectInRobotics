@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>2.2 Funktionsweise SignalverarbeitungFunktionsweise, SignalverarbeitungSignalverarbeitung, Funktionsweise</title>
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+    <meta name="DC.language" content="de">
+    <meta name="DC.title" content="KUKA.RobotSensorInterface 3.3">
+    <meta name="DC.creator" content="PS5">
+    <meta name="DC.subject" content="Stand: 19.11.2014 Version: KST RSI 3.3 V2">
+    <meta name="DC.description" content=" ">
+    <meta name="DC.publisher" content="RobotSensorInterface_V3.3">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <style type="text/css">
+      body {background-color:white; font-family:Tahoma;}
+	    td p {margin:0px;}
+	  </style>
+  </head>
+  <body style="margin:1px; padding:1px; overflow-x: hidden;">
+    <div id="idIntermediateDocument4" style="margin:0pt;padding:0pt;">
+      <div id="idPageSequence3">
+        <div>
+          <div id="idSection7">
+            <p id="sec-0-71d9ed74-6f8a-4d36-9ed8-9b0cd636c928" style="font-family:'Tahoma';page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:11pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0mm;margin-right:0mm;margin-top:1pt;margin-bottom:2pt;text-indent:0mm;">2.2        Funktionsweise Signalverarbeitung</p>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:5mm;margin-top:10pt;margin-bottom:0pt;page-break-after:avoid;widows:5;orphans:5;line-height:14pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Beschreibung</p>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Eine Signalverarbeitung wird mit RSI Objekten aufgebaut. Ein RSI Objekt führt mit seinen Signaleingängen eine bestimmte Funktionalität aus und stellt das Ergebnis an den Signalausgängen bereit.</p>
+            <table style="border-collapse:collapse;margin-bottom:10pt;width:98%;">
+              <col width="100%">
+              <tbody>
+                <tr style="page-break-after:avoid;">
+                  <td style="padding-left:0pt;padding-top:3pt;padding-right:0pt;padding-bottom:3pt;background-color:transparent;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:italic;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><img src="Images\1bce6e9e-8dca-48a6-b6bc-2228e72e4ffe.jpg" alt="1bce6e9e-8dca-48a6-b6bc-2228e72e4ffe.jpg" style="border-width:0.5pt;max-width:300pt;"></p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-left:0pt;padding-top:3pt;padding-right:0pt;padding-bottom:3pt;background-color:transparent;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Abb. 2-1: Schematischer Aufbau eines RSI Objekts</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">RobotSensorInterface stellt dem Benutzer in einer Bibliothek einen umfangreichen Satz an RSI Objekten zur Verfügung. Durch die Verknüpfung der Signal-Ein- und Ausgänge mehrerer RSI Objekte entsteht ein Signalfluss. Der gesamte Signalfluss wird als RSI Kontext bezeichnet.</p>
+            <table style="border-collapse:collapse;margin-bottom:10pt;width:98%;">
+              <col width="100%">
+              <tbody>
+                <tr style="page-break-after:avoid;">
+                  <td style="padding-left:0pt;padding-top:3pt;padding-right:0pt;padding-bottom:3pt;background-color:transparent;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:italic;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><img src="Images\fdd3982e-2ad7-4df9-85a2-37a51f4576c1.jpg" alt="fdd3982e-2ad7-4df9-85a2-37a51f4576c1.jpg" style="border-width:0.5pt;max-width:300pt;"></p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-left:0pt;padding-top:3pt;padding-right:0pt;padding-bottom:3pt;background-color:transparent;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Abb. 2-2: Schematischer Aufbau eines RSI Kontexts</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-family:'Tahoma';margin-left:0mm;margin-right:0mm;margin-top:3pt;margin-bottom:3pt;widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;text-indent:0mm;">Der RSI Kontext wird mit dem grafischen Editor RSI Visual definiert und gespeichert. Im KRL-Programm kann der RSI Kontext geladen und die zum Programmablauf parallele Signalverarbeitung ein- und ausgeschaltet werden. Die Signalverarbeitung wird im Sensortakt berechnet. Je nach Modus ist der Sensortakt 12 ms (Modus IPO) oder 4 ms (Modus IPO_FAST).</p>
+            <table style="border-collapse:collapse;margin-bottom:10pt;width:98%;">
+              <col width="100%">
+              <tbody>
+                <tr style="page-break-after:avoid;">
+                  <td style="padding-left:0pt;padding-top:3pt;padding-right:0pt;padding-bottom:3pt;background-color:transparent;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:10pt;text-align:left;font-weight:normal;font-style:italic;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;"><img src="Images\6bc15fa1-349f-11e3-8605-6cae8b4eb554.gif" alt="6bc15fa1-349f-11e3-8605-6cae8b4eb554.gif" style="border-width:0.5pt;max-width:300pt;"></p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-left:0pt;padding-top:3pt;padding-right:0pt;padding-bottom:3pt;background-color:transparent;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:bold;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Abb. 2-3: Zusammenspiel KRL-Programm - Signalverarbeitung</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table style="border-collapse:collapse;margin-bottom:10pt;width:98%;">
+              <col width="7.143%">
+              <col width="42.857%">
+              <col width="7.143%">
+              <col width="42.857%">
+              <tbody>
+                <tr>
+                  <td style="padding:3pt;background-color:transparent;vertical-align:top;vertical-align:top;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:right;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">1</p>
+                  </td>
+                  <td style="padding:3pt;background-color:transparent;vertical-align:top;vertical-align:top;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">RSI Kontext</p>
+                  </td>
+                  <td style="padding:3pt;background-color:transparent;vertical-align:top;vertical-align:top;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:right;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">2</p>
+                  </td>
+                  <td style="padding:3pt;background-color:transparent;vertical-align:top;vertical-align:top;">
+                    <p style="font-family:'Tahoma';widows:2;orphans:2;line-height:12pt;text-align:left;font-weight:normal;font-style:normal;font-size:10pt;font-variant:normal;font-stretch:normal;color:#000000;text-decoration:none;margin-left:0pt;margin-top:0pt;margin-right:0pt;margin-bottom:0pt;text-indent:0mm;">Sensortakt</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="footnotes"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

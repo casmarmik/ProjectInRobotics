@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="ru" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="RSI">
+    <message key="rsi0">
+      <text>{0}Ok{1}</text>
+    </message>
+    <message key="rsi1">
+      <text>{0}Общая ошибка {1}</text>
+    </message>
+    <message key="rsi2">
+      <text>{0}Недействительный аргумент {1}</text>
+    </message>
+    <message key="rsi3">
+      <text>{0}Не реализовано {1}</text>
+    </message>
+    <message key="rsi4">
+      <text>{0}Нет свободного места в памяти {1}</text>
+    </message>
+    <message key="rsi5">
+      <text>{0}Неизвестный контейнер RSI {1}</text>
+    </message>
+    <message key="rsi6">
+      <text>{0}Файл недействителен {1}</text>
+    </message>
+    <message key="rsi7">
+      <text>{0}Недействительный ID параметра</text>
+    </message>
+    <message key="rsi8">
+      <text>{0}Недействительный параметр</text>
+    </message>
+    <message key="rsi9">
+      <text>{0}Недействительный ID объекта {1}</text>
+    </message>
+    <message key="rsi10">
+      <text>{0}Недействительный индекс входа {1}</text>
+    </message>
+    <message key="rsi11">
+      <text>{0}Недействительный индекс выхода {1}</text>
+    </message>
+    <message key="rsi12">
+      <text>{0}У объекта есть предшественник {1}</text>
+    </message>
+    <message key="rsi13">
+      <text>{0}Недействительный объект – вход сигнала {1}</text>
+    </message>
+    <message key="rsi14">
+      <text>{0}Недействительный объект – выход сигнала {1}</text>
+    </message>
+    <message key="rsi15">
+      <text>{0}Недействительный индекс – сигнальный вход {1}</text>
+    </message>
+    <message key="rsi16">
+      <text>{0}Недействительный индекс – сигнальный выход {1}</text>
+    </message>
+    <message key="rsi17">
+      <text>{0}Вход уже имеет привязку {1}</text>
+    </message>
+    <message key="rsi18">
+      <text>{0}Недействительный сигнал {1}</text>
+    </message>
+    <message key="rsi19">
+      <text>{0}Объект не поддерживает привязку {1}</text>
+    </message>
+    <message key="rsi20">
+      <text>{0}Круговая привязка {1}</text>
+    </message>
+    <message key="rsi21">
+      <text>{0}Unused21 {1}</text>
+    </message>
+    <message key="rsi22">
+      <text>{0}Объект не имеет привязки {1}</text>
+    </message>
+    <message key="rsi23">
+      <text>{0}Требуется привязка {1}</text>
+    </message>
+    <message key="rsi24">
+      <text>{0}Объект деактивирован – сигнальный выход {1}</text>
+    </message>
+    <message key="rsi25">
+      <text>{0}Объект с деактивированным предшественником {1}</text>
+    </message>
+    <message key="rsi26">
+      <text>{0}Неизвестный объект RSI {1}</text>
+    </message>
+    <message key="rsi27">
+      <text>{0}Файл не найден {1}</text>
+    </message>
+    <message key="rsi28">
+      <text>{0}Объект с активированным предшественником {1}</text>
+    </message>
+    <message key="rsi29">
+      <text>{0}Недействительное преобразование типа {1}</text>
+    </message>
+    <message key="rsi30">
+      <text>{0}RSI уже активирован {1}</text>
+    </message>
+    <message key="rsi31">
+      <text>{0}RSI деактивирован {1}</text>
+    </message>
+    <message key="rsi32">
+      <text>{0}Внешняя библиотека RSI не найдена {1}</text>
+    </message>
+    <message key="rsi33">
+      <text>{0}Ошибка соединения {1}</text>
+    </message>
+    <message key="rsi34">
+      <text>{0}Тайм-аут {1}</text>
+    </message>
+    <message key="rsi35">
+      <text>{0}Невозможно без активного контекста RSI</text>
+    </message>
+    <message key="rsi36">
+      <text>{0}Выход зарезервирован системой {1}</text>
+    </message>
+    <message key="rsi100">
+      <text>{0}Ошибка пользователя {1}</text>
+    </message>
+    <message key="rsi998">
+      <text>Параметр TSYS поддерживается только в модуле IPO</text>
+    </message>
+    <message key="rsi999">
+      <text>!!! Внимание! Активируется коррекция датчика !!!</text>
+    </message>
+  </module>
+</resources>

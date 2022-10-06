@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="ja" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} 総補正の限度を超えています: RSI が停止します</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} 修正が許容範囲外: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>シグナルフロー ({0}): オブジェクト {1} がエラー {2} を送信</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>修正リセットが必要です</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>内部 RSI エラー</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>オペレータガードにより、RSI は出力を設定できません。</text>
+    </message>
+  </module>
+</resources>

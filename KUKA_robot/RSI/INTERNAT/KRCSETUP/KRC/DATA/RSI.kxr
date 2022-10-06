@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns="http://www.kuka.com/schemas/kxr/2009">
+   <module name="RSI">
+      <message key="rsi0">
+         <text xml:lang="de-DEV">{0}Ok{1}</text>
+         <text xml:lang="en-DEV">{0}Ok{1}</text>
+      </message>
+      <message key="rsi1">
+         <text xml:lang="de-DEV">{0}Allgemeiner Fehler {1}</text>
+         <text xml:lang="en-DEV">{0}General error {1}</text>
+      </message>
+      <message key="rsi2">
+         <text xml:lang="de-DEV">{0}Ungültiges Argument {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid argument {1}</text>
+      </message>
+      <message key="rsi3">
+         <text xml:lang="de-DEV">{0}Nicht implementiert {1}</text>
+         <text xml:lang="en-DEV">{0}Not implemented {1}</text>
+      </message>
+      <message key="rsi4">
+         <text xml:lang="de-DEV">{0}Kein freier Speicher {1}</text>
+         <text xml:lang="en-DEV">{0}No memory {1}</text>
+      </message>
+      <message key="rsi5">
+         <text xml:lang="de-DEV">{0}Unbekannter RSI Container {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid RSI container {1}</text>
+      </message>
+      <message key="rsi6">
+         <text xml:lang="de-DEV">{0}Datei ungültig {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid file {1}</text>
+      </message>
+      <message key="rsi7">
+         <text xml:lang="de-DEV">{0}Ungültige Parameter ID</text>
+         <text xml:lang="en-DEV">{0}Invalid parameter ID</text>
+      </message>
+      <message key="rsi8">
+         <text xml:lang="de-DEV">{0}Ungültiger Paramter</text>
+         <text xml:lang="en-DEV">{0}Invalid parameter</text>
+      </message>
+      <message key="rsi9">
+         <text xml:lang="de-DEV">{0}Ungültige Objekt ID {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid object ID {1}</text>
+      </message>
+      <message key="rsi10">
+         <text xml:lang="de-DEV">{0}Ungültiger Eingangsindex {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid input index {1}</text>
+      </message>
+      <message key="rsi11">
+         <text xml:lang="de-DEV">{0}Ungültiger Ausgangsindex {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid output index {1}</text>
+      </message>
+      <message key="rsi12">
+         <text xml:lang="de-DEV">{0}Objekt hat Nachfolger {1}</text>
+         <text xml:lang="en-DEV">{0}Object has successor {1}</text>
+      </message>
+      <message key="rsi13">
+         <text xml:lang="de-DEV">{0}Ungültiges Objekt - Signal Eingang {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid object - signal input {1}</text>
+      </message>
+      <message key="rsi14">
+         <text xml:lang="de-DEV">{0}Ungültiges Objekt - Signal Ausgang {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid object - signal input {1}</text>
+      </message>
+      <message key="rsi15">
+         <text xml:lang="de-DEV">{0}Ungültiger Index - Signaleingang {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid index - signal input {1}</text>
+      </message>
+      <message key="rsi16">
+         <text xml:lang="de-DEV">{0}Ungültiger Index - Signalausgang {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid index - signal output {1}</text>
+      </message>
+      <message key="rsi17">
+         <text xml:lang="de-DEV">{0}Eingang ist bereits verlinkt {1}</text>
+         <text xml:lang="en-DEV">{0}Input is already linked {1}</text>
+      </message>
+      <message key="rsi18">
+         <text xml:lang="de-DEV">{0}Ungültiges Signal {1}</text>
+         <text xml:lang="en-DEV">{0}Invalid signal {1}</text>
+      </message>
+      <message key="rsi19">
+         <text xml:lang="de-DEV">{0}Objekt unterstützt keine Verlinkung {1}</text>
+         <text xml:lang="en-DEV">{0}Object doesnot support linkage {1}</text>
+      </message>
+      <message key="rsi20">
+         <text xml:lang="de-DEV">{0}Kreisverlinkung {1}</text>
+         <text xml:lang="en-DEV">{0}Link circle {1}</text>
+      </message>
+      <message key="rsi21">
+         <text xml:lang="de-DEV">{0}Unused21 {1}</text>
+         <text xml:lang="en-DEV">{0}Unused21 {1}</text>
+      </message>
+      <message key="rsi22">
+         <text xml:lang="de-DEV">{0}Objekt nicht verlinkt {1}</text>
+         <text xml:lang="en-DEV">{0}Object not linked {1}</text>
+      </message>
+      <message key="rsi23">
+         <text xml:lang="de-DEV">{0}Verlinkung notwendig {1}</text>
+         <text xml:lang="en-DEV">{0}Link is needed {1}</text>
+      </message>
+      <message key="rsi24">
+         <text xml:lang="de-DEV">{0}Objekt deaktiviert - Signalausgang {1}</text>
+         <text xml:lang="en-DEV">{0}Object disabled -signal output {1}</text>
+      </message>
+      <message key="rsi25">
+         <text xml:lang="de-DEV">{0}Objekt mit deaktiviertem Vorgänger {1}</text>
+         <text xml:lang="en-DEV">{0}Object with disabled predecessor {1}</text>
+      </message>
+      <message key="rsi26">
+         <text xml:lang="de-DEV">{0}Unbekanntes RSI Objekt {1}</text>
+         <text xml:lang="en-DEV">{0}Unknown RSI object {1}</text>
+      </message>
+      <message key="rsi27">
+         <text xml:lang="de-DEV">{0}Datei nicht gefunden {1}</text>
+         <text xml:lang="en-DEV">{0}File not found {1}</text>
+      </message>
+      <message key="rsi28">
+         <text xml:lang="de-DEV">{0}Objekt mit aktiviertem Nachfolger {1}</text>
+         <text xml:lang="en-DEV">{0}Object with enabled successor {1}</text>
+      </message>
+      <message key="rsi29">
+         <text xml:lang="de-DEV">{0}Ungültige Typumwandlung {1}</text>
+         <text xml:lang="en-DEV">{0}Bad cast {1}</text>
+      </message>
+      <message key="rsi30">
+         <text xml:lang="de-DEV">{0}RSI bereits aktiviert {1}</text>
+         <text xml:lang="en-DEV">{0}RSI already running {1}</text>
+      </message>
+      <message key="rsi31">
+         <text xml:lang="de-DEV">{0}RSI ist deaktiviert {1}</text>
+         <text xml:lang="en-DEV">{0}RSI is not running {1}</text>
+      </message>
+      <message key="rsi32">
+         <text xml:lang="de-DEV">{0}Externe RSI Bibliothek nicht gefunden {1}</text>
+         <text xml:lang="en-DEV">{0}External RSI Lib not found {1}</text>
+      </message>
+      <message key="rsi33">
+         <text xml:lang="de-DEV">{0}Verbindungsfehler {1}</text>
+         <text xml:lang="en-DEV">{0}Connect error {1}</text>
+      </message>
+      <message key="rsi34">
+         <text xml:lang="de-DEV">{0}Timeout {1}</text>
+         <text xml:lang="en-DEV">{0}Timeout {1}</text>
+      </message>
+      <message key="rsi35">
+         <text xml:lang="de-DEV">{0}Nicht möglich ohne aktiven RSI-Kontext</text>
+         <text xml:lang="en-DEV">{0}Not possible without active RSI Context</text>
+      </message>
+      <message key="rsi36">
+         <text xml:lang="de-DEV">{0}Ausgang vom System reserviert {1}</text>
+         <text xml:lang="en-DEV">{0}Output reserved by System {1}</text>
+      </message>
+      <message key="rsi100">
+         <text xml:lang="de-DEV">{0}Benutzerfehler {1}</text>
+         <text xml:lang="en-DEV">{0}User error {1}</text>
+      </message>
+      <message key="rsi998">
+         <text xml:lang="de-DEV">TSYS Parameter wird nur im Modus IPO unterstützt</text>
+         <text xml:lang="en-DEV">TSYS parameter only supported in mode IPO</text>
+      </message>
+      <message key="rsi999">
+         <text xml:lang="de-DEV">!!! Achtung - Sensorkorrektur wird aktiviert !!!</text>
+         <text xml:lang="en-DEV">!!! Attention - Sensor correction goes active !!!</text>
+      </message>
+   </module>
+</resources>

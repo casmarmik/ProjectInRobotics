@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns="http://www.kuka.com/schemas/kxr/2009">
+   <module name="Diagnose">
+      <uiText key="Diagnose_Value9004_0">
+         <text xml:lang="de-DEV">Inaktiv</text>
+         <text xml:lang="en-DEV">Stopped</text>
+      </uiText>
+      <uiText key="Diagnose_Value9004_1">
+         <text xml:lang="de-DEV">Aktiv (IPO)</text>
+         <text xml:lang="en-DEV">Running (IPO)</text>
+      </uiText>
+      <uiText key="Diagnose_Value9004_2">
+         <text xml:lang="de-DEV">Aktiv (IPO_FAST)</text>
+         <text xml:lang="en-DEV">Running (IPO_FAST)</text>
+      </uiText>
+      <uiText key="Diagnose_Description9001">
+         <text xml:lang="de-DEV">Diagnose für Robot Sensor Interface</text>
+         <text xml:lang="en-DEV">Diagnosis for Robot Sensor Interface</text>
+      </uiText>
+      <uiText key="Diagnose_Name9001">
+         <text xml:lang="de-DEV">Robot Sensor Interface</text>
+         <text xml:lang="en-DEV">Robot Sensor Interface</text>
+      </uiText>
+      <uiText key="Diagnose_Description9004">
+         <text xml:lang="de-DEV">Status der Signalverarbeitung</text>
+         <text xml:lang="en-DEV">Execution status</text>
+      </uiText>
+      <uiText key="Diagnose_Name9004">
+         <text xml:lang="de-DEV">Status</text>
+         <text xml:lang="en-DEV">Status</text>
+      </uiText>
+      <uiText key="Diagnose_Description9005">
+         <text xml:lang="de-DEV">Zähler der Signalverarbeitungszyklen</text>
+         <text xml:lang="en-DEV">Execution counter</text>
+      </uiText>
+      <uiText key="Diagnose_Name9005">
+         <text xml:lang="de-DEV">Zähler</text>
+         <text xml:lang="en-DEV">Counter</text>
+      </uiText>
+      <uiText key="Diagnose_Description9006">
+         <text xml:lang="de-DEV">Minimale Ausführungszeit</text>
+         <text xml:lang="en-DEV">Minimal execution time</text>
+      </uiText>
+      <uiText key="Diagnose_Name9006">
+         <text xml:lang="de-DEV">Ausführungszeit (Min)</text>
+         <text xml:lang="en-DEV">Execution time (min)</text>
+      </uiText>
+      <uiText key="Diagnose_Description9007">
+         <text xml:lang="de-DEV">Maximale Ausführungszeit</text>
+         <text xml:lang="en-DEV">Maximal execution time</text>
+      </uiText>
+      <uiText key="Diagnose_Name9007">
+         <text xml:lang="de-DEV">Ausführungszeit (Max)</text>
+         <text xml:lang="en-DEV">Execution time (max)</text>
+      </uiText>
+      <uiText key="Diagnose_Description9008">
+         <text xml:lang="de-DEV">Durchschnittliche Ausführungzeit</text>
+         <text xml:lang="en-DEV">Mean execution time</text>
+      </uiText>
+      <uiText key="Diagnose_Name9008">
+         <text xml:lang="de-DEV">Ausführungszeit (Mittel)</text>
+         <text xml:lang="en-DEV">Execution time (mean)</text>
+      </uiText>
+      <uiText key="Diagnose_Description9009">
+         <text xml:lang="de-DEV">Anzahl der Kommunikationszyklen seit Start der Kommunikation</text>
+         <text xml:lang="en-DEV">Cycles since begin of communication</text>
+      </uiText>
+      <uiText key="Diagnose_Name9009">
+         <text xml:lang="de-DEV">Kommunikationszyklen</text>
+         <text xml:lang="en-DEV">Roundtrip</text>
+      </uiText>
+      <uiText key="Diagnose_Description9010">
+         <text xml:lang="de-DEV">Gesamt verlorene Pakete</text>
+         <text xml:lang="en-DEV">Total of lost packets</text>
+      </uiText>
+      <uiText key="Diagnose_Name9010">
+         <text xml:lang="de-DEV">Gesamtverlust</text>
+         <text xml:lang="en-DEV">Total lost</text>
+      </uiText>
+      <uiText key="Diagnose_Description9011">
+         <text xml:lang="de-DEV">Qualität der Verbindung der letzten 5 sek.</text>
+         <text xml:lang="en-DEV">Shows quality since last 5 sec.</text>
+      </uiText>
+      <uiText key="Diagnose_Name9011">
+         <text xml:lang="de-DEV">Verbindungsqualität</text>
+         <text xml:lang="en-DEV">Quality of communication</text>
+      </uiText>
+      <uiText key="Diagnose_Description9012">
+         <text xml:lang="de-DEV">Maximale Anzahl nacheinanderfolgender Paketverluste</text>
+         <text xml:lang="en-DEV">Maximum of lost packets in common</text>
+      </uiText>
+      <uiText key="Diagnose_Name9012">
+         <text xml:lang="de-DEV">Maximal zusammehängender Verlust</text>
+         <text xml:lang="en-DEV">Max of following lost packet</text>
+      </uiText>
+      <uiText key="Diagnose_Description9013">
+         <text xml:lang="de-DEV">Anzahl der angelegten RSI Objekte</text>
+         <text xml:lang="en-DEV">Number of created RSI objects</text>
+      </uiText>
+      <uiText key="Diagnose_Name9013">
+         <text xml:lang="de-DEV">Objekt Zähler</text>
+         <text xml:lang="en-DEV">Object counter</text>
+      </uiText>
+      <uiText key="Diagnose_Description9014">
+         <text xml:lang="de-DEV">Von RSI benutzter Speicher</text>
+         <text xml:lang="en-DEV">Used memory used from RSI</text>
+      </uiText>
+      <uiText key="Diagnose_Name9014">
+         <text xml:lang="de-DEV">Benutzter Speicher</text>
+         <text xml:lang="en-DEV">Used memory</text>
+      </uiText>
+      <uiText key="Diagnose_Description9015">
+         <text xml:lang="de-DEV">Für RSI zur Verfügung stehender Speicher</text>
+         <text xml:lang="en-DEV">Memory for RSI</text>
+      </uiText>
+      <uiText key="Diagnose_Name9015">
+         <text xml:lang="de-DEV">Speicher</text>
+         <text xml:lang="en-DEV">Memory</text>
+      </uiText>
+      <uiText key="Diagnose_Description9016">
+         <text xml:lang="de-DEV">Ausführungszeit</text>
+         <text xml:lang="en-DEV">Execution time</text>
+      </uiText>
+      <uiText key="Diagnose_Name9016">
+         <text xml:lang="de-DEV">Ausführungszeit</text>
+         <text xml:lang="en-DEV">Execution time</text>
+      </uiText>
+      <uiText key="Diagnose_Description9017">
+         <text xml:lang="de-DEV">Sensor Takt</text>
+         <text xml:lang="en-DEV">Cycle time</text>
+      </uiText>
+      <uiText key="Diagnose_Name9017">
+         <text xml:lang="de-DEV">Sensor Takt</text>
+         <text xml:lang="en-DEV">Cycle time</text>
+      </uiText>
+   </module>
+</resources>

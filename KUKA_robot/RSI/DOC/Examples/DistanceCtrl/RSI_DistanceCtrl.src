@@ -1,0 +1,55 @@
+&ACCESS RVP
+&REL 2
+&PARAM TEMPLATE = C:\KRC\Roboter\Template\vorgabe
+&PARAM EDITMASK = *
+DEF RSI_DistanceCtrl( )
+; =============================================
+; 
+; RSI EXAMPLE: Distance Crtl
+; Move on a LIN path with superimposed corrections
+; Deviation from programmed path is controlled with
+; a analog input $ANIN[1]
+; 
+; =============================================
+
+; Declaration of KRL variables
+DECL INT ret	; Return value for RSI commands
+DECL INT CONTID	; ContainerID
+
+;FOLD INI
+  ;FOLD BASISTECH INI
+    GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+    INTERRUPT ON 3 
+    BAS (#INITMOV,0 )
+  ;ENDFOLD (BASISTECH INI)
+  ;FOLD USER INI
+    ;Make your modifications here
+
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+
+; Move to start position
+PTP {A1 0, A2 -90, A3 90, A4 0, A5 90, A6 0}
+$BASE=$POS_ACT
+
+; Create signal processing
+ret=RSI_CREATE("RSI_DistanceCtrl.rsi")
+IF (ret <> RSIOK) THEN
+  HALT
+ENDIF
+
+; Start signal processing in relative correction mode
+ret=RSI_ON(#RELATIVE)
+IF (ret <> RSIOK) THEN
+  HALT
+ENDIF
+
+LIN_REL {Y 100}
+
+; Turn off RSI 
+ret=RSI_OFF()
+IF (ret <> RSIOK) THEN
+  HALT
+ENDIF
+
+END

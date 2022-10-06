@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RSI xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/RSI.xsd">
+	<Interface>
+		<MemSize>500000</MemSize>
+	</Interface>
+	<ALog>
+	    <Enabled>false</Enabled>
+		<MQueueSize>100</MQueueSize>
+		<FileSize>100000</FileSize>
+		<LogLevel>NoLogging</LogLevel>
+		<ErrorHistory>true</ErrorHistory>
+	</ALog>
+	<NetDependency>
+      <NetConfig>
+      </NetConfig>
+   </NetDependency>
+</RSI>

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="pl" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} Przekroczona dopuszczalna korekcja całkowita: następuje zatrzymanie RSI</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} Korekcja poza dopuszczalnym zakresem: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>Przepływ sygnału ({0}): Obiekt {1} zgłasza błąd {2}</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>Wymagany reset korekcji</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>Błąd wewnętrzny RSI</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>RSI nie może ustawić wyjść z powodu ochrony użytkownika</text>
+    </message>
+    <message key="M_29006" number="29006">
+      <text>RSI: Przekroczenie czasu obliczenia sygnału {0} usec</text>
+    </message>
+  </module>
+</resources>

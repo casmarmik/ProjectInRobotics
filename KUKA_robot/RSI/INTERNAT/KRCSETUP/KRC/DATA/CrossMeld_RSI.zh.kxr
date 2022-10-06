@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="zh" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} 超出了所允许的总修正： RSI 被暂停</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} 修正值位于允许的范围之外： {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>信号流 ({0}): 对象 {1} 提供错误 {2}</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>需要修正复位</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>RSI 内部错误</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>由于操作人员防护装置， RSI 不可设置输出端</text>
+    </message>
+    <message key="M_29006" number="29006">
+      <text>RSI： 信号计算超时 {0} 毫秒</text>
+    </message>
+  </module>
+</resources>

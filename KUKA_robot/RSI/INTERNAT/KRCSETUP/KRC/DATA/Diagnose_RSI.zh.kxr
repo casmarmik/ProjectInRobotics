@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="zh" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="Diagnose">
+    <uiText key="Diagnose_Name9001">
+      <text>机器人传感器界面</text>
+    </uiText>
+    <uiText key="Diagnose_Description9001">
+      <text>机器人传感器接口诊断</text>
+    </uiText>
+    <uiText key="Diagnose_Name9004">
+      <text>状态</text>
+    </uiText>
+    <uiText key="Diagnose_Description9004">
+      <text>信号处理状态</text>
+    </uiText>
+    <uiText key="Diagnose_Value9004_0">
+      <text>未激活</text>
+    </uiText>
+    <uiText key="Diagnose_Value9004_1">
+      <text>激活 (IPO)</text>
+    </uiText>
+    <uiText key="Diagnose_Value9004_2">
+      <text>激活 (IPO_FAST)</text>
+    </uiText>
+    <uiText key="Diagnose_Name9005">
+      <text>计数器</text>
+    </uiText>
+    <uiText key="Diagnose_Description9005">
+      <text>信号处理循环计数器</text>
+    </uiText>
+    <uiText key="Diagnose_Name9006">
+      <text>执行时间（最小）</text>
+    </uiText>
+    <uiText key="Diagnose_Description9006">
+      <text>最小执行时间</text>
+    </uiText>
+    <uiText key="Diagnose_Name9007">
+      <text>执行时间（最大）</text>
+    </uiText>
+    <uiText key="Diagnose_Description9007">
+      <text>最大执行时间</text>
+    </uiText>
+    <uiText key="Diagnose_Name9008">
+      <text>执行时间（平均值）</text>
+    </uiText>
+    <uiText key="Diagnose_Description9008">
+      <text>平均执行时间</text>
+    </uiText>
+    <uiText key="Diagnose_Name9009">
+      <text>通讯循环</text>
+    </uiText>
+    <uiText key="Diagnose_Description9009">
+      <text>通讯启动时起的通讯循环数量</text>
+    </uiText>
+    <uiText key="Diagnose_Name9010">
+      <text>总丢失</text>
+    </uiText>
+    <uiText key="Diagnose_Description9010">
+      <text>总丢失的包</text>
+    </uiText>
+    <uiText key="Diagnose_Name9011">
+      <text>连接质量</text>
+    </uiText>
+    <uiText key="Diagnose_Description9011">
+      <text>上 5 秒连接质量</text>
+    </uiText>
+    <uiText key="Diagnose_Name9012">
+      <text>最大关联丢失</text>
+    </uiText>
+    <uiText key="Diagnose_Description9012">
+      <text>相继包丢失的最大数量</text>
+    </uiText>
+    <uiText key="Diagnose_Name9013">
+      <text>计数器对象</text>
+    </uiText>
+    <uiText key="Diagnose_Description9013">
+      <text>创建 RSI 对象的数量</text>
+    </uiText>
+    <uiText key="Diagnose_Name9015">
+      <text>存储器</text>
+    </uiText>
+    <uiText key="Diagnose_Description9015">
+      <text>可供用于 RSI 的存储器</text>
+    </uiText>
+    <uiText key="Diagnose_Name9016">
+      <text>执行时间</text>
+    </uiText>
+    <uiText key="Diagnose_Description9016">
+      <text>执行时间</text>
+    </uiText>
+    <uiText key="Diagnose_Name9017">
+      <text>脉冲传感器</text>
+    </uiText>
+    <uiText key="Diagnose_Description9017">
+      <text>脉冲传感器</text>
+    </uiText>
+  </module>
+</resources>

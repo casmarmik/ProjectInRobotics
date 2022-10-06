@@ -1,0 +1,52 @@
+&ACCESS RVP
+&REL 7
+&PARAM DISKPATH = KRC:\R1\Program\RSI
+&PARAM TEMPLATE = C:\KRC\Roboter\Template\vorgabe
+&PARAM EDITMASK = *
+DEF RSI_SigTransformation( )
+; =============================================
+; 
+; RSI EXAMPLE: Transformation of coordinates
+; Simulate a sensorsignal in relationship to 
+; a flange mounted sensor. Transform the SIGNAL
+; to $BASE coordinates. Show the transformed 
+; position in RSIMONITOR
+; =============================================
+
+; Declaration of KRL variables
+DECL INT CONTID	; ContainerID
+
+;FOLD INI
+  ;FOLD BASISTECH INI
+    GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+    INTERRUPT ON 3 
+    BAS (#INITMOV,0 )
+  ;ENDFOLD (BASISTECH INI)
+  ;FOLD USER INI
+    ;Make your modifications here
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+
+; Move to start position 
+PTP {A1 0, A2 -90, A3 90, A4 0, A5 90, A6 0}
+$TOOL = {X 0, Y 0, Z 100, A 90 ,B -90, C 0}
+$BASE = $NULLFRAME
+
+; Create signal processing
+IF (RSI_CREATE("RSI_SigTransformation.rsi") <> RSIOK) THEN
+  HALT
+ENDIF
+
+; Start signal processing
+IF (RSI_ON() <> RSIOK) THEN
+  HALT
+ENDIF
+
+wait sec 0.012
+
+; Turn off RSI 
+IF (RSI_OFF() <> RSIOK) THEN
+  HALT
+ENDIF
+
+END

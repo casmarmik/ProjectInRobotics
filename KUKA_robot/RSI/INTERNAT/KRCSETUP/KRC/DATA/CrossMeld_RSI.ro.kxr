@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="ro" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} Corecţie generală permisă depăşită: RSI se opreşte</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>Corecţie {0} în afara domeniul permis: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>Flux semnal ({0}): Obiectul {1} produce eroarea {2}</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>Necesară resetarea corecţiei</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>Eroare internă RSI</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>RSI nu poate seta ieşirile din cauza protecţiei utilizatorului</text>
+    </message>
+  </module>
+</resources>

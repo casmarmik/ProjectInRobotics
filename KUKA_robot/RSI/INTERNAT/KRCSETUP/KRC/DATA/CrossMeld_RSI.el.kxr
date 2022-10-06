@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources xml:lang="el" xmlns="http://www.kuka.com/schemas/kxr/2009">
+  <module name="CrossMeld">
+    <message key="M_29000" number="29000">
+      <text>{0} Υπέρβαση της επιτρεπόμενης συνολικής διόρθωσης: Το RSI σταματά</text>
+    </message>
+    <message key="M_29001" number="29001">
+      <text>{0} Διόρθωση εκτός της επιτρεπόμενης περιοχής: {1}</text>
+    </message>
+    <message key="M_29002" number="29002">
+      <text>Ροή σήματος ({0}): Το αντικείμενο {1} δίνει σφάλμα {2}</text>
+    </message>
+    <message key="M_29003" number="29003">
+      <text>Απαιτείται μηδενισμός διόρθωσης</text>
+    </message>
+    <message key="M_29004" number="29004">
+      <text>Εσωτερικό σφάλμα RSI</text>
+    </message>
+    <message key="M_29005" number="29005">
+      <text>Το RSI δεν μπορεί να ορίσει εξόδους λόγω της προστασίας χειριστή</text>
+    </message>
+  </module>
+</resources>
