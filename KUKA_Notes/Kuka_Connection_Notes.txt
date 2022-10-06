@@ -1,0 +1,5 @@
+Kuka robot IP - 172.31.1.147
+
+
+kukauser
+68kuka1secpw59
