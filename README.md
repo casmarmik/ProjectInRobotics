@@ -10,3 +10,13 @@ And then call a service when you want to save a point cloud:
 ```
 rosservice call /pointcloud_to_pcd
 ```
+
+
+To run the point cloud processing program first install pcl_ros
+```
+sudo apt install ros-noetic-pcl-ros
+```
+Then run
+```
+rosrun pointnet pointnet
+```

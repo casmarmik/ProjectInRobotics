@@ -13,8 +13,12 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   pcl_ros
+  pcl_conversions
   tf2_ros
 )
+
+find_package(PCL 1.5 REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -108,7 +112,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES pointnet
- CATKIN_DEPENDS roscpp rospy std_msgs
+ CATKIN_DEPENDS roscpp rospy std_msgs pcl_ros pcl_conversions
  DEPENDS system_lib
 )
 
@@ -159,6 +163,8 @@ add_dependencies(pointcloud_to_pcd ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+  Eigen3::Eigen
 )
 
 target_link_libraries(pointcloud_to_pcd
