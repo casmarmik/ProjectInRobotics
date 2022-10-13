@@ -12,12 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf2_ros
-  moveit_core
-  moveit_ros_planning
   moveit_ros_planning_interface
-  moveit_ros_perception
-  rviz_visual_tools
-  moveit_visual_tools
   pluginlib
 )
 
@@ -113,8 +108,6 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  #INCLUDE_DIRS include
   CATKIN_DEPENDS
-  moveit_core
-  moveit_visual_tools
   moveit_ros_planning_interface
   roscpp rospy
   std_msgs
