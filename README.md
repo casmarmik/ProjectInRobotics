@@ -1,3 +1,8 @@
+Install openni-launch and openni-camera
+```
+sudo apt install ros-noetic-openni-camera
+sudo apt install ros-noetic-openni-launch
+```
 To start gathering feed from camera first start a roscore then run:
 ```
 roslaunch openni_launch openni.launch

@@ -108,7 +108,7 @@ int main(int argc, char** argv)
   pointnet::PointNet pn(nh);
 
   // Load point cloud from file
-  std::string filepath = "/home/marcus/pir/ros_ws/src/pointnet/data/backwall.pcd";
+  std::string filepath = "src/project_in_robotics/pointnet/data/backwall.pcd";
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud(new pcl::PointCloud<pcl::PointNormal>);
   pcl::io::loadPCDFile(filepath, *cloud);
 
@@ -136,6 +136,10 @@ int main(int argc, char** argv)
 
   // Find largest plane to remove table top
   // findLargestPlane(cloud, cloud);
+
+  // TODO
+  // Link to pose estimation: https://pcl.readthedocs.io/projects/tutorials/en/pcl-1.11.0/alignment_prerejective.html
+  // Need to get point cloud of objects that we want to find
 
   // Convert cloud for visualization
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
