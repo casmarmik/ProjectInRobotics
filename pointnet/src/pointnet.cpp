@@ -140,6 +140,7 @@ int main(int argc, char** argv)
   // TODO
   // Link to pose estimation: https://pcl.readthedocs.io/projects/tutorials/en/pcl-1.11.0/alignment_prerejective.html
   // Need to get point cloud of objects that we want to find
+  // Convert stl to point cloud https://github.com/isl-org/Open3D/issues/867
 
   // Convert cloud for visualization
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
