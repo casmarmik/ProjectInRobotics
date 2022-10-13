@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
-<robot name="kuka_workcell" xmlns:xacro="http://ros.org/wiki/xacro">
-    <!-- UR5 macro -->
-    <xacro:include filename="$(find kuka_kr6_support)/urdf/kr6r700sixx.xacro" />
+<robot name="kuka_kr6r700sixx" xmlns:xacro="http://ros.org/wiki/xacro">
+    <!-- kuka macro -->
+    <xacro:include filename="$(find kuka_simulation)/config/gazebo_kuka_kr6r700sixx.urdf" />
   
     <link name="world"/>
 
