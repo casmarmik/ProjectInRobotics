@@ -25,3 +25,6 @@ Then run
 ```
 rosrun pointnet pointnet
 ```
+
+This migth be useful for finding the trasnformation between the robot and the camera
+https://github.com/opencv/opencv/blob/b5a9a6793b3622b01fe6c7b025f85074fec99491/modules/calib3d/test/test_calibration_hand_eye.cpp#L145
