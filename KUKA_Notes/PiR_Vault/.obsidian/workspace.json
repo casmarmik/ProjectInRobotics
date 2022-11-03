@@ -66,9 +66,37 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "641953b7ace844ee",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Diagram-files.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "88868b19ef618d53",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          },
+          {
+            "id": "66606be558ba9c8c",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 7
       }
     ],
     "direction": "vertical"
@@ -134,7 +162,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "xml-files.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -151,7 +178,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "xml-files.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -173,9 +199,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "xml-files.md"
-              }
+              "state": {}
             }
           }
         ]
@@ -185,14 +209,17 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "00e56766cebaaf92",
+  "active": "66606be558ba9c8c",
   "lastOpenFiles": [
-    "xml-files.md",
+    "Computer and KUKA Robot.md",
+    "RSI-files.md",
+    "File acces com-con.md",
+    "Communication com-con.md",
     "RSI Interface.md",
     "KUKA Robot controller(con).md",
-    "Communication com-con.md",
+    "Diagram-files.md",
+    "xml-files.md",
     "WorkVisual.md",
-    "File acces com-con.md",
     "Computer(com).md"
   ]
 }

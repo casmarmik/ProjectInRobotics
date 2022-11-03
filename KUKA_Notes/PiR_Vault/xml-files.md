@@ -8,8 +8,9 @@ Xml-files at there most basic form can look like this:
     <code>
 <body/>
 ```
+This is all that is needed for sending a xml-file since it is send as this text encoded.
 
-Ofcourse for actual communication wiht [[KUKA Robot controller(con)|con]], looks different, containing relevant data set up in a proper way for working [[Communication com-con|communication]] such as this:
+Ofcourse for actual communication with [[KUKA Robot controller(con)|con]], looks different, containing relevant data set up in a proper way for working [[Communication com-con|communication]] such as this:
 ```
 
 ```

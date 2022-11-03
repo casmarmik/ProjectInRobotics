@@ -2,4 +2,4 @@ We think that the GUI software writes the xxx.rsi.xml and xxx.diagram files from
 
 In xxx.rsi, each rSIElement defines which other elements its own inputs are connected to. All rSIElements declare inputs and/or outputs
 
-Communication over Ethernet requires the exchange of [[xml-files]].
+Communication over Ethernet requires the exchange of [[xml-files]]. Furthermore [[RSI-files]] and [[Diagram-files]] are needed on the con.
