@@ -1,0 +1,3 @@
+The controller can be used with a pendent, and to some degree by [[File acces com-con|accessing]] the files on the controller.
+
+Control of the robots movements can also be accomplished by running prgrams with the pendent and through that program and the [[RSI Interface]] let the [[Computer(com)|com]] direct the robot live as if it was a sensor. This requires [[Communication com-con|communication]], exchanging [[xml-files]] with pre-specified information located in the RSI_EthernetConfic.xml file.
