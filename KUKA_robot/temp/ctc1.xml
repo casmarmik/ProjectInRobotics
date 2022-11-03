@@ -1,0 +1,22 @@
+<ROOT>
+	<CONFIG>
+	  <IP_NUMBER>192.168.1.102</IP_NUMBER>   <!-- IP-number of the external socket -->
+	  <PORT>49152</PORT>                   <!-- Port-number of the external socket -->      
+	  <SENTYPE>ImFree</SENTYPE>        <!-- The name of your system send in <Sen Type="" > -->     
+	  <ONLYSEND>TRUE</ONLYSEND>       <!-- TRUE means the client don't expect answers. Do not send anything to robot -->
+	</CONFIG>
+	<!-- RSI Data: TYPE=  "BOOL", "STRING", "LONG", "DOUBLE" -->
+	<!-- INDX= "INTERNAL" switch on internal read values. Needed by DEF_... -->
+	<!-- INDX= "nmb" Input/Output index of RSI-Object / Maximum of RSI Channels: 64  -->   
+	<!-- HOLDON="1", set this output index of RSI Object to the last value  -->   
+	<!-- DEF_Delay count the late packages and send it back to server  -->
+	<!-- DEF_Tech: .T = advance .C = main run / .T1 advance set function generator 1 -->
+   
+	<SEND>
+		<ELEMENTS>
+			<ELEMENT TAG="DEF_RIst" TYPE="DOUBLE" INDX="INTERNAL" />
+		</ELEMENTS>
+	</SEND>
+	<RECEIVE>
+	</RECEIVE>
+</ROOT>

@@ -2,7 +2,7 @@
    <CONFIG>
       <IP_NUMBER>192.168.1.102</IP_NUMBER>   <!-- IP-number of the external socket -->
       <PORT>49152</PORT>                   <!-- Port-number of the external socket -->      
-      <SENTYPE>dataFromPC</SENTYPE>        <!-- The name of your system send in <Sen Type="" > -->     
+      <SENTYPE>ImFree</SENTYPE>        <!-- The name of your system send in <Sen Type="" > -->     
       <ONLYSEND>TRUE</ONLYSEND>       <!-- TRUE means the client don't expect answers. Do not send anything to robot -->
    </CONFIG>
    <!-- RSI Data: TYPE=  "BOOL", "STRING", "LONG", "DOUBLE" -->
@@ -13,7 +13,15 @@
    <!-- DEF_Tech: .T = advance .C = main run / .T1 advance set function generator 1 -->
    
    <SEND>
+      <ELEMENTS>
+         <ELEMENT TAG="DEF_RIst" TYPE="DOUBLE" INDX="INTERNAL" />
+         <ELEMENT TAG="DEF_RSol" TYPE="DOUBLE" INDX="INTERNAL" />
+         <ELEMENT TAG="DEF_Delay" TYPE="LONG" INDX="INTERNAL" />
+         <ELEMENT TAG="DEF_Tech.C1" TYPE="DOUBLE" INDX="INTERNAL" />
+      </ELEMENTS>
    </SEND>
    <RECEIVE>
+		<ELEMENTS>
+		</ELEMENTS>
    </RECEIVE>
 </ROOT>
