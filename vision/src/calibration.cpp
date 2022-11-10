@@ -31,7 +31,7 @@ void calibrate()
       cv::Mat coord;
       while (getline(ss,temp,','))
       {
-        coord.push_back(std::stod(temp));
+        coord.push_back(std::stof(temp));
       }
       coords.push_back(coord);
     }
@@ -45,18 +45,18 @@ void calibrate()
   for (unsigned int i = 0; i < nPoses; i++)
   {
     cv::Mat temp;
-    temp.push_back(coords[i].at<double>(0));
-    temp.push_back(coords[i].at<double>(1));
-    temp.push_back(coords[i].at<double>(2));
+    temp.push_back(coords[i].at<float>(0));
+    temp.push_back(coords[i].at<float>(1));
+    temp.push_back(coords[i].at<float>(2));
     t_base2gripper.push_back(temp);
     cv::Mat euler;
-    euler.push_back(coords[i].at<double>(3));
-    euler.push_back(coords[i].at<double>(4));
-    euler.push_back(coords[i].at<double>(5));
+    euler.push_back(coords[i].at<float>(3));
+    euler.push_back(coords[i].at<float>(4));
+    euler.push_back(coords[i].at<float>(5));
     R_base2gripper.push_back(euler);
   }
 
-  double squareSize = 0.0204;
+  float squareSize = 0.0204;
   cv::Size boardSize(10,7);
   std::vector<cv::Mat> corners(nPoses);
   std::vector<std::vector<cv::Point3f>> Q;
@@ -89,7 +89,6 @@ void calibrate()
   cv::Vec<float, 5> k(0, 0, 0, 0, 0); // distortion coefficients
 
   std::vector<cv::Mat> rvecs, tvecs;
-  std::vector<double> stdIntrinsics, stdExtrinsics, perViewErrors;
   int flags = cv::CALIB_FIX_ASPECT_RATIO + cv::CALIB_FIX_K3 +
               cv::CALIB_ZERO_TANGENT_DIST + cv::CALIB_FIX_PRINCIPAL_POINT;
   cv::Size frameSize(640, 480);
@@ -101,12 +100,28 @@ void calibrate()
   cv::Mat rvec,tvec;
   cv::solvePnPRansac(Q[4], corners[4], K, k, rvec, tvec);
 
+  cv::Mat r_vec = rvec;
+  cv::Mat t_vec = tvec;
 
   std::cout << "rvec:\n" << rvec << std::endl;
   std::cout << "tvec:\n" << tvec << std::endl;
 
-  cv::imshow("chessboard detection", imgs[4]);
-  cv::waitKey(0);
+  // cv::imshow("chessboard detection", imgs[4]);
+  // cv::waitKey(0);
+
+  cv::Mat R_cam2base_est, t_cam2base_est;
+
+
+  cv::Mat R_b2g = R_base2gripper[4];
+  cv::Mat t_b2g = t_base2gripper[4];
+
+  std::cout << "R_base2gripper:\n" << R_b2g << std::endl;
+  std::cout << "t_base2gripper:\n" << t_b2g << std::endl;
+
+  calibrateHandEye(R_b2g, t_b2g, r_vec, t_vec, R_cam2base_est, t_cam2base_est, cv::HandEyeCalibrationMethod::CALIB_HAND_EYE_ANDREFF);
+
+  std::cout << "R_cam2base_est:\n" << R_cam2base_est << std::endl;
+  std::cout << "t_cam2base_est:\n" << t_cam2base_est << std::endl;
 
 }
 
