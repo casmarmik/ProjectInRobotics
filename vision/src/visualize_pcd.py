@@ -14,7 +14,7 @@ bounding_box_points = list(itertools.product(*bounds))  # create limit points
 bounding_box = o3d.geometry.AxisAlignedBoundingBox.create_from_points(
 o3d.utility.Vector3dVector(bounding_box_points))  # create bounding box object
 pcd = pcd.crop(bounding_box)
-plane_model, inliers = pcd.segment_plane(distance_threshold=0.007, ransac_n=3, num_iterations=1000)
+plane_model, inliers = pcd.segment_plane(distance_threshold=0.01, ransac_n=3, num_iterations=1000)
 # pcd.estimate_normals()
 # pcd.orient_normals_towards_camera_location()
 out_arr = np.asarray(pcd.points)  
@@ -25,7 +25,7 @@ print("inliers: " + str(len(inliers)))
 
 #figure out how to do spacial filtering - maybe just look at z-value and if it is above a threshold, then remove the point
 
-o3d.visualization.draw([outliers_pcd])
+o3d.visualization.draw([pcd])
 
 # fig = plt.figure()
 # ax = fig.add_subplot(111, projection='3d')
