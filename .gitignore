@@ -3,3 +3,4 @@ build
 devel
 .vscode
 object_classification
+model/

@@ -13,7 +13,7 @@ For the example, use the TestServer located in the DOC folder extracted from the
 On the controller, run the RSI_Ethernet program located in R1/Program on the controller.
 Make sure it gets to the RSI_MOVECORR() command before you can actually read anything on the TestServer interface on your PC
 
-We think that the GUI software writes the xxx.rsi.xml and xxx.diagram files from user input, and the generates the xxx.rsi file which is loaded in software
+We think that the GUI software writes the xxx.rsi.xml and xxx.diagram files from user input, and the generates the xxx.rsi file which is loaded in software (correct)
 
 In xxx.rsi, each rSIElement defines which other elements its own inputs are connected to. All rSIElements declare inputs and/or outputs
 
