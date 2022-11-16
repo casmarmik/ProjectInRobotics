@@ -45,14 +45,15 @@ void calibrate()
   for (unsigned int i = 0; i < nPoses; i++)
   {
     cv::Mat temp;
-    temp.push_back(coords[i].at<float>(0));
-    temp.push_back(coords[i].at<float>(1));
-    temp.push_back(coords[i].at<float>(2));
+    temp.push_back(coords[i].at<float>(0)/1000.0);
+    temp.push_back(coords[i].at<float>(1)/1000.0);
+    temp.push_back(coords[i].at<float>(2)/1000.0);
     t_base2gripper.push_back(temp);
     cv::Mat euler;
     euler.push_back(coords[i].at<float>(3));
     euler.push_back(coords[i].at<float>(4));
     euler.push_back(coords[i].at<float>(5));
+    cv::Rodrigues(euler,euler);
     R_base2gripper.push_back(euler);
   }
 
@@ -80,6 +81,7 @@ void calibrate()
       Q.push_back(objp);
     }
 
+    // std::cout << i << std::endl;
     // drawChessboardCorners(imgs[i], boardSize, cv::Mat(corners[i]), found);
     // cv::imshow("chessboard detection", imgs[i]);
     // cv::waitKey(0);
@@ -93,35 +95,58 @@ void calibrate()
               cv::CALIB_ZERO_TANGENT_DIST + cv::CALIB_FIX_PRINCIPAL_POINT;
   cv::Size frameSize(640, 480);
 
+  
+  // std::vector<std::vector<cv::Point3f>> Q_good;
+  // std::vector<cv::Mat> corners_good;
+  // std::vector<cv::Mat> R_base2gripper_good, t_base2gripper_good;
+  // for (size_t i = 0; i < nPoses; i++)
+  // {
+  //   if (i == 0 || i == 1 || i == 8 || i == 9)
+  //   {
+  //     Q_good.push_back(Q[i]);
+  //     corners_good.push_back(corners[i]);
+  //     R_base2gripper_good.push_back(R_base2gripper[i]);
+  //     t_base2gripper_good.push_back(t_base2gripper[i]);
+  //   }
+  // }
+  
+
   float error = cv::calibrateCamera(Q, corners, frameSize, K, k, rvecs, tvecs, flags);
 
-  // std::cout << "Reprojection error = " << error << "\nK =\n" << K << "\nk=\n" << k << std::endl;
+  std::cout << "Reprojection error = " << error << "\nK =\n" << K << "\nk=\n" << k << std::endl;
 
-  cv::Mat rvec,tvec;
-  cv::solvePnPRansac(Q[4], corners[4], K, k, rvec, tvec);
+  std::vector<cv::Mat> R_t2c,t_t2c;
 
-  cv::Mat r_vec = rvec;
-  cv::Mat t_vec = tvec;
-
-  std::cout << "rvec:\n" << rvec << std::endl;
-  std::cout << "tvec:\n" << tvec << std::endl;
-
+  for (int i = 0; i < Q.size(); i++)
+  {
+    cv::Mat R_temp, t_temp;
+    cv::solvePnPRansac(Q[i], corners[i], K, k, R_temp, t_temp);
+    cv::Rodrigues(R_temp,R_temp);
+    R_t2c.push_back(R_temp);
+    t_t2c.push_back(t_temp);
+  }
+  
   // cv::imshow("chessboard detection", imgs[4]);
   // cv::waitKey(0);
 
-  cv::Mat R_cam2base_est, t_cam2base_est;
+  cv::Mat R_cam2base_est = cv::Mat::eye(3,3,CV_32F);
+  R_cam2base_est.at<float>(1,1) = -1;
+  R_cam2base_est.at<float>(2,2) = -1;
+  cv::Mat t_cam2base_est;
+  t_cam2base_est.push_back(-0.6);
+  t_cam2base_est.push_back(0.6);
+  t_cam2base_est.push_back(-0.8);
 
+  std::cout << "R_base2gripper:\n" << R_base2gripper[0] << std::endl;
+  std::cout << "t_base2gripper:\n" << t_base2gripper[0] << std::endl;
+  std::cout << "R_t2c:\n" << R_t2c[0] << std::endl;
+  std::cout << "t_t2c:\n" << t_t2c[0] << std::endl;
 
-  cv::Mat R_b2g = R_base2gripper[4];
-  cv::Mat t_b2g = t_base2gripper[4];
-
-  std::cout << "R_base2gripper:\n" << R_b2g << std::endl;
-  std::cout << "t_base2gripper:\n" << t_b2g << std::endl;
-
-  calibrateHandEye(R_b2g, t_b2g, r_vec, t_vec, R_cam2base_est, t_cam2base_est, cv::HandEyeCalibrationMethod::CALIB_HAND_EYE_ANDREFF);
+  calibrateHandEye(R_base2gripper, t_base2gripper, R_t2c, t_t2c, R_cam2base_est, t_cam2base_est, cv::HandEyeCalibrationMethod::CALIB_HAND_EYE_DANIILIDIS);
 
   std::cout << "R_cam2base_est:\n" << R_cam2base_est << std::endl;
-  std::cout << "t_cam2base_est:\n" << t_cam2base_est << std::endl;
+  std::cout << "R_cam2base_est.t:\n" << R_cam2base_est.t() << std::endl;
+  std::cout << "t_cam2base_est:\n" << -R_cam2base_est.t() * t_cam2base_est << std::endl;
 
 }
 
