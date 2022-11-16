@@ -19,7 +19,8 @@
    </SEND>
    <RECEIVE>
 		<ELEMENTS>
-			<ELEMENT TAG="DIOut" TYPE="BOOL" INDX="1" HOLDON="1" />
+			<ELEMENT TAG="Gripper" TYPE="LONG" INDX="1" HOLDON="1" />
+			<ELEMENT TAG="StopFlag" TYPE="LONG" INDX="2" HOLDON="1" />
 		</ELEMENTS>
    </RECEIVE>
 </ROOT>
