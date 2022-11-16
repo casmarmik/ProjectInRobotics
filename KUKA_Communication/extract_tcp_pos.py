@@ -1,8 +1,9 @@
-from pickle import FALSE
 import socket
 import threading
 import time
+import math
 from xml.etree import ElementTree as ET
+from scipy.spatial.transform import Rotation as R
 
 TEST_XML = """
 <Rob Type="KUKA">
@@ -21,19 +22,16 @@ class TCPSocket:
         self.thread = threading.Thread(target=self.read_thread)
 
         self.tcp_pose = None
-        self.collect_tcp = FALSE
+        self.collect_tcp = False
 
     def connect(self):
+        self.socket.bind((self.host, self.port))
         self.thread.start()
         self.tcp_pose = [0,0,0,0,0,0]
-        return
-        self.socket.bind((self.host, self.port))
-        
 
     def disconnect(self):
         self.running = False
         self.thread.join()
-        return
         self.socket.close()
 
     def collect_tcp_pose(self):
@@ -41,31 +39,52 @@ class TCPSocket:
         # Wait for TCP position to be collected
         while self.collect_tcp == False:
             time.sleep(0.1)
-        
-        return self.tcp_pose
+
+        f = open("vision/data/calibration/tcp.txt", "a")
+        f.write(f"{self.tcp_pose[0]},{self.tcp_pose[1]},{self.tcp_pose[2]},{self.tcp_pose[3]},{self.tcp_pose[4]},{self.tcp_pose[5]}\n")
+        f.close()
 
     def read_thread(self):
         self.running = True
         while self.running:
-            
-            # Parse xml file
-            xml = ET.XML(TEST_XML)
-            children = xml.getchildren()
+            xml_encoded, _ = self.socket.recvfrom(1024)
 
-            # Find correct child and get tcp coordinates
-            for i in range(len(children)):
-                if children[i].tag == "RIst" and self.collect_tcp:
-                    for i in range(len(self.tcp_pose)):
-                        self.tcp_pose[i] = children[i].items()[i][1]
+            if self.collect_tcp:
+                # Parse xml data
+                xml_decoded = xml_encoded.decode('utf-8')
+                xml = ET.XML(xml_decoded)
+                children = xml.getchildren()
+
+                # Find correct child and get tcp coordinates
+                for i in range(len(children)):
+                    if children[i].tag == "RIst":
+                        for j in range(len(self.tcp_pose)):
+                            self.tcp_pose[j] = float(children[i].items()[j][1])
+
+                        # Convert from euler angles to rotation vector
+                        rot = R.from_euler("ZYX", [math.radians(self.tcp_pose[3]), math.radians(self.tcp_pose[4]), math.radians(self.tcp_pose[5])])
+                        rotvec = rot.as_rotvec()
+                        self.tcp_pose[3] = rotvec[0]
+                        self.tcp_pose[4] = rotvec[1]
+                        self.tcp_pose[5] = rotvec[2]
+
                         print(self.tcp_pose)
-                    self.collect_tcp = False
-            continue
-            xml_encoded, addr = self.socket.recvfrom(1024)
-            xml_decoded = xml_encoded.decode('utf-8')
-            print(xml_decoded)
+                        self.collect_tcp = False
+                        break # No need to loop through the other children
+
 
 if __name__ == '__main__':
-    socket = TCPSocket()
-    socket.connect()
-    time.sleep(10)
-    socket.disconnect()
+    # Setup socket
+    s = TCPSocket()
+    s.connect()
+    running = True
+    while running:
+        command = input("Type e to exit or c to capture tcp position: ")
+        if command == 'e':
+            break
+        elif command == 'c':
+            s.collect_tcp_pose()
+        else:
+            print("unknown input please retry!")
+
+    s.disconnect()
