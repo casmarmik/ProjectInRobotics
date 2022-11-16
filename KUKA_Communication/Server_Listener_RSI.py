@@ -5,7 +5,7 @@
 
 
 import socket
-from IPython.display import clear_output, display
+#from IPython.display import clear_output, display
 
 
 # In[2]:
@@ -23,8 +23,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #s, port = find_free_port(s_)
 #print("Port: " + str(port))
 
-HOST = "127.0.0.1"#"192.168.1.100"
-PORT = 4434 #49152
+HOST = "192.168.1.102" #"127.0.0.1"
+PORT = 49152 #4434
 UDP_INFO = (HOST, PORT)
 s.bind(UDP_INFO)
 #print(s.getsockname()[1])
@@ -32,7 +32,7 @@ s.bind(UDP_INFO)
 while True:
     xml_encoded, addr = s.recvfrom(1024)
     xml_decoded = xml_encoded.decode('utf-8')
-    clear_output(wait=True)
+    #clear_output(wait=True)
     print(xml_decoded)
 s.shutdown
    
