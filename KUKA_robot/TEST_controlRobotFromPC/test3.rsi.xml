@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSIObjects xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/RSIContext.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <RSIObject ObjType="ETHERNET" ObjTypeID="64" ObjID="ETHERNET1">
+    <Parameters>
+      <Parameter Name="ConfigFile" ParamID="1" ParamValue="test3.xml" IsRuntime="false" />
+      <Parameter Name="Timeout" ParamID="1" ParamValue="100" />
+      <Parameter Name="Flag" ParamID="4" ParamValue="1" />
+      <Parameter Name="Precision" ParamID="8" ParamValue="1" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="MAP2SEN_PREA" ObjTypeID="17" ObjID="MAP2SEN_PREA1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="2" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Index" ParamID="1" ParamValue="1" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="MAP2SEN_PREA" ObjTypeID="17" ObjID="MAP2SEN_PREA2">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="3" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Index" ParamID="1" ParamValue="2" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="MAP2SEN_PREA" ObjTypeID="17" ObjID="MAP2SEN_PREA3">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="5" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Index" ParamID="1" ParamValue="4" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="MAP2SEN_PREA" ObjTypeID="17" ObjID="MAP2SEN_PREA4">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="4" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Index" ParamID="1" ParamValue="3" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="MAP2SEN_PREA" ObjTypeID="17" ObjID="MAP2SEN_PREA5">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="6" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Index" ParamID="1" ParamValue="5" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="MAP2SEN_PREA" ObjTypeID="17" ObjID="MAP2SEN_PREA6">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="7" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Index" ParamID="1" ParamValue="6" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="MAP2SEN_PINT" ObjTypeID="16" ObjID="MAP2SEN_PINT1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="1" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Index" ParamID="1" ParamValue="1" />
+    </Parameters>
+  </RSIObject>
+</RSIObjects>
