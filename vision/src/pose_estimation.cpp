@@ -27,6 +27,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/centroid.h>
+#include <pcl/io/ply_io.h>
 
 // Inspired by lecture 6
 inline float dist_sq(const pcl::Histogram<153> &query, const pcl::Histogram<153> &target)
@@ -135,12 +136,13 @@ pcl::PointNormal findCentroid(pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud
   return centroidPoint;
 }
 
-Eigen::Matrix3f findOrientation(pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud, pcl::PointNormal centroidPN)
+Eigen::Matrix3f findOrientation(pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud,  Eigen::Vector4f centroidPN)
 {
   Eigen::Vector4f centroid;
-  centroid[0] = centroidPN.x;
-  centroid[1] = centroidPN.y;
-  centroid[2] = centroidPN.z;
+  centroid = centroidPN;
+  // centroid[0] = centroidPN.g;
+  // centroid[1] = centroidPN.y;
+  // centroid[2] = centroidPN.z;
   centroid[3] = 1;
   Eigen::Matrix3f covariance_matrix;
 
@@ -163,27 +165,31 @@ void executePoseEstimation(bool visualize)
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_p(new pcl::PointCloud<pcl::PointNormal>);
 
   // Read in the cloud data
-  pcl::PCDReader reader;
-  reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/plug.pcd", *cloud);	 // Target
-  reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/plug.pcd", *cloud_template); // Template
+  pcl::PCDReader pcd_reader;
+  pcl::PLYReader ply_reader;
+  pcd_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/screw.pcd", *cloud);	 // Target
+  ply_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/screw.ply", *cloud_template); // Template
 
   for (size_t i = 0; i < cloud_template->size(); i++)
   {
-    cloud_template->at(i).x = cloud_template->at(i).x/100.0;
-    cloud_template->at(i).y = cloud_template->at(i).y/100.0;
-    cloud_template->at(i).z = cloud_template->at(i).z/100.0;
+    cloud_template->at(i).x = cloud_template->at(i).x/1000.0;
+    cloud_template->at(i).y = cloud_template->at(i).y/1000.0;
+    cloud_template->at(i).z = cloud_template->at(i).z/1000.0;
   }
 
-  // Create the filtering object
-  pcl::VoxelGrid<pcl::PointNormal> sor;
-  float leaf_size = 0.004;
-  sor.setInputCloud(cloud);
-  sor.setLeafSize(leaf_size, leaf_size, leaf_size);
-  sor.filter(*cloud);
+   std::cout << "PointCloud before voxel grid: " << cloud->width * cloud->height
+            << " data points (" << pcl::getFieldsList(*cloud) << ")." << std::endl;
 
-  sor.setInputCloud(cloud_template);
-  sor.setLeafSize(leaf_size, leaf_size, leaf_size);
-  sor.filter(*cloud_template);
+  // Create the filtering object
+  pcl::VoxelGrid<pcl::PointNormal> vox;
+  float leaf_size = 0.002;
+  vox.setInputCloud(cloud);
+  vox.setLeafSize(leaf_size, leaf_size, leaf_size);
+  vox.filter(*cloud);
+
+  vox.setInputCloud(cloud_template);
+  vox.setLeafSize(leaf_size, leaf_size, leaf_size);
+  vox.filter(*cloud_template);
 
   Eigen::Matrix4f transform_1 = Eigen::Matrix4f::Identity();
   transform_1(1,1) = -1;
@@ -217,6 +223,18 @@ void executePoseEstimation(bool visualize)
 
   // // Find largest plane to remove table top
   findLargestPlane(cloud_filtered, cloud_p);
+
+  std::cout << "PointCloud before StatisticalOutlierRemoval: " << cloud_filtered->width * cloud_filtered->height
+            << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl; 
+  // Create the filtering object
+  pcl::StatisticalOutlierRemoval<pcl::PointNormal> sor;
+  sor.setInputCloud(cloud_filtered);
+  sor.setMeanK(5);
+  sor.setStddevMulThresh(1.0);
+  sor.filter(*cloud_filtered);
+
+  std::cout << "PointCloud after StatisticalOutlierRemoval: " << cloud_filtered->width * cloud_filtered->height
+            << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl; 
 
   // // Compute surface normals
   pcl::NormalEstimation<pcl::PointNormal, pcl::PointNormal> ne;
@@ -355,7 +373,7 @@ void executePoseEstimation(bool visualize)
 
   // Set ICP parameters
   const size_t iter2 = 50;
-  const float thressq2 = 0.00255 * 0.00255;
+  const float thressq2 = 0.002 * 0.002;
 
   // Start ICP
   Eigen::Matrix4f pose2 = Eigen::Matrix4f::Identity();
@@ -388,7 +406,7 @@ void executePoseEstimation(bool visualize)
     est.estimateRigidTransformation(*object_alignedICP, idxobj, *cloud_filtered, idxscn, T);
 
     // 3) Apply pose
-    pcl::transformPointCloud(*cloud_filtered, *object_alignedICP, T);
+    pcl::transformPointCloud(*object_alignedICP, *object_alignedICP, T);
 
     // 4) Update result
     pose2 = T * pose2;
@@ -415,22 +433,22 @@ void executePoseEstimation(bool visualize)
   std::cout << "Inliers: " << inliers << "/" << object_alignedICP->size() << std::endl;
   std::cout << "RMSE: " << rmse << std::endl;
 
-  // // Find centroid of square
-  // pcl::PointNormal centroidPoint;
-  // centroidPoint = findCentroid(object_alignedICP);
-  // // Find centroid of template
-  // pcl::PointNormal centroidPointTemplate;
-  // centroidPointTemplate = findCentroid(cloud_object);
+  // Find centroid of square
+  Eigen::Vector4f centroidPoint;
+  pcl::compute3DCentroid(*object_alignedICP, centroidPoint);
+  // Find centroid of template
+  Eigen::Vector4f centroidPointTemplate;
+  pcl::compute3DCentroid(*cloud_template, centroidPointTemplate);
   // // find orientation of template and object
-  // Eigen::Matrix3f orientationTemplate, orientationObject;
-  // orientationTemplate = findOrientation(cloud_object, centroidPointTemplate);
-  // orientationObject = findOrientation(object_alignedICP, centroidPoint);
+  Eigen::Matrix3f orientationTemplate, orientationObject;
+  orientationTemplate = findOrientation(cloud_template, centroidPointTemplate);
+  orientationObject = findOrientation(object_alignedICP, centroidPoint);
 
-  // // Find axis angle representation difference  Inspired by https://math.stackexchange.com/questions/2113634/comparing-two-rotation-matrices
-  // Eigen::Matrix3f rot = orientationTemplate.transpose() * orientationObject;
+  // Find axis angle representation difference  Inspired by https://math.stackexchange.com/questions/2113634/comparing-two-rotation-matrices
+  Eigen::Matrix3f rot = orientationTemplate.transpose() * orientationObject;
 
-  // double angle = std::acos((rot.trace() - 1) / 2) * 180 / 3.1415926536;
-  // std::cout << "ANGLE " << angle << std::endl;
+  double angle = std::acos((rot.trace() - 1) / 2) * 180 / 3.1415926536;
+  std::cout << "ANGLE " << angle << std::endl;
 
   // visualize template on target square
   if (visualize)
@@ -439,6 +457,10 @@ void executePoseEstimation(bool visualize)
     v.addPointCloud<pcl::PointNormal>(object_aligned, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_aligned, 0, 255, 0), "object_aligned");
     v.addPointCloud<pcl::PointNormal>(object_alignedICP, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_alignedICP, 0, 0, 255), "object_alignedICP");
     v.addPointCloud<pcl::PointNormal>(cloud_filtered, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(cloud_filtered, 255, 0, 0), "scene");
+    v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_aligned");
+    v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_alignedICP");
+    v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "scene");
+    
     v.spin();
   }
   
