@@ -364,7 +364,6 @@ void executePoseEstimation(bool visualize)
   std::cout << "Starting ICP..." << std::endl;
   for (std::size_t i = 0; i < iter2; ++i)
   {
-    std::cout << i << std::endl;
     // 1) Find closest points
     std::vector<std::vector<int>> idx;
     std::vector<std::vector<float>> distsq;
@@ -374,23 +373,19 @@ void executePoseEstimation(bool visualize)
     // Threshold and create indices for object/scene and compute RMSE
     std::vector<int> idxobj;
     std::vector<int> idxscn;
-    // std::cout << "idx.size() " << idx.size() << std::endl;
     for (size_t j = 0; j < idx.size(); ++j)
     {
-      // std::cout << "distsq[j][0] " << distsq[j][0] << std::endl;
       if (distsq[j][0] <= thressq2)
       {
         idxobj.push_back(j);
         idxscn.push_back(idx[j][0]);
       }
     }
-    std::cout << "idxscn " << idxscn.size() << std::endl;
 
     // 2) Estimate transformation
     Eigen::Matrix4f T;
     pcl::registration::TransformationEstimationSVD<pcl::PointNormal, pcl::PointNormal> est;
     est.estimateRigidTransformation(*object_alignedICP, idxobj, *cloud_filtered, idxscn, T);
-    std::cout << "T\n" << T << std::endl;
 
     // 3) Apply pose
     pcl::transformPointCloud(*cloud_filtered, *object_alignedICP, T);
