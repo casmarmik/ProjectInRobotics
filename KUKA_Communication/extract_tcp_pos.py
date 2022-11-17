@@ -5,13 +5,6 @@ import math
 from xml.etree import ElementTree as ET
 from scipy.spatial.transform import Rotation as R
 
-TEST_XML = """
-<Rob Type="KUKA">
-    <RIst X="390.0" Y="0.0" Z="670.0" A="-180.0" B="0.0" C="180.0"/>
-</Rob>
-""".strip()
-print(TEST_XML)
-
 class TCPSocket:
     def __init__(self, host="192.168.1.102", port=49152):
         self.host = host
@@ -40,6 +33,9 @@ class TCPSocket:
         while self.collect_tcp == False:
             time.sleep(0.1)
 
+        if self.tcp_pose[0] == self.tcp_pose[1] == self.tcp_pose[2] == self.tcp_pose[3] == self.tcp_pose[4] == self.tcp_pose[5] == 0:
+            return
+            
         f = open("vision/data/calibration/tcp.txt", "a")
         f.write(f"{self.tcp_pose[0]},{self.tcp_pose[1]},{self.tcp_pose[2]},{self.tcp_pose[3]},{self.tcp_pose[4]},{self.tcp_pose[5]}\n")
         f.close()
@@ -47,30 +43,58 @@ class TCPSocket:
     def read_thread(self):
         self.running = True
         while self.running:
-            xml_encoded, _ = self.socket.recvfrom(1024)
+            xml_encoded, addr = self.socket.recvfrom(1024)
+            # Parse xml data
+            xml_decoded = xml_encoded.decode('utf-8')
+            #print(xml_decoded)
+            xml = ET.fromstring(str(xml_decoded))
 
             if self.collect_tcp:
-                # Parse xml data
-                xml_decoded = xml_encoded.decode('utf-8')
-                xml = ET.XML(xml_decoded)
-                children = xml.getchildren()
+                rist = xml.find("RIst")
+                for i in range(len(self.tcp_pose)):
+                    self.tcp_pose[i] = float(rist.items()[i][1])
 
-                # Find correct child and get tcp coordinates
-                for i in range(len(children)):
-                    if children[i].tag == "RIst":
-                        for j in range(len(self.tcp_pose)):
-                            self.tcp_pose[j] = float(children[i].items()[j][1])
+                # Convert from euler angles to rotation vector
+                rot = R.from_euler("ZYX", [math.radians(self.tcp_pose[3]), math.radians(self.tcp_pose[4]), math.radians(self.tcp_pose[5])])
+                rotvec = rot.as_rotvec()
+                self.tcp_pose[3] = rotvec[0]
+                self.tcp_pose[4] = rotvec[1]
+                self.tcp_pose[5] = rotvec[2]
 
-                        # Convert from euler angles to rotation vector
-                        rot = R.from_euler("ZYX", [math.radians(self.tcp_pose[3]), math.radians(self.tcp_pose[4]), math.radians(self.tcp_pose[5])])
-                        rotvec = rot.as_rotvec()
-                        self.tcp_pose[3] = rotvec[0]
-                        self.tcp_pose[4] = rotvec[1]
-                        self.tcp_pose[5] = rotvec[2]
+                print(self.tcp_pose)
+                self.collect_tcp = False
+                    
+            sIPOC = xml.find('IPOC').text
+            xmlMsg = self.buildXMLString(0,sIPOC)
+            self.socket.sendto(xmlMsg.encode('utf-8'), addr)
+        
+        # Send stop flag to robot
+        xml_encoded, addr = self.socket.recvfrom(1024)
+        xml_decoded = xml_encoded.decode('utf-8')
+        xml = ET.XML(xml_decoded)
+        sIPOC = xml.find('IPOC').text
+        xmlMsg = self.buildXMLString(1,sIPOC)
+        self.socket.sendto(xmlMsg.encode('utf-8'), addr)
 
-                        print(self.tcp_pose)
-                        self.collect_tcp = False
-                        break # No need to loop through the other children
+    def buildXMLString(self,StopFlag,curIPOC):
+        xml_ = []
+        xml_.append('<Sen Type="ImFree">')
+        xml_.append('<Gripper>')
+        xml_.append("1")
+        xml_.append('</Gripper>')
+        xml_.append('<StopFlag>')
+        xml_.append(str(StopFlag))
+        xml_.append('</StopFlag>')
+        xml_.append('<IPOC>')
+        xml_.append(curIPOC)
+        xml_.append('</IPOC>')
+        xml_.append('</Sen>')
+
+        xml = ""
+        for x in xml_:
+            xml += x
+
+        return xml
 
 
 if __name__ == '__main__':
