@@ -15,12 +15,13 @@
    <SEND>
       <ELEMENTS>
          <ELEMENT TAG="DEF_RIst" TYPE="DOUBLE" INDX="INTERNAL" />
+		 <ELEMENT TAG="StopFlag" TYPE="DOUBLE" INDX="1" />
       </ELEMENTS>
    </SEND>
    <RECEIVE>
 		<ELEMENTS>
-			<ELEMENT TAG="Gripper" TYPE="LONG" INDX="1" HOLDON="1" />
-			<ELEMENT TAG="StopFlag" TYPE="LONG" INDX="2" HOLDON="1" />
+			<ELEMENT TAG="Gripper" TYPE="DOUBLE" INDX="1" HOLDON="1" />
+			<ELEMENT TAG="StopFlag" TYPE="DOUBLE" INDX="2" HOLDON="1" />
 		</ELEMENTS>
    </RECEIVE>
 </ROOT>

@@ -3,7 +3,12 @@
   <rSIObjects>
     <rSIElement name="ETHERNET1" objType="ETHERNET" objTypeID="64" maxInputs="64" maxOutputs="64">
       <rSIInPorts>
-        <rSIInPort name="In1" mandatory="false" />
+        <rSIInPort name="In1" mandatory="false">
+          <source>
+            <rSIOutPortMoniker name="//SEN_PREA1/Out1" />
+          </source>
+        </rSIInPort>
+        <rSIInPort name="In2" mandatory="false" />
       </rSIInPorts>
       <rSIOutPorts>
         <rSIOutPort name="Out1" />
@@ -17,9 +22,9 @@
         <rSIParameter name="Precision" value="1" paramType="System.Int32" minVal="1" maxVal="32" isEnum="false" index="8" />
       </rSIParameters>
     </rSIElement>
-    <rSIElement name="MAP2SEN_PINT1" objType="MAP2SEN_PINT" objTypeID="16" maxInputs="0" maxOutputs="0">
+    <rSIElement name="MAP2SEN_PREA1" objType="MAP2SEN_PREA" objTypeID="17" maxInputs="0" maxOutputs="0">
       <rSIInPorts>
-        <rSIInPort name="In1" signalType="Int">
+        <rSIInPort name="In1">
           <source>
             <rSIOutPortMoniker name="//ETHERNET1/Out1" />
           </source>
@@ -29,16 +34,24 @@
         <rSIParameter name="Index" value="1" paramType="System.Int32" minVal="1" maxVal="20" isEnum="false" index="1" />
       </rSIParameters>
     </rSIElement>
-    <rSIElement name="MAP2SEN_PINT2" objType="MAP2SEN_PINT" objTypeID="16" maxInputs="0" maxOutputs="0">
+    <rSIElement name="MAP2SEN_PREA2" objType="MAP2SEN_PREA" objTypeID="17" maxInputs="0" maxOutputs="0">
       <rSIInPorts>
-        <rSIInPort name="In1" signalType="Int">
+        <rSIInPort name="In1">
           <source>
             <rSIOutPortMoniker name="//ETHERNET1/Out2" />
           </source>
         </rSIInPort>
       </rSIInPorts>
       <rSIParameters>
-        <rSIParameter name="Index" value="1" paramType="System.Int32" minVal="1" maxVal="20" isEnum="false" index="1" />
+        <rSIParameter name="Index" value="2" paramType="System.Int32" minVal="1" maxVal="20" isEnum="false" index="1" />
+      </rSIParameters>
+    </rSIElement>
+    <rSIElement name="SEN_PREA1" objType="SEN_PREA" objTypeID="58" maxInputs="0" maxOutputs="0">
+      <rSIOutPorts>
+        <rSIOutPort name="Out1" />
+      </rSIOutPorts>
+      <rSIParameters>
+        <rSIParameter name="Index" value="2" paramType="System.Int32" minVal="1" maxVal="20" isEnum="false" index="1" />
       </rSIParameters>
     </rSIElement>
   </rSIObjects>
