@@ -3,7 +3,7 @@ import open3d as o3d
 import matplotlib.pyplot as plt
 import itertools
 
-pcd = o3d.io.read_point_cloud("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/p1.pcd")
+pcd = o3d.io.read_point_cloud("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/plug.pcd")
 pcd.remove_non_finite_points()
 out_arr = np.asarray(pcd.points)  
 print("points before down sampling: " + str(len(out_arr)))
@@ -26,6 +26,7 @@ print("inliers: " + str(len(inliers)))
 #figure out how to do spacial filtering - maybe just look at z-value and if it is above a threshold, then remove the point
 
 o3d.visualization.draw([pcd])
+# o3d.io.write_point_cloud("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/plug_segmented.pcd", pcd)
 
 # fig = plt.figure()
 # ax = fig.add_subplot(111, projection='3d')
