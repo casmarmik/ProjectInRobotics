@@ -28,16 +28,6 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/centroid.h>
 
-#include <rw/rw.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/core/Ptr.hpp>
-#include <rw/models/Device.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/loaders/WorkCellLoader.hpp>
-#include <rw/trajectory/LinearInterpolator.hpp>
-#include <rw/kinematics/MovableFrame.hpp>
-#include <rw/loaders.hpp>
-
 // Inspired by lecture 6
 inline float dist_sq(const pcl::Histogram<153> &query, const pcl::Histogram<153> &target)
 {
@@ -107,7 +97,7 @@ void findLargestPlane(pcl::PointCloud<pcl::PointNormal>::Ptr &input_cloud, pcl::
   extract.setNegative(true);
   extract.filter(*output_cloud);
   input_cloud.swap(output_cloud);
-  std::cout << "PointCloud representing the planar component: " << output_cloud->width * output_cloud->height << " data points removed." << std::endl;
+  std::cout << "PointCloud representing the planar component: " << output_cloud->width * output_cloud->height << " data points remaining." << std::endl;
 }
 
 pcl::PointNormal findCentroid(pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud)
@@ -165,77 +155,40 @@ Eigen::Matrix3f findOrientation(pcl::PointCloud<pcl::PointNormal>::Ptr input_clo
   return eigen_vectors;
 }
 
-// Inspired by https://www.embeddedrelated.com/showcode/311.php
-double AWGN_generator()
-{ /* Generates additive white Gaussian Noise samples with zero mean and a standard deviation of 1. */
-
-  double temp1;
-  double temp2;
-  double result;
-  int p;
-  double PI = 3.1415926536;
-  p = 1;
-
-  while (p > 0)
-  {
-    temp2 = (rand() / ((double)RAND_MAX)); /*  rand() function generates an
-                                                   integer between 0 and  RAND_MAX,
-                                                   which is defined in stdlib.h.
-                                               */
-
-    if (temp2 == 0)
-    { // temp2 is >= (RAND_MAX / 2)
-      p = 1;
-    } // end if
-    else
-    { // temp2 is < (RAND_MAX / 2)
-      p = -1;
-    } // end else
-
-  } // end while()
-
-  temp1 = cos((2.0 * (double)PI) * rand() / ((double)RAND_MAX));
-  result = sqrt(-2.0 * log(temp2)) * temp1;
-
-  return result; // return the generated random sample to the caller
-}
-
-void addNormalNoise(pcl::PointCloud<pcl::PointNormal>::Ptr &cloud, double std_dev)
+void executePoseEstimation(bool visualize)
 {
-  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_temp(new pcl::PointCloud<pcl::PointNormal>);
-  pcl::PointNormal noisePoint;
-  for (size_t i = 0; i < cloud->size(); i++)
-  {
-    noisePoint.x = cloud->at(i).x + std_dev * AWGN_generator();
-    noisePoint.y = cloud->at(i).y + std_dev * AWGN_generator();
-    noisePoint.z = cloud->at(i).z + std_dev * AWGN_generator();
-    cloud_temp->push_back(noisePoint);
-  }
-  cloud.swap(cloud_temp);
-}
-
-void executeSquare(bool visualize)
-{
-  rw::common::TimerUtil::sleepMs(300);
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud(new pcl::PointCloud<pcl::PointNormal>);
-  pcl::PointCloud<pcl::PointNormal>::Ptr cloud2(new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_template(new pcl::PointCloud<pcl::PointNormal>);
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointNormal>);
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_p(new pcl::PointCloud<pcl::PointNormal>);
 
   // Read in the cloud data
   pcl::PCDReader reader;
-  reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/p1.pcd", *cloud);	 // Template
-  reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/p1.pcd", *cloud2); // Target
+  reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/plug.pcd", *cloud);	 // Target
+  reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/plug.pcd", *cloud_template); // Template
+
+  for (size_t i = 0; i < cloud_template->size(); i++)
+  {
+    cloud_template->at(i).x = cloud_template->at(i).x/100.0;
+    cloud_template->at(i).y = cloud_template->at(i).y/100.0;
+    cloud_template->at(i).z = cloud_template->at(i).z/100.0;
+  }
 
   // Create the filtering object
   pcl::VoxelGrid<pcl::PointNormal> sor;
+  float leaf_size = 0.004;
   sor.setInputCloud(cloud);
-  sor.setLeafSize(0.01f, 0.01f, 0.01f);
+  sor.setLeafSize(leaf_size, leaf_size, leaf_size);
   sor.filter(*cloud);
 
-  sor.setInputCloud(cloud2);
-  sor.setLeafSize(0.01f, 0.01f, 0.01f);
-  sor.filter(*cloud2);
+  sor.setInputCloud(cloud_template);
+  sor.setLeafSize(leaf_size, leaf_size, leaf_size);
+  sor.filter(*cloud_template);
+
+  Eigen::Matrix4f transform_1 = Eigen::Matrix4f::Identity();
+  transform_1(1,1) = -1;
+  transform_1(2,2) = -1; 
+  pcl::transformPointCloud (*cloud, *cloud, transform_1);
 
   // get coordinates to help spacial filtering
   pcl::PointNormal minPt, maxPt;
@@ -250,74 +203,65 @@ void executeSquare(bool visualize)
   std::cout << "PointCloud before filtering: " << cloud->width * cloud->height
             << " data points (" << pcl::getFieldsList(*cloud) << ")." << std::endl;
 
+
   // Filter away points not in pick location
-  spatialFilter(cloud, cloud_filtered, -1.45, -1.0, "z");
-  spatialFilter(cloud_filtered, cloud_filtered, -0.5, 0.15, "y");
-
-  spatialFilter(cloud2, cloud2, -1.45, -1.0, "z");
-  spatialFilter(cloud2, cloud2, -0.5, 0.15, "y");
-
-  // Add noise for test
-  addNormalNoise(cloud2, noise);
+  spatialFilter(cloud, cloud_filtered, -0.9, -0.757, "z");
+  spatialFilter(cloud_filtered, cloud_filtered, -0.136, 1, "y");
+  spatialFilter(cloud_filtered, cloud_filtered, -0.15, 0.2, "x");
 
   // make point cloud of only object
-  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_object(cloud_filtered);
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_object(cloud_template);
 
   std::cout << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height
             << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl;
 
-  // Find largest plane to remove table top
-  findLargestPlane(cloud_object, cloud_p);
+  // // Find largest plane to remove table top
+  findLargestPlane(cloud_filtered, cloud_p);
 
-  // write cloud with squre for visualization
-  pcl::PCDWriter writer;
-  writer.write<pcl::PointNormal>("cloud_filtered.pcd", *cloud_filtered, false);
-  writer.write<pcl::PointNormal>("scene.pcd", *cloud, false);
-  writer.write<pcl::PointNormal>("cloud_object.pcd", *cloud_object, false);
-
-  // Compute surface normals
+  // // Compute surface normals
   pcl::NormalEstimation<pcl::PointNormal, pcl::PointNormal> ne;
   ne.setKSearch(10);
-  // estimate normals for object (square)
-  ne.setInputCloud(cloud_object);
-  ne.compute(*cloud_object);
-  // estimate normals for scene
+  // estimate normals for template
+  ne.setInputCloud(cloud_template);
+  ne.compute(*cloud_template);
+  // estimate normals for filtered scene
   ne.setInputCloud(cloud_filtered);
   ne.compute(*cloud_filtered);
 
-  // Compute shape features
-  pcl::PointCloud<pcl::Histogram<153>>::Ptr object_features(new pcl::PointCloud<pcl::Histogram<153>>);
+  // // Compute shape features
+  pcl::PointCloud<pcl::Histogram<153>>::Ptr template_features(new pcl::PointCloud<pcl::Histogram<153>>);
   pcl::PointCloud<pcl::Histogram<153>>::Ptr scene_features(new pcl::PointCloud<pcl::Histogram<153>>);
 
   pcl::SpinImageEstimation<pcl::PointNormal, pcl::PointNormal, pcl::Histogram<153>> spin;
   spin.setRadiusSearch(0.05);
 
-  spin.setInputCloud(cloud_object);
-  spin.setInputNormals(cloud_object);
-  spin.compute(*object_features);
+  spin.setInputCloud(cloud_template);
+  spin.setInputNormals(cloud_template);
+  spin.compute(*template_features);
 
   spin.setInputCloud(cloud_filtered);
   spin.setInputNormals(cloud_filtered);
   spin.compute(*scene_features);
 
-  // Find feature matches
-  std::cout << "Found: " << object_features->size() << " object features" << std::endl;
-  pcl::Correspondences corr(object_features->size());
-  for (size_t i = 0; i < object_features->size(); ++i)
+  // // Find feature matches
+  std::cout << "Found: " << template_features->size() << " template features" << std::endl;
+  std::cout << "Found: " << scene_features->size() << " scene features" << std::endl;
+  pcl::Correspondences corr(template_features->size());
+  for (size_t i = 0; i < template_features->size(); ++i)
   {
     corr[i].index_query = i;
-    nearest_feature(object_features->points[i], *scene_features, corr[i].index_match, corr[i].distance);
+    nearest_feature(template_features->points[i], *scene_features, corr[i].index_match, corr[i].distance);
   }
 
-  // Create a k-d tree for pick location
+  // // Create a k-d tree for pick location
   pcl::search::KdTree<pcl::PointNormal> tree;
-  tree.setInputCloud(cloud2);
+  tree.setInputCloud(cloud_filtered);
 
-  // Set RANSAC parameters
+  // // Set RANSAC parameters
   const size_t iter = 5000;
-  const float thressq = 0.0225 * 0.0225;
+  const float thressq = 0.0025 * 0.0025;
 
-  // Start RANSAC
+  // // Start RANSAC
   Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
   pcl::PointCloud<pcl::PointNormal>::Ptr object_aligned(new pcl::PointCloud<pcl::PointNormal>);
   float penalty = FLT_MAX;
@@ -338,10 +282,10 @@ void executeSquare(bool visualize)
     // Estimate transformation
     Eigen::Matrix4f T;
     pcl::registration::TransformationEstimationSVD<pcl::PointNormal, pcl::PointNormal> est;
-    est.estimateRigidTransformation(*cloud_object, idxobj, *cloud2, idxscn, T);
+    est.estimateRigidTransformation(*cloud_template, idxobj, *cloud_filtered, idxscn, T);
 
     // Apply pose
-    pcl::transformPointCloud(*cloud_object, *object_aligned, T);
+    pcl::transformPointCloud(*cloud_template, *object_aligned, T);
 
     // Validate
     std::vector<std::vector<int>> idx;
@@ -362,7 +306,7 @@ void executeSquare(bool visualize)
     rmse = sqrtf(rmse / inliers);
 
     // Evaluate a penalty function
-    const float outlier_rate = 1.0f - float(inliers) / cloud_object->size();
+    const float outlier_rate = 1.0f - float(inliers) / cloud_filtered->size();
     // const float penaltyi = rmse;
     const float penaltyi = outlier_rate;
 
@@ -372,17 +316,17 @@ void executeSquare(bool visualize)
       std::cout << "\t--> Got a new model with " << inliers << " inliers!" << std::endl;
       penalty = penaltyi;
       pose = T;
-      if (inliers == object_features->size())
+      if (inliers >= scene_features->size()*0.97)
       {
-        std::cout << "All points for model are inliers. Ending RANSAC" << std::endl;
+        std::cout << inliers << " points out of " << scene_features->size() << " points for model are inliers. Ending RANSAC" << std::endl;
         break;
       }
     }
   }
 
-  pcl::transformPointCloud(*cloud_object, *object_aligned, pose);
+  pcl::transformPointCloud(*cloud_template, *object_aligned, pose);
 
-  // Compute inliers and RMSE
+  // // Compute inliers and RMSE
   std::vector<std::vector<int>> idx;
   std::vector<std::vector<float>> distsq;
   tree.nearestKSearch(*object_aligned, std::vector<int>(), 1, idx, distsq);
@@ -390,6 +334,7 @@ void executeSquare(bool visualize)
   float rmse = 0;
   for (size_t i = 0; i < distsq.size(); ++i)
   {
+    // std::cout << "distsq[j][0] " << distsq[i][0] << std::endl;
     if (distsq[i][0] <= thressq)
     {
       ++inliers, rmse += distsq[i][0];
@@ -397,20 +342,20 @@ void executeSquare(bool visualize)
   }
   rmse = sqrtf(rmse / inliers);
 
-  // Print pose
+  // // Print pose
   std::cout << "Got the following pose:" << std::endl
             << pose << std::endl;
-  std::cout << "Inliers: " << inliers << "/" << cloud_object->size() << std::endl;
+  std::cout << "Inliers: " << inliers << "/" << scene_features->size() << std::endl;
   std::cout << "RMSE: " << rmse << std::endl;
 
   // Inspired by lecture 6
   // Create a k-d tree for scene ICP
   pcl::search::KdTree<pcl::PointNormal> treeICP;
-  treeICP.setInputCloud(cloud2);
+  treeICP.setInputCloud(cloud_filtered);
 
   // Set ICP parameters
   const size_t iter2 = 50;
-  const float thressq2 = 0.0255 * 0.0225;
+  const float thressq2 = 0.00255 * 0.00255;
 
   // Start ICP
   Eigen::Matrix4f pose2 = Eigen::Matrix4f::Identity();
@@ -419,30 +364,36 @@ void executeSquare(bool visualize)
   std::cout << "Starting ICP..." << std::endl;
   for (std::size_t i = 0; i < iter2; ++i)
   {
+    std::cout << i << std::endl;
     // 1) Find closest points
     std::vector<std::vector<int>> idx;
     std::vector<std::vector<float>> distsq;
     treeICP.nearestKSearch(*object_alignedICP, std::vector<int>(), 1, idx, distsq);
 
+
     // Threshold and create indices for object/scene and compute RMSE
     std::vector<int> idxobj;
     std::vector<int> idxscn;
+    // std::cout << "idx.size() " << idx.size() << std::endl;
     for (size_t j = 0; j < idx.size(); ++j)
     {
+      // std::cout << "distsq[j][0] " << distsq[j][0] << std::endl;
       if (distsq[j][0] <= thressq2)
       {
         idxobj.push_back(j);
         idxscn.push_back(idx[j][0]);
       }
     }
+    std::cout << "idxscn " << idxscn.size() << std::endl;
 
     // 2) Estimate transformation
     Eigen::Matrix4f T;
     pcl::registration::TransformationEstimationSVD<pcl::PointNormal, pcl::PointNormal> est;
-    est.estimateRigidTransformation(*object_alignedICP, idxobj, *cloud2, idxscn, T);
+    est.estimateRigidTransformation(*object_alignedICP, idxobj, *cloud_filtered, idxscn, T);
+    std::cout << "T\n" << T << std::endl;
 
     // 3) Apply pose
-    pcl::transformPointCloud(*object_alignedICP, *object_alignedICP, T);
+    pcl::transformPointCloud(*cloud_filtered, *object_alignedICP, T);
 
     // 4) Update result
     pose2 = T * pose2;
@@ -469,69 +420,30 @@ void executeSquare(bool visualize)
   std::cout << "Inliers: " << inliers << "/" << object_alignedICP->size() << std::endl;
   std::cout << "RMSE: " << rmse << std::endl;
 
-  // Find centroid of square
-  pcl::PointNormal centroidPoint;
-  centroidPoint = findCentroid(object_alignedICP);
-  // Find centroid of template
-  pcl::PointNormal centroidPointTemplate;
-  centroidPointTemplate = findCentroid(cloud_object);
-  // find orientation of template and object
-  Eigen::Matrix3f orientationTemplate, orientationObject;
-  orientationTemplate = findOrientation(cloud_object, centroidPointTemplate);
-  orientationObject = findOrientation(object_alignedICP, centroidPoint);
+  // // Find centroid of square
+  // pcl::PointNormal centroidPoint;
+  // centroidPoint = findCentroid(object_alignedICP);
+  // // Find centroid of template
+  // pcl::PointNormal centroidPointTemplate;
+  // centroidPointTemplate = findCentroid(cloud_object);
+  // // find orientation of template and object
+  // Eigen::Matrix3f orientationTemplate, orientationObject;
+  // orientationTemplate = findOrientation(cloud_object, centroidPointTemplate);
+  // orientationObject = findOrientation(object_alignedICP, centroidPoint);
 
-  // Find axis angle representation difference  Inspired by https://math.stackexchange.com/questions/2113634/comparing-two-rotation-matrices
-  Eigen::Matrix3f rot = orientationTemplate.transpose() * orientationObject;
+  // // Find axis angle representation difference  Inspired by https://math.stackexchange.com/questions/2113634/comparing-two-rotation-matrices
+  // Eigen::Matrix3f rot = orientationTemplate.transpose() * orientationObject;
 
-  double angle = std::acos((rot.trace() - 1) / 2) * 180 / 3.1415926536;
-  std::cout << "ANGLE " << angle << std::endl;
-
-  // Save data in file
-  std::ofstream fileAng;
-  fileAng.open("testNoiseAng", std::ios_base::app);
-  fileAng << noise << ", " << angle << "\n";
-  fileAng.close();
-
-  // Load the workcell and device
-  rw::models::WorkCell::Ptr wc = rw::loaders::WorkCellLoader::Factory::load("../../Project_WorkCell_Obstacle/Scene.wc.xml");
-  rw::kinematics::Frame *cameraFrame25D = wc->findFrame("Scanner25D");
-
-  // Find moveable grapsing object
-  rw::kinematics::MovableFrame::Ptr movSquareFrame = wc->findFrame<rw::kinematics::MovableFrame>("Square");
-
-  // get the default state
-  rw::kinematics::State state = wc->getDefaultState();
-
-  // set tranformation of square in scanner frame
-  rw::math::Transform3D<> fTmf;
-  fTmf.P()[0] = centroidPoint.x;
-  fTmf.P()[1] = centroidPoint.y;
-  fTmf.P()[2] = centroidPoint.z;
-  fTmf.R() = rw::math::Rotation3D<>(1, 0, 0, 0, 1, 0, 0, 0, 1);
-
-  // get scanner frame in world frame
-  rw::math::Transform3D<> wTmf = cameraFrame25D->wTf(state);
-
-  // calculate square in world frame
-  rw::math::Transform3D<> wTf = wTmf * fTmf;
-
-  std::cout << "Calculated position: " << wTf << std::endl
-            << "Actual position: " << movSquareFrame->wTf(state) << std::endl;
-
-  std::vector<double> diff = {std::abs(wTf.P()[0] - movSquareFrame->wTf(state).P()[0]), std::abs(wTf.P()[1] - movSquareFrame->wTf(state).P()[1]), std::abs(wTf.P()[2] - movSquareFrame->wTf(state).P()[2])};
-  double diffMag = std::sqrt(std::pow(diff[0], 2) + std::pow(diff[1], 2) + std::pow(diff[2], 2));
-
-  std::ofstream file;
-  file.open("testNoisePos", std::ios_base::app);
-  file << noise << ", " << diffMag << "\n";
-  file.close();
+  // double angle = std::acos((rot.trace() - 1) / 2) * 180 / 3.1415926536;
+  // std::cout << "ANGLE " << angle << std::endl;
 
   // visualize template on target square
   if (visualize)
   {
     pcl::visualization::PCLVisualizer v("Calculated position in pick location");
-    v.addPointCloud<pcl::PointNormal>(object_alignedICP, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_alignedICP, 0, 255, 0), "object_aligned");
-    v.addPointCloud<pcl::PointNormal>(cloud2, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(cloud2, 255, 0, 0), "scene");
+    v.addPointCloud<pcl::PointNormal>(object_aligned, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_aligned, 0, 255, 0), "object_aligned");
+    v.addPointCloud<pcl::PointNormal>(object_alignedICP, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_alignedICP, 0, 0, 255), "object_alignedICP");
+    v.addPointCloud<pcl::PointNormal>(cloud_filtered, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(cloud_filtered, 255, 0, 0), "scene");
     v.spin();
   }
   
@@ -541,7 +453,7 @@ void executeSquare(bool visualize)
 int main(int argc, char **argv)
 {
   bool visualize = true;
-  executeSquare(visualize);
+  executePoseEstimation(visualize);
 
   return 0;
 }
