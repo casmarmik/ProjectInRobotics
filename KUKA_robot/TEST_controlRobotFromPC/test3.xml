@@ -14,7 +14,7 @@
    
    <SEND>
       <ELEMENTS>
-         <ELEMENT TAG="DEF_RIst" TYPE="DOUBLE" INDX="INTERNAL" />
+         <ELEMENT TAG="DEF_AIPos" TYPE="DOUBLE" INDX="INTERNAL" />
       </ELEMENTS>
    </SEND>
    <RECEIVE>

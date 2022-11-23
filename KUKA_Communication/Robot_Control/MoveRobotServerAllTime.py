@@ -21,10 +21,9 @@ class TCPSocket:
                                    [0,0,0,0,0,0],
                                    [0,0,0,0,0,0],
                                    [0,0,0,0,0,0]])
-        self.sGripper  = '0.0'
-        self.sStopFlag = '0.0'
-        self.sNoMoFlag = '1.0'
-        
+        #self.sGripper  = '0.0'
+        self.sStopFlag = '0'
+        #self.sNoMoFlag = '1.0'
         self.poseI     = 0
 
     def connect(self, timeout):
@@ -34,11 +33,11 @@ class TCPSocket:
 
     def disconnect(self):
         self.running = False
-        print("(=_0)zzZZ")
+        #print("(=_0)zzZZ")
         self.thread.join()
-        print("(=_=)zzZZ")
+        #print("(=_=)zzZZ")
         self.socket.close()
-        print(" ___")
+        #print(" ___")
         print("Shutdown complete")
 
     def buildXMLString(self, adjPoseXML):
@@ -46,9 +45,9 @@ class TCPSocket:
         xml_.append('<Sen Type="ImFree">')
 
         # Gripper control
-        xml_.append('<Gripper>')
-        xml_.append(self.sGripper)
-        xml_.append('</Gripper>')
+        #xml_.append('<Gripper>')
+        #xml_.append(self.sGripper)
+        #xml_.append('</Gripper>')
 
         # Flag for stopping robot movement or reversely allow for movement
 #        xml_.append('<noMoFlag>')
@@ -78,36 +77,32 @@ class TCPSocket:
     
     def getActualPose(self, xml):
         actPose = []
-        actPose_tag = xml.find('RIst')
-        actPose.append(float(actPose_tag.attrib['X']))
-        actPose.append(float(actPose_tag.attrib['Y']))
-        actPose.append(float(actPose_tag.attrib['Z']))
-        actPose.append(float(actPose_tag.attrib['A']))
-        actPose.append(float(actPose_tag.attrib['B']))
-        actPose.append(float(actPose_tag.attrib['C']))
+        actPose_tag = xml.find('AIPos')
+        actPose.append(float(actPose_tag.attrib['A1']))
+        actPose.append(float(actPose_tag.attrib['A2']))
+        actPose.append(float(actPose_tag.attrib['A3']))
+        actPose.append(float(actPose_tag.attrib['A4']))
+        actPose.append(float(actPose_tag.attrib['A5']))
+        actPose.append(float(actPose_tag.attrib['A6']))
 
         return actPose
 
     def setPTPPoses(self):
-        self.npPTPPoses = np.array([[0,0,0,0,0,0],
-                                    [0,0,0,0,0,0],
-                                    [0,0,0,0,0,0],
-                                    [0,0,0,0,0,0]])
+        self.npPTPPoses = np.array([[-44.5,-90.0,90.0,0.0,0.0,0.0],
+                                    [-44.5,-134.5,90.0,0.0,0.0,0.0],
+                                    [30.5,-62.3,90.0,0.0,0.0,0.0],
+                                    [14.9,-62.3,5.4,0.0,0.0,0.0]])
 
     def getPTPPoseInXML(self):
-        poseXML = []
-        tags = ['X', 'Y', 'Z', 'A', 'B', 'C']
+        poseXML = ""
+        tags = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
         pose = self.npPTPPoses[self.poseI]
-        poseXML.append('<RIst')
+        poseXML += '<Angles'
         for i in range(0, len(pose)):
-            poseXML.append(' ' + tags[i] + '="' + str(pose[i]) + '"')
-        poseXML.append('/>')
-
-        sPoseXML = ""
-        for x in poseXML:
-            sPoseXML += x
+            poseXML += ' ' + tags[i] + '="' + str(pose[i]) + '"'
+        poseXML += '/>'
         
-        return sPoseXML
+        return poseXML
     
     def comparePoses(self, errorThreshold):
         compDist = dis.euclidean(self.npPTPPoses[self.poseI], self.actPose)
@@ -118,12 +113,14 @@ class TCPSocket:
     
     def read_thread(self):
         self.running = True
+        adjPoseXML = self.getPTPPoseInXML()
+
         while self.running:
             if self.poseI >= len(self.npPTPPoses):
-                self.sStopFlag = '1.0'
+                self.sStopFlag = '1'
                 
             # Incase massages should stop
-            if self.sStopFlag == '1.0':
+            if self.sStopFlag >= '1':
                 print("[Thread]: Stopping sending messages")
                 return
             
@@ -138,23 +135,28 @@ class TCPSocket:
             #sStopFlag = xml.find('StopFlag').text
             self.sIPOC = xml.find('IPOC').text
             self.actPose = self.getActualPose(xml)
+            print("[Thread]: Actual pose: " + str(self.actPose))
+            print("[Thread]: Stop Flag: " + str(self.sStopFlag))
+            print("[Thread]: poseI: " + str(self.poseI))
             
             # Set error that is allowed between poses
             errorThreshold = 0.01
             # Compare ptp pose currently heading to with actual pose
             comp, compDist = self.comparePoses(errorThreshold)
             if comp:
-                self.poseI += 1
+                if self.poseI != len(self.npPTPPoses):
+                    self.poseI += 1
+                adjPoseXML = self.getPTPPoseInXML()
             
             # Adjust til they are within the set error threshold
-            adjPoseXML = self.getPTPPoseInXML()
+            
             adjXMLMSG = self.buildXMLString(adjPoseXML)
             self.socket.sendto(adjXMLMSG.encode('utf-8'), addr)
-            print("(0-0) {IPOC: " + self.sIPOC + "]")
-            print("(0-0) {Actual Pose: " + str(self.actPose) + "]")
-            print("(0-0) {Desired Pose: " + str(self.npPTPPose[self.poseI]) + "]")
-            print("(0-0) {Pose Reached: " + str(comp) + "]")
-            print("(0-0) {Pose nr. sending: " + str(self.poseI) + "]")
+            # print("(0-0) {IPOC: " + self.sIPOC + "]")
+            # print("(0-0) {Actual Pose: " + str(self.actPose) + "]")
+            # print("(0-0) {Desired Pose: " + str(self.npPTPPose[self.poseI]) + "]")
+            # print("(0-0) {Pose Reached: " + str(comp) + "]")
+            # print("(0-0) {Pose nr. sending: " + str(self.poseI) + "]")
 
             
         
@@ -171,42 +173,41 @@ class TCPSocket:
         
         
 if __name__ == '__main__':
+    
     # Setup socket
-    s = TCPSocket(host="localhost", port=4434)
-    print("(=-=) {Initialization proces...]")
+    s = TCPSocket()
     # Setup ptp poses
     s.setPTPPoses()
-    print("(0-=) {complete]")
     
 
     # connect socket
-    s.connect(10)
+    s.connect(60)
     print("(0-0) {Connected! Thread up and running!]")
 
     running = True
     c_com = True
     while running:
-        command = input("Press '1' to open gripper, press '2' to close gripper or press 'q' to quit: ")
+        command = input("Press 'q' to quit: ")
 
 #        if c_com == True:
 #            command = input("Press '1' to open gripper, press '2' to close gripper, press c to MOVE robot or press 'q' to quit: ")
 #        else:
 #            command = input("Press '1' to open gripper, press '2' to close gripper, press c to STOP robot or press 'q' to quit: ")
 
-        if command == '1':
-            print("Opening gripper!")
-            s.sGripper = '1.0'
+        # if command == '1':
+        #     print("Opening gripper!")
+        #     s.sGripper = '1.0'
             
-        elif command == '2':
-            print("Closing Gripper!")
-            s.sGripper = '0.0'
+        # elif command == '2':
+        #     print("Closing Gripper!")
+        #     s.sGripper = '0.0'
             
 #        elif command == 'c':
 #            c_com = s.ptpMove(c_com)
             
-        elif command == 'q':
+        if command == 'q':
             print("(=_0)>{Shutting down...]")
-            s.sStopFlag = '1.0'
+            s.sStopFlag = '1'
             break
         else:
             print("unknown input please retry!")
