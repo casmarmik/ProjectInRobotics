@@ -1,10 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-
 import socket
 import threading
-import time
 import xml.etree.ElementTree as et
 import numpy as np
 from scipy.spatial import distance as dis
@@ -49,16 +44,6 @@ class TCPSocket:
     def buildXMLString(self, adjPoseXML):
         xml_ = []
         xml_.append('<Sen Type="ImFree">')
-
-        # Gripper control
-        xml_.append('<Gripper>')
-        xml_.append(self.sGripper)
-        xml_.append('</Gripper>')
-
-        # Flag for stopping robot movement or reversely allow for movement
-        xml_.append('<noMoFlag>')
-        xml_.append(self.sNoMoFlag)
-        xml_.append('</noMoFlag>')
         
         # Flag for stopping all process and shutting down
         xml_.append('<StopFlag>')
@@ -160,54 +145,27 @@ class TCPSocket:
             print("(0-0) {Desired Pose: " + str(self.npPTPPose[self.poseI]) + "]")
             print("(0-0) {Pose Reached: " + str(comp) + "]")
             print("(0-0) {Pose nr. sending: " + str(self.poseI) + "]")
-
-            
-        
-    def ptpMove(self, move):
-        if move:
-            print("(=-=)>{Motion Active]")
-            self.noMoFlag = '0.0'
-            return False
-        else:
-            print("(=-=)>{Motion Deactive]")
-            self.noMoFlag = '1.0'
-            return True
-            
         
         
 if __name__ == '__main__':
     # Setup socket
     s = TCPSocket(host="localhost", port=4434)
-    print("(=-=)>{Initialization proces...]")
+    print("(=-=) {Initialization proces...]")
     # Setup ptp poses
     s.setPTPPoses()
-    print("(0-=)>{complete]")
+    print("(0-=) {complete]")
     
 
     # connect socket
     s.connect(10)
-    print("(0-0)>{Connected! Thread up and running!]")
+    print("(0-0) {Connected! Thread up and running!]")
 
     running = True
     c_com = True
     while running:
-        if c_com == True:
-            command = input("Press '1' to open gripper, press '2' to close gripper, press c to MOVE robot or press 'q' to quit: ")
-        else:
-            command = input("Press '1' to open gripper, press '2' to close gripper, press c to STOP robot or press 'q' to quit: ")
+        command = input("The robot is recieving poses and moves accordingly at this moment, press 'q' to quit: ")
 
-        if command == '1':
-            print("Opening gripper!")
-            s.sGripper = '1.0'
-            
-        elif command == '2':
-            print("Closing Gripper!")
-            s.sGripper = '0.0'
-            
-        elif command == 'c':
-            c_com = s.ptpMove(c_com)
-            
-        elif command == 'q':
+        if command == 'q':
             print("(=_0)>{Shutting down...]")
             s.sStopFlag = '1.0'
             break
@@ -215,7 +173,3 @@ if __name__ == '__main__':
             print("unknown input please retry!")
     
     s.disconnect()
-
-
-
-
