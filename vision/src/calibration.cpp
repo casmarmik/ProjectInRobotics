@@ -15,14 +15,14 @@ void calibrate()
   for (unsigned int i = 0; i < number_of_images; i++)
   {
     std::stringstream ss;
-    ss << "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/old_calibration/" << i << ".jpeg";
+    ss << "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/calibration/" << i << ".jpeg";
     std::string image_path = cv::samples::findFile(ss.str().c_str());
     cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
     imgs.push_back(img);
   }
 
   std::string line;
-  std::ifstream myfile("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/old_calibration/tcp_pos.txt");
+  std::ifstream myfile("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/calibration/tcp.txt");
   if (myfile.is_open())
   {
     while (getline(myfile, line))
