@@ -36,7 +36,7 @@ class TCPSocket:
         if self.tcp_pose[0] == self.tcp_pose[1] == self.tcp_pose[2] == self.tcp_pose[3] == self.tcp_pose[4] == self.tcp_pose[5] == 0:
             return
             
-        f = open("vision/data/calibration/tcp.txt", "a")
+        f = open("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/calibration/tcp.txt", "a")
         f.write(f"{self.tcp_pose[0]},{self.tcp_pose[1]},{self.tcp_pose[2]},{self.tcp_pose[3]},{self.tcp_pose[4]},{self.tcp_pose[5]}\n")
         f.close()
 

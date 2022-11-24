@@ -75,7 +75,7 @@ def image_callback(msg):
         elif target == "calibration":
             global calibration_counter
             print("saving image")
-            cv2.imwrite(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/calibration/{calibration_counter}.jpeg", cv2_img)
+            cv2.imwrite(f"/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/calibration/{calibration_counter}.jpeg", cv2_img)
             calibration_counter = calibration_counter + 1
 
         else:

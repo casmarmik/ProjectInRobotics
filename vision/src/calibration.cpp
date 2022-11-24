@@ -11,18 +11,18 @@ void calibrate()
 {
   std::vector<cv::Mat> imgs;
   std::vector<std::vector<double>> coords;
-  unsigned int number_of_images = 30;
+  unsigned int number_of_images = 10;
   for (unsigned int i = 0; i < number_of_images; i++)
   {
     std::stringstream ss;
-    ss << "/home/mads/project_in_robotics/project_in_robotics/vision/data/calibration/" << i << ".jpeg";
+    ss << "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/old_calibration/" << i << ".jpeg";
     std::string image_path = cv::samples::findFile(ss.str().c_str());
     cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
     imgs.push_back(img);
   }
 
   std::string line;
-  std::ifstream myfile("/home/mads/project_in_robotics/project_in_robotics/vision/data/calibration/tcp.txt");
+  std::ifstream myfile("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/old_calibration/tcp_pos.txt");
   if (myfile.is_open())
   {
     while (getline(myfile, line))
@@ -158,6 +158,45 @@ void calibrate()
     // std::cout << "tmp: " << -R_t2c t_temp << std::endl;
     // cv::imshow("chessboard detection", imgs[img_index[i]]);
     // cv::waitKey(0);
+
+    cv::Matx44f trans(cv::Matx44f::eye()); 
+    trans(0,3) = 0;
+    trans(1,3) = 0;
+    trans(2,3) = 0.075;// Add translation to z of tcp.
+
+    cv::Matx44f b2g(cv::Matx44f::eye());
+    b2g(0,0) = R_base2gripper[i].at<double>(0,0);
+    b2g(0,1) = R_base2gripper[i].at<double>(0,1);
+    b2g(0,2) = R_base2gripper[i].at<double>(0,2);
+    b2g(1,0) = R_base2gripper[i].at<double>(1,0);
+    b2g(1,1) = R_base2gripper[i].at<double>(1,1);
+    b2g(1,2) = R_base2gripper[i].at<double>(1,2);
+    b2g(2,0) = R_base2gripper[i].at<double>(2,0);
+    b2g(2,1) = R_base2gripper[i].at<double>(2,1);
+    b2g(2,2) = R_base2gripper[i].at<double>(2,2);
+    b2g(0,3) = t_base2gripper[i].at<double>(0);
+    b2g(1,3) = t_base2gripper[i].at<double>(1);
+    b2g(2,3) = t_base2gripper[i].at<double>(2);
+
+    std::cout << "trans before:\n" << b2g << std::endl;
+
+    b2g = b2g * trans;
+
+
+    std::cout << "trans after:\n" << b2g << std::endl;
+
+    R_base2gripper[i].at<double>(0,0) = b2g(0,0);
+    R_base2gripper[i].at<double>(0,1) = b2g(0,1);
+    R_base2gripper[i].at<double>(0,2) = b2g(0,2);
+    R_base2gripper[i].at<double>(1,0) = b2g(1,0);
+    R_base2gripper[i].at<double>(1,1) = b2g(1,1);
+    R_base2gripper[i].at<double>(1,2) = b2g(1,2);
+    R_base2gripper[i].at<double>(2,0) = b2g(2,0);
+    R_base2gripper[i].at<double>(2,1) = b2g(2,1);
+    R_base2gripper[i].at<double>(2,2) = b2g(2,2);
+    t_base2gripper[i].at<double>(0) = b2g(0,3);
+    t_base2gripper[i].at<double>(1) = b2g(1,3);
+    t_base2gripper[i].at<double>(2) = b2g(2,3);
   }
 
   // cv::imshow("chessboard detection", imgs[4]);
@@ -172,24 +211,29 @@ void calibrate()
 
   calibrateHandEye(R_base2gripper, t_base2gripper, R_t2c, t_t2c, R_cam2base_est, t_cam2base_est,
                    cv::HandEyeCalibrationMethod::CALIB_HAND_EYE_ANDREFF);
+  std::cout << "CALIB_HAND_EYE_ANDREFF" << std::endl;
   std::cout << "R_cam2base_est:\n" << R_cam2base_est << std::endl;
-  std::cout << "R_cam2base_est:\n" << t_cam2base_est << std::endl;
+  std::cout << "t_cam2base_est:\n" << t_cam2base_est << std::endl;
   calibrateHandEye(R_base2gripper, t_base2gripper, R_t2c, t_t2c, R_cam2base_est, t_cam2base_est,
                    cv::HandEyeCalibrationMethod::CALIB_HAND_EYE_DANIILIDIS);
+  std::cout << "CALIB_HAND_EYE_DANIILIDIS" << std::endl;
   std::cout << "R_cam2base_est:\n" << R_cam2base_est << std::endl;
-  std::cout << "R_cam2base_est:\n" << t_cam2base_est << std::endl;
+  std::cout << "t_cam2base_est:\n" << t_cam2base_est << std::endl;
   calibrateHandEye(R_base2gripper, t_base2gripper, R_t2c, t_t2c, R_cam2base_est, t_cam2base_est,
                    cv::HandEyeCalibrationMethod::CALIB_HAND_EYE_HORAUD);
+  std::cout << "CALIB_HAND_EYE_HORAUD" << std::endl;
   std::cout << "R_cam2base_est:\n" << R_cam2base_est << std::endl;
-  std::cout << "R_cam2base_est:\n" << t_cam2base_est << std::endl;
+  std::cout << "t_cam2base_est:\n" << t_cam2base_est << std::endl;
   calibrateHandEye(R_base2gripper, t_base2gripper, R_t2c, t_t2c, R_cam2base_est, t_cam2base_est,
                    cv::HandEyeCalibrationMethod::CALIB_HAND_EYE_PARK);
+  std::cout << "CALIB_HAND_EYE_PARK" << std::endl;
   std::cout << "R_cam2base_est:\n" << R_cam2base_est << std::endl;
-  std::cout << "R_cam2base_est:\n" << t_cam2base_est << std::endl;
+  std::cout << "t_cam2base_est:\n" << t_cam2base_est << std::endl;
   calibrateHandEye(R_base2gripper, t_base2gripper, R_t2c, t_t2c, R_cam2base_est, t_cam2base_est,
                    cv::HandEyeCalibrationMethod::CALIB_HAND_EYE_TSAI);
+  std::cout << "CALIB_HAND_EYE_TSAI" << std::endl;
   std::cout << "R_cam2base_est:\n" << R_cam2base_est << std::endl;
-  std::cout << "R_cam2base_est:\n" << t_cam2base_est << std::endl;
+  std::cout << "t_cam2base_est:\n" << t_cam2base_est << std::endl;
 }
 
 int main(int argc, char** argv)
