@@ -8,12 +8,10 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/convolution_3d.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/surface/mls.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/io/io.h>
 #include <pcl/segmentation/sac_segmentation.h>
@@ -167,8 +165,8 @@ void executePoseEstimation(bool visualize)
   // Read in the cloud data
   pcl::PCDReader pcd_reader;
   pcl::PLYReader ply_reader;
-  pcd_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/screw.pcd", *cloud);	 // Target
-  ply_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/screw.ply", *cloud_template); // Template
+  pcd_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/plug_standing.pcd", *cloud);	 // Target
+  ply_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/plug.ply", *cloud_template); // Template
 
   for (size_t i = 0; i < cloud_template->size(); i++)
   {
@@ -186,7 +184,7 @@ void executePoseEstimation(bool visualize)
   vox.setInputCloud(cloud);
   vox.setLeafSize(leaf_size, leaf_size, leaf_size);
   vox.filter(*cloud);
-
+  leaf_size = leaf_size * 0.8f;
   vox.setInputCloud(cloud_template);
   vox.setLeafSize(leaf_size, leaf_size, leaf_size);
   vox.filter(*cloud_template);
@@ -211,8 +209,8 @@ void executePoseEstimation(bool visualize)
 
 
   // Filter away points not in pick location
-  spatialFilter(cloud, cloud_filtered, -0.9, -0.757, "z");
-  spatialFilter(cloud_filtered, cloud_filtered, -0.136, 1, "y");
+  spatialFilter(cloud, cloud_filtered, -0.9, -0.589, "z");
+  spatialFilter(cloud_filtered, cloud_filtered, -0.036, 0.25, "y");
   spatialFilter(cloud_filtered, cloud_filtered, -0.15, 0.2, "x");
 
   // make point cloud of only object
@@ -277,7 +275,7 @@ void executePoseEstimation(bool visualize)
 
   // // Set RANSAC parameters
   const size_t iter = 5000;
-  const float thressq = 0.0025 * 0.0025;
+  const float thressq = 0.0015 * 0.0015;
 
   // // Start RANSAC
   Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
@@ -334,7 +332,7 @@ void executePoseEstimation(bool visualize)
       std::cout << "\t--> Got a new model with " << inliers << " inliers!" << std::endl;
       penalty = penaltyi;
       pose = T;
-      if (inliers >= scene_features->size()*0.97)
+      if (inliers >= scene_features->size()*0.9)
       {
         std::cout << inliers << " points out of " << scene_features->size() << " points for model are inliers. Ending RANSAC" << std::endl;
         break;
@@ -454,10 +452,10 @@ void executePoseEstimation(bool visualize)
   if (visualize)
   {
     pcl::visualization::PCLVisualizer v("Calculated position in pick location");
-    v.addPointCloud<pcl::PointNormal>(object_aligned, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_aligned, 0, 255, 0), "object_aligned");
+    // v.addPointCloud<pcl::PointNormal>(object_aligned, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_aligned, 0, 255, 0), "object_aligned");
     v.addPointCloud<pcl::PointNormal>(object_alignedICP, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_alignedICP, 0, 0, 255), "object_alignedICP");
     v.addPointCloud<pcl::PointNormal>(cloud_filtered, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(cloud_filtered, 255, 0, 0), "scene");
-    v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_aligned");
+    // v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_aligned");
     v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_alignedICP");
     v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "scene");
     

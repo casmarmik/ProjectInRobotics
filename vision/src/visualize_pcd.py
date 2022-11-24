@@ -3,7 +3,7 @@ import open3d as o3d
 import matplotlib.pyplot as plt
 import itertools
 
-pcd = o3d.io.read_point_cloud("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/plug.pcd")
+pcd = o3d.io.read_point_cloud("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/1669206976261120.pcd")
 pcd.remove_non_finite_points()
 out_arr = np.asarray(pcd.points)  
 print("points before down sampling: " + str(len(out_arr)))
