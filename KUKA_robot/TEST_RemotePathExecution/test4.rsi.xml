@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSIObjects xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/RSIContext.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <RSIObject ObjType="ETHERNET" ObjTypeID="64" ObjID="ETHERNET1">
+    <Parameters>
+      <Parameter Name="ConfigFile" ParamID="1" ParamValue="test4.xml" IsRuntime="false" />
+      <Parameter Name="Timeout" ParamID="1" ParamValue="100" />
+      <Parameter Name="Flag" ParamID="4" ParamValue="1" />
+      <Parameter Name="Precision" ParamID="8" ParamValue="1" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="AXISCORR" ObjTypeID="33" ObjID="AXISCORR1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="2" />
+      <Input InIdx="2" OutObjID="ETHERNET1" OutIdx="3" />
+      <Input InIdx="3" OutObjID="ETHERNET1" OutIdx="4" />
+      <Input InIdx="4" OutObjID="ETHERNET1" OutIdx="5" />
+      <Input InIdx="5" OutObjID="ETHERNET1" OutIdx="6" />
+      <Input InIdx="6" OutObjID="ETHERNET1" OutIdx="7" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="LowerLimA1" ParamID="1" ParamValue="-1000" />
+      <Parameter Name="LowerLimA2" ParamID="2" ParamValue="-1000" />
+      <Parameter Name="LowerLimA3" ParamID="3" ParamValue="-1000" />
+      <Parameter Name="LowerLimA4" ParamID="4" ParamValue="-1000" />
+      <Parameter Name="LowerLimA5" ParamID="5" ParamValue="-1000" />
+      <Parameter Name="LowerLimA6" ParamID="6" ParamValue="-1000" />
+      <Parameter Name="UpperLimA1" ParamID="13" ParamValue="1000" />
+      <Parameter Name="UpperLimA2" ParamID="14" ParamValue="1000" />
+      <Parameter Name="UpperLimA3" ParamID="15" ParamValue="1000" />
+      <Parameter Name="UpperLimA4" ParamID="16" ParamValue="1000" />
+      <Parameter Name="UpperLimA5" ParamID="17" ParamValue="1000" />
+      <Parameter Name="UpperLimA6" ParamID="18" ParamValue="1000" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="STOP" ObjTypeID="18" ObjID="STOP1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="1" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Mode" ParamID="1" ParamValue="4" />
+      <Parameter Name="Channel" ParamID="2" ParamValue="0" />
+    </Parameters>
+  </RSIObject>
+</RSIObjects>
