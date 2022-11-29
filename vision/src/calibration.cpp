@@ -11,7 +11,7 @@ void calibrate()
 {
   std::vector<cv::Mat> imgs;
   std::vector<std::vector<double>> coords;
-  unsigned int number_of_images = 10;
+  unsigned int number_of_images = 20;
   for (unsigned int i = 0; i < number_of_images; i++)
   {
     std::stringstream ss;
@@ -39,7 +39,7 @@ void calibrate()
     myfile.close();
   }
 
-  int nPoses = coords.size();
+  int nPoses = number_of_images;
 
   std::vector<cv::Mat> R_base2gripper, t_base2gripper;
 
@@ -68,11 +68,12 @@ void calibrate()
       Q.push_back(objp);
       corners.push_back(temp_corners);
       cv::Mat temp;
-      // std::cout << coords[i][0] << " " << coords[i][1] << " " << coords[i][2] << std::endl;
+      std::cout << coords[i][0] << " " << coords[i][1] << " " << coords[i][2] << std::endl;
 
       temp.push_back(coords[i][0] / 1000.0);
       temp.push_back(coords[i][1] / 1000.0);
       temp.push_back(coords[i][2] / 1000.0);
+      // std::cout << temp.at<double>(0) << " " << temp.at<double>(1) << " " << temp.at<double>(2) << std::endl;
       //
       t_base2gripper.push_back(temp);
       cv::Mat euler;
@@ -140,10 +141,13 @@ void calibrate()
   for (int i = 0; i < Q.size(); i++)
   {
     cv::Mat R_temp, t_temp;
-    cv::solvePnPRansac(cv::Mat(Q[i]), cv::Mat(corners[i]), K, k, R_temp, t_temp);
+    cv::solvePnP(cv::Mat(Q[i]), cv::Mat(corners[i]), K, k, R_temp, t_temp);
     cv::Rodrigues(R_temp, R_temp);
+    R_temp = R_temp.inv();
+    t_temp = -R_temp.inv() * t_temp;
     R_t2c.push_back(R_temp);
     t_t2c.push_back(t_temp);
+    std::cout << "t_t2c:\n" << t_temp << std::endl;
     std::vector<cv::Point3f> point_3d;
     point_3d.push_back(cv::Point3f(0.1, 0, 0));
     point_3d.push_back(cv::Point3f(0, 0.1, 0));
@@ -160,8 +164,8 @@ void calibrate()
     // cv::waitKey(0);
 
     cv::Matx44f trans(cv::Matx44f::eye()); 
-    trans(0,3) = 0;
-    trans(1,3) = 0;
+    trans(0,3) = 0.083;
+    trans(1,3) = 0.062;
     trans(2,3) = 0.075;// Add translation to z of tcp.
 
     cv::Matx44f b2g(cv::Matx44f::eye());
@@ -234,6 +238,8 @@ void calibrate()
   std::cout << "CALIB_HAND_EYE_TSAI" << std::endl;
   std::cout << "R_cam2base_est:\n" << R_cam2base_est << std::endl;
   std::cout << "t_cam2base_est:\n" << t_cam2base_est << std::endl;
+  std::cout << "R_base2cam_est:\n" << R_cam2base_est.inv() << std::endl;
+  std::cout << "t_base2cam_est:\n" << -R_cam2base_est.inv() * t_cam2base_est << std::endl;
 }
 
 int main(int argc, char** argv)
