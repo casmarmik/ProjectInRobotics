@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   message_generation
   std_msgs
+  visualization_msgs
 )
 
 find_package(PCL 1.5 REQUIRED)
@@ -159,6 +160,10 @@ add_executable(pose_estimation
   src/pose_estimation.cpp
   )
 
+add_executable(image_sim
+  src/image_sim.cpp
+  )
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -174,6 +179,8 @@ add_dependencies(pointcloud_to_pcd ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_
 add_dependencies(calibrate ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_dependencies(pose_estimation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_dependencies(image_sim ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
@@ -195,6 +202,10 @@ target_link_libraries(pose_estimation
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${PCL_LIBRARIES}
+)
+
+target_link_libraries(image_sim
+  ${catkin_LIBRARIES}
 )
 
 

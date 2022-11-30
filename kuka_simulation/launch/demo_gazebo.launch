@@ -13,6 +13,15 @@
     <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
   </include>
 
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <param name="robot_description"
+    command="$(find xacro)/xacro --inorder  '$(find kuka_simulation)/config/kuka_workcell.xacro'"/>
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+    args="-urdf -model rrbot -param robot_description"/>
+
+
   <include file="$(dirname)/demo.launch" pass_all_args="true">
     <!-- robot description is loaded by gazebo.launch, to enable Gazebo features -->
     <arg name="load_robot_description" value="false" />

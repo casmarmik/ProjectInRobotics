@@ -2,9 +2,34 @@
 <robot name="kuka_kr6r700sixx" xmlns:xacro="http://ros.org/wiki/xacro">
     <!-- kuka macro -->
     <xacro:include filename="$(find kuka_simulation)/config/gazebo_kuka_kr6r700sixx.urdf" />
+    <!-- <xacro:include filename="$(find kuka_simulation)/config/camera.gazebo" /> -->
+    <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
   
     <link name="world"/>
 
+    <!-- Camera -->
+    <link name="camera_link">
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+        <box size="${camera_link} ${camera_link} ${camera_link}"/>
+            </geometry>
+        </collision>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+        <box size="${camera_link} ${camera_link} ${camera_link}"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+
+        <inertial>
+            <mass value="1e-5" />
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+        </inertial>
+    </link>
 
     <!--mounting plate-->
     <link name="robot_mounting_plate">
@@ -155,6 +180,26 @@
         </collision>
     </link>
 
+    <joint name="camera_joint" type="fixed">
+        <axis xyz="0 1 0" />
+        <origin xyz="0.42 -0.82 0.62" rpy="0 0 0"/>
+        <parent link="world"/>
+        <child link="camera_link"/>
+    </joint>
+
+    <!-- generate an optical frame http://www.ros.org/reps/rep-0103.html#suffix-frames
+      so that ros and opencv can operate on the camera frame correctly -->
+    <joint name="camera_optical_joint" type="fixed">
+        <!-- these values have to be these values otherwise the gazebo camera image
+            won't be aligned properly with the frame it is supposedly originating from -->
+        <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+        <parent link="camera_link"/>
+        <child link="camera_link_optical"/>
+    </joint>
+
+    <link name="camera_link_optical">
+    </link>
+
     <joint name="robot_mounting_plate_top_to_world" type="fixed">
         <origin xyz="0.0 0.0 0" rpy="0 0 0"/>
         <parent link="world"/>
@@ -221,3 +266,4 @@
         <child link="base_link"/>
     </joint>
 </robot>
+
