@@ -3,7 +3,7 @@
     <!-- kuka macro -->
     <xacro:include filename="$(find kuka_simulation)/config/gazebo_kuka_kr6r700sixx.urdf" />
     <!-- <xacro:include filename="$(find kuka_simulation)/config/camera.gazebo" /> -->
-    <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
+    <xacro:property name="camera_link" value="0.03" /> <!-- Size of square 'camera' box -->
   
     <link name="world"/>
 
@@ -12,14 +12,14 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-        <box size="${camera_link} ${camera_link} ${camera_link}"/>
+        <box size="0.06 ${camera_link} ${camera_link}"/>
             </geometry>
         </collision>
 
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-        <box size="${camera_link} ${camera_link} ${camera_link}"/>
+        <box size="0.06 ${camera_link} ${camera_link}"/>
             </geometry>
             <material name="red"/>
         </visual>
@@ -182,7 +182,7 @@
 
     <joint name="camera_joint" type="fixed">
         <axis xyz="0 1 0" />
-        <origin xyz="0.42 -0.82 0.62" rpy="0 0 0"/>
+        <origin xyz="0.3859 -0.8837 0.5477" rpy="-2.5334 0.0440 -0.0288"/>
         <parent link="world"/>
         <child link="camera_link"/>
     </joint>
@@ -237,7 +237,7 @@
     </joint>
 
     <joint name="left_wall_ref_to_world" type="fixed">
-        <origin xyz="-0.916 -0.87 -0.881" rpy="0 0 0"/>
+        <origin xyz="-0.916 -0.92 -0.881" rpy="0 0 0"/>
         <parent link="world"/>
         <child link="left_wall_ref"/>
     </joint>

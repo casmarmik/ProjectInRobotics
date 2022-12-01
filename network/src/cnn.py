@@ -45,7 +45,7 @@ class CNN():
 if __name__ == '__main__':
     # gather data
     cnn = CNN()
-    cnn.load_model("/home/mads/project_in_robotics/project_in_robotics/network/src/retina_extraction.hdf5")
+    cnn.load_model("/home/mads/project_in_robotics/project_in_robotics/network/model/retina_extraction.hdf5")
     # TODO collect some test image
     test_images = cv2.imread("/home/mads/project_in_robotics/project_in_robotics/vision/data/object_classification/cropped_images/1/1.jpeg")
     test_images = test_images / 255.

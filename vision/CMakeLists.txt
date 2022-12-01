@@ -136,6 +136,13 @@ include_directories(
 #   src/${PROJECT_NAME}/pointnet.cpp
 # )
 
+add_library(pose_estimation2d
+  src/pose_estimation2d/pose_estimation2d.cpp
+  include/pose_estimation2d/pose_estimation2d.h
+)
+
+target_link_libraries(pose_estimation2d ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -145,23 +152,27 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME} 
-  src/pointnet.cpp
+  src/pointnet/pointnet.cpp
   )
 
 add_executable(pointcloud_to_pcd
-  src/pointcloud_to_pcd.cpp
+  src/helpers/pointcloud_to_pcd.cpp
   )
 
 add_executable(calibrate
-  src/calibration.cpp
+  src/calibration/calibration.cpp
   )
 
 add_executable(pose_estimation
-  src/pose_estimation.cpp
+  src/pose_estimation3d/pose_estimation.cpp
   )
 
 add_executable(image_sim
-  src/image_sim.cpp
+  src/image_simulation/image_sim.cpp
+  )
+
+add_executable(pose_estimation2d_node
+  src/pose_estimation2d/pose_estimation2d_node.cpp
   )
 
 ## Rename C++ executable without prefix
@@ -181,6 +192,8 @@ add_dependencies(calibrate ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED
 add_dependencies(pose_estimation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_dependencies(image_sim ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_dependencies(pose_estimation2d_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
@@ -208,8 +221,13 @@ target_link_libraries(image_sim
   ${catkin_LIBRARIES}
 )
 
+target_link_libraries(pose_estimation2d_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  pose_estimation2d
+)
 
-catkin_install_python(PROGRAMS src/take_image.py
+catkin_install_python(PROGRAMS src/helpers/take_image.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
