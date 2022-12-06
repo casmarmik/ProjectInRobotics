@@ -12,6 +12,39 @@
       <Parameter Name="Precision" ParamID="8" ParamValue="1" />
     </Parameters>
   </RSIObject>
+  <RSIObject ObjType="AXISCORR" ObjTypeID="33" ObjID="AXISCORR1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="12" />
+      <Input InIdx="2" OutObjID="ETHERNET1" OutIdx="13" />
+      <Input InIdx="3" OutObjID="ETHERNET1" OutIdx="14" />
+      <Input InIdx="4" OutObjID="ETHERNET1" OutIdx="15" />
+      <Input InIdx="5" OutObjID="ETHERNET1" OutIdx="16" />
+      <Input InIdx="6" OutObjID="ETHERNET1" OutIdx="17" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="LowerLimA1" ParamID="1" ParamValue="-1000" />
+      <Parameter Name="LowerLimA2" ParamID="2" ParamValue="-1000" />
+      <Parameter Name="LowerLimA3" ParamID="3" ParamValue="-1000" />
+      <Parameter Name="LowerLimA4" ParamID="4" ParamValue="-1000" />
+      <Parameter Name="LowerLimA5" ParamID="5" ParamValue="-1000" />
+      <Parameter Name="LowerLimA6" ParamID="6" ParamValue="-1000" />
+      <Parameter Name="UpperLimA1" ParamID="13" ParamValue="1000" />
+      <Parameter Name="UpperLimA2" ParamID="14" ParamValue="1000" />
+      <Parameter Name="UpperLimA3" ParamID="15" ParamValue="1000" />
+      <Parameter Name="UpperLimA4" ParamID="16" ParamValue="1000" />
+      <Parameter Name="UpperLimA5" ParamID="17" ParamValue="1000" />
+      <Parameter Name="UpperLimA6" ParamID="18" ParamValue="1000" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="STOP" ObjTypeID="18" ObjID="STOP1">
+    <Inputs>
+      <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="5" />
+    </Inputs>
+    <Parameters>
+      <Parameter Name="Mode" ParamID="1" ParamValue="4" />
+      <Parameter Name="Channel" ParamID="2" ParamValue="0" />
+    </Parameters>
+  </RSIObject>
   <RSIObject ObjType="MAP2SEN_PINT" ObjTypeID="16" ObjID="MAP2SEN_PINT1">
     <Inputs>
       <Input InIdx="1" OutObjID="ETHERNET1" OutIdx="1" />

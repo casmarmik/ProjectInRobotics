@@ -4,12 +4,13 @@ import xml.etree.ElementTree as et
 import numpy as np
 from scipy.spatial import distance as dis
 from collections import deque
-import rospy as ro
-from trajectory_msgs.msg import JointTrajectory as JT
+from time import sleep
+#import rospy as ro
+#from trajectory_msgs.msg import JointTrajectory as JT
 
 
 # Global variable containing the poses recieved from the simulation
-sim_poses = JT()
+#sim_poses = JT()
 
 
 # NOTES:
@@ -33,24 +34,26 @@ class controllerComm:
         self.running   = False
         self.thread    = threading.Thread(target=self.communicate)
 
-        # Initialise variable which the PC sends to the robot
-        # [String] exitFlag: Must be either '0' (False) or '1' (True).
-        # If true, then the program running on the controller is terminated
-        # Note, if the controller is currently moving along a path, the stopPath-flag must also be set to true
+        # Initialize variables which the PC sends to the robot
+        # [Char] exitFlag: Must be either '0' (False) or '1' (True).
+        # If true, all motion is stopped and the program running on the controller is terminated
         self.exitFlag = '0'
-        # [String] pathState: Must be either '0' (False) or '1' (True).
+        # [Char] pathState: Must be either '0' (False) or '1' (True).
         # If false, then the controller executes the path, otherwise it stops executing the current path, if there is one.
         self.pathState = '1'
-
+        # [Char] pathState: Must be either '0' (False) or '1' (True).
+        # If false, then the controller executes the path, otherwise it stops executing the current path, if there is one.
         self.PTPState = '0'
 
+        self.robotIsShutdown = '0' # If '1', then robot is done shutting down
         self.robotReadyForData = '0'
 
+        # [Array] curRobotAngles: Current joint angles of the robot
         self.curRobotAngles = []
 
-        # [Int] gripperState:
-        # If gripperState is '0', the controller will open the gripper.
-        # Any other positive value larger than zero will close the gripper
+        # [Char] gripperState:
+        # If gripperState is '0', the controller will close the gripper.
+        # Any other positive value larger than zero will open the gripper
         self.gripperState = '0'
         # [Queue] pathPoses: Queue of poses in a path
         # Each array in the queue has the structure [A1,A2,A3,A4,A5,A6], which are the six joint angles of the robot,
@@ -58,21 +61,22 @@ class controllerComm:
         self.pathPoses = deque()
         # [Queue] PTPPoses: Queue of poses, which are not in a path.
         # Each array in the queue has the structure [A1,A2,A3,A4,A5,A6], which are the six joint angles of the robot,
-        # with A1 being the base joint of the robot. The path is interpolated to satisfy controller contraints.
+        # with A1 being the base joint of the robot.
         self.PTPPoses = deque()
-        # [Int] IPOC:
-        # Timestamp received from controller. The Pc must send a response witht the same timestamp as the message just received
+        # [String] IPOC:
+        # Timestamp received from controller. The PC must send a response with the same timestamp as the message just received
         self.IPOC = '0'
 
     # Method for printing debug-messages in the communication-class
-    def debugMsg(msg):
-        print('[Communication]: ' + msg)        
+    def debugMsg(self, msg):
+        print('[Thread]: ' + msg)        
 
     def isRunning(self):
         return self.running
 
     # Setter-methods for data sent to the controller
     def exitProgram(self):
+        self.stopMotion()
         self.exitFlag = '1'
 
     def startPath(self):
@@ -81,15 +85,17 @@ class controllerComm:
     def startPTP(self):
         self.PTPState = '1'
 
-    def stopPath(self):
+    def stopMotion(self):
         self.pathState = '1'
+        self.PTPState = '0'
         self.pathPoses.clear()
+        self.PTPPoses.clear()
 
     def openGripper(self):
-        self.gripperState = '0'
+        self.gripperState = '1'
 
     def closeGripper(self):
-        self.gripperState = '1'
+        self.gripperState = '0'
 
     # Starts the socket and thread
     # Parameter timeout is the time in seconds that the PC will wait for a response from the controller
@@ -117,14 +123,14 @@ class controllerComm:
         # Path state
         xml += '<PathState>' + self.pathState + '</PathState>'
 
-        # Stop Path
-        xml += '<StopPath>' + self.pathState + '</StopPath>'
-
         # PTP state
         xml += '<PTPState>' + self.PTPState + '</PTPState>'
 
         # Gripper state
         xml += '<Gripper>' + self.gripperState + '</Gripper>'
+
+        # Path state start/stop flag to RSI-block
+        xml += '<PathStateStop>' + '0'+ '</PathStateStop>' # self.pathState 
         
         # Path pose
         xml += self.getPathPose()
@@ -159,41 +165,45 @@ class controllerComm:
     def addPTPPose(self, pose):
         self.PTPPoses.append(pose)
 
-    def getPoseInXML(self, jointAngles):
+    def getPoseInXML(self, jointAngles, type):
         poseXML = ""
         tags = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
-        poseXML += '<Angles'
+        poseXML += '<' + type + 'Angles'
         for i in range(0, len(jointAngles)):
             poseXML += ' ' + tags[i] + '="' + str(jointAngles[i]) + '"'
         poseXML += '/>'
         return poseXML
 
     def getPathPose(self):
-        if self.pathPoses.count > 0 and self.pathState == '0' and self.robotReadyForData == '1':
-            tempPose = self.getPoseInXML(self.pathPoses.popleft())
-            if self.pathPoses.count == 0:
-                self.pathState = '1'
-            return tempPose
-        else:
-            return self.getPoseInXML(self.curRobotAngles)
+        #if len(self.pathPoses) > 0 and self.pathState == '0' and self.robotReadyForData == '1':
+        #    tempPose = self.getPoseInXML(self.pathPoses.popleft(), 'Path')
+        #    if len(self.pathPoses) == 0:
+        #        self.pathState = '1'
+        #    return tempPose
+        #else:
+        return self.getPoseInXML(self.curRobotAngles, 'Path')
 
     def getPTPPose(self):
-        if self.PTPPoses.count > 0 and self.PTPState == '1': 
-            tempPose = self.getPoseInXML(self.PTPPoses[0])
-            if self.robotReadyForData == '1':
-                self.PTPPoses.pop()
-                self.PTPState = '0'
-            return tempPose
+        if len(self.PTPPoses) > 0 and self.PTPState == '1':
+            nextPose = self.getPoseInXML(self.PTPPoses[0], 'PTP')
+            isIdentical, _ = self.matchesCurPose(self.PTPPoses[0])
+            if isIdentical:
+                self.debugMsg(nextPose)
+                #self.debugMsg("Near PTP")
+                self.PTPPoses.popleft()
+            return nextPose
         else:
-            return self.getPoseInXML(self.curRobotAngles)
+            # Reset PTP-state
+            self.PTPState = '0'
+            return self.getPoseInXML(self.curRobotAngles, 'PTP')
 
     # Check if the actual pose of the robot matches the PTP pose the robot should move to, within a specified threshold
     # If it does, return true, otherwise return false. Also returns the euclidian distance 
-    def checkPTPPose(self, errorThreshold=0.01):
-        if self.PTPPoses.count == 0:
+    def matchesCurPose(self, pose, errorThreshold=0.01):
+        if len(self.PTPPoses) == 0:
             return False, -1
         else:
-            compDist = dis.euclidean(self.getPTPPose(), self.curRobotAngles)
+            compDist = dis.euclidean(pose, self.curRobotAngles)
             if compDist > errorThreshold:
                 return False, compDist
             else:   
@@ -212,8 +222,19 @@ class controllerComm:
 
         while self.running:
             
+            if self.robotIsShutdown == '1':
+                self.debugMsg("Shutting down")
+                self.running = False
+                break
+
             # Receive xml message
-            xmlEncoded, addr = self.socket.recvfrom(1024)
+
+            try:
+                xmlEncoded, addr = self.socket.recvfrom(1024)
+            except:
+                self.debugMsg("Timed out waiting for controller response")
+                self.running = False
+                break
 
             # Parse xml message
             xmlDecoded = xmlEncoded.decode('utf-8')
@@ -222,6 +243,7 @@ class controllerComm:
             # Get relevant message info
             self.IPOC = xml.find('IPOC').text
             self.robotReadyForData = xml.find('readyForData').text
+            self.robotIsShutdown = xml.find('robotIsShutdown').text
             self.curRobotAngles = self.getCurrentRobotPoseAngles(xml)
             
             ## Logic starts here
@@ -235,13 +257,11 @@ class controllerComm:
             
             # Adjust til they are within the set error threshold
             XML_MSG = self.buildXMLString()
-
-            if self.exitFlag == '1':
-                self.running = False
+            #self.debugMsg(XML_MSG)
             self.socket.sendto(XML_MSG.encode('utf-8'), addr)
 
 # ROS NODE CODE ------------------------------------------------------------------
-def call(jt):
+""" def call(jt):
     # Setting poses in the globalscope
     global sim_poses
     # Setting the sim_poses to the recieved values
@@ -256,7 +276,7 @@ def whisper():
     return pub, rate
 
 def listener():
-    ro.Subscriber("poses", JT, call)
+    ro.Subscriber("poses", JT, call) """
 
 # MAIN CODE ----------------------------------------------------------------------
 if __name__ == '__main__':
@@ -270,146 +290,102 @@ if __name__ == '__main__':
     #comm.setStartAndEndPoses()
 
     # Initialization of publisher and subcriber node and relevant variables
-    ro.init_node('reciever', anonymous=True, disable_signals=True)
+    #ro.init_node('reciever', anonymous=True, disable_signals=True)
     pub  = None
     rate = None
 
     # Initialize Publisher and set it to publish on the topic: poses 
-    try:
+    """ try:
         pub, rate = whisper()
     except ro.ROSInterruptException:
         pass
-    print("(0-0) { HEYO! We Made it! ]")
+    print("(0-0) { HEYO! We Made it! ]") """
     # Initialize Subscriber and set it to listen on the topic: poses 
-    try:
+    """ try:
         listener()
     except ro.ROSInterruptException:
-        pass
+        pass """
 
-    print("(0-0) { Hello! ]")
-    while not ro.is_shutdown():
+    #print("(0-0) { Hello! ]")
+    #while not ro.is_shutdown():
         # Publish with Publisher at the set rate when the Publisher was initialized
-        pub.publish(sim_poses)
-        rate.sleep()
+        #pub.publish(sim_poses)
+        #rate.sleep()
 
 
-        # Recieve Path poses from ROS node ----- for now hard coded as a reversed poses list
-        pathPosesForComm = np.array([[14.9,-62.3,5.4,0.0,0.0,0.0]
-                                    [30.5,-62.3,90.0,0.0,0.0,0.0],
-                                    [-44.5,-134.5,90.0,0.0,0.0,0.0],
-                                    [-44.5,-90.0,90.0,0.0,0.0,0.0]])
-        # Set PTP motions where needed ----- for now hard coded as a reversed poses list
-        PTPPosesForComm = np.array([[14.9,-62.3,5.4,0.0,0.0,0.0]
-                                    [30.5,-62.3,90.0,0.0,0.0,0.0],
-                                    [-44.5,-134.5,90.0,0.0,0.0,0.0],
-                                    [-44.5,-90.0,90.0,0.0,0.0,0.0]])
+    # Recieve Path poses from ROS node ----- for now hard coded as a reversed poses list
+    pathPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
+                                [20.0,-90.0,90.0,0.0,0.0,0.0],
+                                [30.0,-90.0,90.0,0.0,0.0,0.0],
+                                [40.0,-90.0,90.0,0.0,0.0,0.0]])
+    # Set PTP motions where needed ----- for now hard coded as a reversed poses list
+    PTPPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
+                                [20.0,-90.0,90.0,0.0,0.0,0.0],
+                                [30.0,-90.0,90.0,0.0,0.0,0.0],
+                                [40.0,-90.0,90.0,0.0,0.0,0.0]])
 
 
-        # Start the communication
-        comm.start()
-        print("(0-0) {Connected! Thread up and running!]")
-        
-        # Input recieved poses into the comm obj
-        comm.readPathData(pathPosesForComm)
-        comm.readPTPData(PTPPosesForComm)
-        
-
-        # Start up user interface for the user
-        commandInfo = '''
-        Guide: 
-        For motion press m to move along a predefined path and press s to stop again.
-        Press p for ptp motion along predefined poses.
-        Press h to ptp to the robot's home position.
-        Press g to close or open the robot depending on whether the gripper is open or closed.
-        Press 'q' to quit the program.
-
-        Please press a button:
-        '''
-        while True:
-            command = input(commandInfo)
-
-            if command == 'p':  #  NOT DONE
-                print("Starting PTP motion")
-                comm.readPTPData()
-                comm.startPTP()
-                while comm.PTPState == '1':
-                    continue
-                while comm.robotReadyForData == '1':
-                    continue
-            
-            elif command == 'h':  #  NOT DONE
-                print("Heading home!")
-                home = [0.0, -90.0, 90.0, 0.0, 90.0, 0.0]
-                comm.addPTPPose(home)
-                comm.startPTP()
-                while comm.PTPState == '1':
-                    continue
-                while comm.robotReadyForData == '1':
-                    continue
-
-            elif command == 'm':
-                print("Starting path motion")
-                comm.readPathData()
-                comm.startPath()
-                while comm.pathState == '0':
-                    continue
-                while comm.robotReadyForData == '1':
-                    continue
-
-            elif command == 's':
-                print("Stopping path motion")
-                comm.stopPath()
-
-            elif command == 'g':
-                if comm.gripperState == '1':
-                    print("Opening Gripper!")
-                    comm.openGripper()
-                else:
-                    print("Closing gripper!")
-                    comm.closeGripper()
-
-            elif command == 'q':
-                print("(=_0)>{Shutting down...]")
-                comm.stopPath()
-                comm.exitProgram()
-                break
-            else:
-                print("unknown input please retry!")
+    # Start the communication
+    comm.start(30)
+    print(msgPrefix + 'Spinning up user menu')
     
+    # Input recieved poses into the comm object
+    comm.readPathData(pathPosesForComm)
+
+    # Start up user interface for the user
+    commandInfo = '''
+    Options: 
+    Press 'm' to move along an interpolated path.
+    Press 'p' to move between pose(s) using PTP movement.
+    Press 's' to stop movements.
+    Press 'h' to return to home position.
+    Press 'o' to open the gripper.
+    Press 'c' to close the gripper.
+    Press 'q' to quit the program.
+    '''
+    while True:
+        command = input(commandInfo)
+
+        if command == 'p':
+            print("Starting PTP motion")
+            comm.readPTPData(PTPPosesForComm)
+            comm.startPTP()
+        
+        elif command == 'h':
+            print("Heading home!")
+            home = [0.0, -90.0, 90.0, 0.0, 0.0, 0.0]
+            comm.addPTPPose(home)
+            comm.startPTP()
+
+        elif command == 'm': #  NOT DONE
+            print("Starting path motion")
+            comm.readPathData()
+            comm.startPath()
+            while comm.pathState == '0':
+                continue
+            while comm.robotReadyForData == '1':
+                continue
+
+        elif command == 's':
+            print(msgPrefix + "Stopping motion")
+            comm.stopMotion()
+
+        elif command == 'o':
+            print(msgPrefix + "Opening Gripper!")
+            comm.openGripper()
+
+        elif command == 'c':
+            print(msgPrefix + "Closing gripper!")
+            comm.closeGripper()
+
+        elif command == 'q':
+            print(msgPrefix + "Shutting down...")
+            comm.exitProgram()
+            break
+
+        else:
+            print(msgPrefix + "Unknown input please retry!")
+
     while comm.isRunning():
-        continue
+        sleep(0.1)
     comm.close()
-
-
-
-    #        if c_com == True:
-#            command = input("Press '1' to open gripper, press '2' to close gripper, press c to MOVE robot or press 'q' to quit: ")
-#        else:
-#            command = input("Press '1' to open gripper, press '2' to close gripper, press c to STOP robot or press 'q' to quit: ")
-
-        # if command == '1':
-        #     print("Opening gripper!")
-        #     s.sGripper = '1.0'
-            
-        # elif command == '2':
-        #     print("Closing Gripper!")
-        #     s.sGripper = '0.0'
-            
-#        elif command == 'c':
-#            c_com = s.ptpMove(c_com)
-            
-        # Desired commands:
-        # 1. Move home command
-        # 2. Quit-command (already have this)
-        # 3. Move path
-        # 4. Stop path
-        # 5. Actuate gripper
-        # 6. Move PTP
-
-        # Suggestion for main commands for PTP-movement
-        #comm.addPTPPose()
-        #comm.startPTP()
-        #while comm.PTPState == '1':
-        #    continue
-        #while comm.robotReadyForData == '1':
-        #    continue

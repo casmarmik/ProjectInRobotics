@@ -118,7 +118,7 @@
         <elementListCompartment Id="0a04f709-71d7-4761-a421-c1e3b53f36e3" absoluteBounds="9.515, 9.51, 1.4700000000000002, 0.44169108072916663" name="RSIParameters" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </rSIElementShape>
-    <rSIElementShape Id="df1d4de5-ce3d-4c78-a7c7-93598b059e00" absoluteBounds="9.5, 2.25, 1.5, 0.85938964843749988" fillColor="BlanchedAlmond">
+    <rSIElementShape Id="df1d4de5-ce3d-4c78-a7c7-93598b059e00" absoluteBounds="9.5, 2.25, 1.5, 1.0516910807291664" fillColor="BlanchedAlmond">
       <rSIElementMoniker name="//MAP2SEN_PINT1" />
       <relativeChildShapes>
         <rSIInPortShape Id="80cb3684-c9e9-45e4-8de9-b3d14f8ae8f2" absoluteBounds="9.0999999940395355, 2.5, 0.40000000596046448, 0.075000002980232239" fillColor="BlanchedAlmond">
@@ -127,7 +127,7 @@
         </rSIInPortShape>
       </relativeChildShapes>
       <nestedChildShapes>
-        <elementListCompartment Id="c084e919-27c4-40ae-9a71-f671218e002c" isExpanded="false" absoluteBounds="9.515, 2.76, 1.4700000000000002, 0.2493896484375" name="RSIParameters" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="c084e919-27c4-40ae-9a71-f671218e002c" absoluteBounds="9.515, 2.76, 1.4700000000000002, 0.44169108072916663" name="RSIParameters" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </rSIElementShape>
     <rSISignalConnector edgePoints="[(9.09999999403954 : 2.53750000149012); (7.65000000596046 : 2.53750000149012)]" fixedFrom="Caller" fixedTo="Caller" TargetRelationshipDomainClassId="e3f2b7da-330d-4daf-bd29-4d4ed734c0af">
