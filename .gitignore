@@ -2,6 +2,6 @@
 build
 devel
 .vscode
-object_classification
+object_classification_data
 model/
 *.asv

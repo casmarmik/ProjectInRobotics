@@ -4,7 +4,7 @@ from cv_bridge import CvBridge, CvBridgeError
 import cv2
 
 # Customized srv to capture  
-from network.srv import image_filepath
+from vision.srv import ImageCapture
 
 take_image_flag = False
 filepath = ""
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     # Set up your subscriber and define its callback
     rospy.Subscriber("/camera/rgb/image_rect_color", Image, image_callback)
-    s = rospy.Service("/image_capture", image_filepath, capture_image)
+    s = rospy.Service("/image_capture", ImageCapture, capture_image)
     # Spin until ctrl + c
     rospy.spin()
 

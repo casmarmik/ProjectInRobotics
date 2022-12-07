@@ -1,0 +1,4 @@
+string filepath
+uint32 pose_estimation_type
+---
+bool succes
