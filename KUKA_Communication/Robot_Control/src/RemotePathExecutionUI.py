@@ -4,7 +4,7 @@ import xml.etree.ElementTree as et
 import numpy as np
 from scipy.spatial import distance as dis
 from collections import deque
-from time import sleep
+from time import time, sleep
 #import rospy as ro
 #from trajectory_msgs.msg import JointTrajectory as JT
 
@@ -26,6 +26,10 @@ class controllerComm:
         self.IP        = IP
         self.port      = port
 
+        self.timePathStart = 0
+
+        #self.startingPathPose = [0.0, -90.0, 90.0, 0.0, 0.0, 0.0]
+
         # Initialize socket
         self.socket    = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -39,17 +43,19 @@ class controllerComm:
         # If true, all motion is stopped and the program running on the controller is terminated
         self.exitFlag = '0'
         # [Char] pathState: Must be either '0' (False) or '1' (True).
-        # If false, then the controller executes the path, otherwise it stops executing the current path, if there is one.
-        self.pathState = '1'
+        # If true, then the controller executes the path, otherwise it stops executing the current path, if there is one.
+        self.pathState = '0'
         # [Char] pathState: Must be either '0' (False) or '1' (True).
-        # If false, then the controller executes the path, otherwise it stops executing the current path, if there is one.
+        # If true, then the controller executes the path, otherwise it stops executing the current path, if there is one.
         self.PTPState = '0'
+        # Stop block in RSI-diagram is triggered on rising edge, meaning when this variables goes from 0 to 1
+        self.stopPath = '0'
 
         self.robotIsShutdown = '0' # If '1', then robot is done shutting down
-        self.robotReadyForData = '0'
+        self.robotPathDone = '1'
 
         # [Array] curRobotAngles: Current joint angles of the robot
-        self.curRobotAngles = []
+        self.curRobotAngles = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
         # [Char] gripperState:
         # If gripperState is '0', the controller will close the gripper.
@@ -79,15 +85,29 @@ class controllerComm:
         self.stopMotion()
         self.exitFlag = '1'
 
-    def startPath(self):
-        self.pathState = '0'
+    # The poses-variable can be a 2D np-array of multiple poses, 
+    # or a single pose in the form of a list containing six joint angles
+    def startPath(self, poses):
+        #self.debugMsg("Starting path pose is now: " + str(self.curRobotAngles[0]) + str(self.curRobotAngles[1]) + str(self.curRobotAngles[2]) + str(self.curRobotAngles[3]) + str(self.curRobotAngles[4]) + str(self.curRobotAngles[5]))
+        #self.startingPathPose = self.curRobotAngles
+        self.pathPoses.clear()
+        self.stopPath = '0'
+        self.pathState = '1'
+        while self.robotPathDone == '1':
+            sleep(0.1)
+        self.addPosesToQueue(poses,'Path')
+        self.timePathStart = time()
 
-    def startPTP(self):
+    # The poses-variable can be a 2D np-array of multiple poses, 
+    # or a single pose in the form of a list containing six joint angles
+    def startPTP(self, poses):
+        self.addPosesToQueue(poses,'PTP')
         self.PTPState = '1'
 
     def stopMotion(self):
-        self.pathState = '1'
+        self.pathState = '0'
         self.PTPState = '0'
+        self.stopPath = '1'
         self.pathPoses.clear()
         self.PTPPoses.clear()
 
@@ -130,7 +150,7 @@ class controllerComm:
         xml += '<Gripper>' + self.gripperState + '</Gripper>'
 
         # Path state start/stop flag to RSI-block
-        xml += '<PathStateStop>' + '0'+ '</PathStateStop>' # self.pathState 
+        xml += '<PathStateStop>' + self.stopPath + '</PathStateStop>'
         
         # Path pose
         xml += self.getPathPose()
@@ -159,11 +179,19 @@ class controllerComm:
         actPose.append(float(actPose_tag.attrib['A6']))
         return actPose
 
-    def addPathPose(self, pose):
-        self.pathPoses.append(pose)
-
-    def addPTPPose(self, pose):
-        self.PTPPoses.append(pose)
+    def addPosesToQueue(self, poses, queueType):
+        # If there is more than one pose
+        if type(poses) is np.ndarray:
+            for pose in poses:
+                if queueType == 'PTP':
+                    self.PTPPoses.append(pose)
+                else:
+                    self.pathPoses.append(pose)
+        else:
+            if queueType == 'PTP':
+                self.PTPPoses.append(poses)
+            else:
+                self.pathPoses.append(poses)
 
     def getPoseInXML(self, jointAngles, type):
         poseXML = ""
@@ -175,53 +203,55 @@ class controllerComm:
         return poseXML
 
     def getPathPose(self):
-        #if len(self.pathPoses) > 0 and self.pathState == '0' and self.robotReadyForData == '1':
-        #    tempPose = self.getPoseInXML(self.pathPoses.popleft(), 'Path')
-        #    if len(self.pathPoses) == 0:
-        #        self.pathState = '1'
-        #    return tempPose
-        #else:
-        return self.getPoseInXML(self.curRobotAngles, 'Path')
+        #self.debugMsg("Path Done: " + self.robotPathDone)
+        if len(self.pathPoses) > 0 and self.robotPathDone == '0':
+            timeElapsed = time() - self.timePathStart
+            if len(self.pathPoses) > 1 and self.pathPoses[1][-1] < timeElapsed:
+                self.debugMsg("Current Time: " + str(timeElapsed))
+                self.pathPoses.popleft()
+            if len(self.pathPoses) == 1:
+                self.pathState = '0'
+                self.stopPath = '1'
+                return self.getPoseInXML(self.pathPoses[0][:-1], 'Path')    
+            else:   
+                startPoint = self.pathPoses[0]
+                endPoint = self.pathPoses[1]
+                jointAngles = interpolatePath(startPoint, endPoint, timeElapsed)
+                nextPose = self.getPoseInXML(jointAngles, 'Path')
+                return nextPose
+        else:
+            return self.getPoseInXML([0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'Path')
 
     def getPTPPose(self):
         if len(self.PTPPoses) > 0 and self.PTPState == '1':
+            # Only remove pose from queue, when it is near current robot joint angles
             nextPose = self.getPoseInXML(self.PTPPoses[0], 'PTP')
             isIdentical, _ = self.matchesCurPose(self.PTPPoses[0])
             if isIdentical:
-                self.debugMsg(nextPose)
-                #self.debugMsg("Near PTP")
                 self.PTPPoses.popleft()
             return nextPose
         else:
-            # Reset PTP-state
+            # Reset PTP-state and send current robot joint angles
             self.PTPState = '0'
             return self.getPoseInXML(self.curRobotAngles, 'PTP')
 
     # Check if the actual pose of the robot matches the PTP pose the robot should move to, within a specified threshold
     # If it does, return true, otherwise return false. Also returns the euclidian distance 
     def matchesCurPose(self, pose, errorThreshold=0.01):
-        if len(self.PTPPoses) == 0:
-            return False, -1
-        else:
-            compDist = dis.euclidean(pose, self.curRobotAngles)
-            if compDist > errorThreshold:
-                return False, compDist
-            else:   
-                return True, compDist
-    
-    def readPathData(self, poses):
-        for p in poses:
-            comm.addPathPose(p)
-
-    def readPTPData(self, poses):
-        for p in poses:
-            comm.addPTPPose(p)
+        compDist = dis.euclidean(pose, self.curRobotAngles)
+        if compDist > errorThreshold:
+            return False, compDist
+        else:   
+            return True, compDist
 
     def communicate(self):
         self.running = True
 
         while self.running:
             
+            # Start a timer
+            # startTime = time()
+
             if self.robotIsShutdown == '1':
                 self.debugMsg("Shutting down")
                 self.running = False
@@ -242,7 +272,7 @@ class controllerComm:
 
             # Get relevant message info
             self.IPOC = xml.find('IPOC').text
-            self.robotReadyForData = xml.find('readyForData').text
+            self.robotPathDone = xml.find('robotPathDone').text
             self.robotIsShutdown = xml.find('robotIsShutdown').text
             self.curRobotAngles = self.getCurrentRobotPoseAngles(xml)
             
@@ -258,7 +288,17 @@ class controllerComm:
             # Adjust til they are within the set error threshold
             XML_MSG = self.buildXMLString()
             #self.debugMsg(XML_MSG)
+
+            # 0.004 is the cycle-time of RSI
+            #remainingTime = 0.003 - elapsedTime
+            #if remainingTime > 0:
+            #    self.debugMsg("Remaining time: " + str(remainingTime))
+            #    sleep(remainingTime)
+
             self.socket.sendto(XML_MSG.encode('utf-8'), addr)
+            #endTime = time()
+            #elapsedTime = endTime - startTime
+            #print(elapsedTime)
 
 # ROS NODE CODE ------------------------------------------------------------------
 """ def call(jt):
@@ -278,11 +318,45 @@ def whisper():
 def listener():
     ro.Subscriber("poses", JT, call) """
 
+# path is a 2D numpy array, where each array conatins the six joint angles,
+# and the 7'th value is the timestamp
+# cycleTime is in s
+def interpolatePath(startPoint, endPoint, timeSincePathStart):
+    
+    pd = endPoint[:-1] - startPoint[:-1]
+    td = endPoint[-1] - startPoint[-1]
+    curTime = timeSincePathStart - startPoint[-1]
+    slope = np.divide(pd,td)
+
+    return slope * curTime + startPoint[:-1]
+
+    # res = []                                             # Initialize path list
+    # lastIndex = len(path) - 1
+    # for i in range(0, lastIndex):
+    #     p1 = path[i,:-1]                                    # Pose 1, start pose of interpolation
+    #     p2 = path[i + 1,:-1]                                # Pose 2, end pose of interpolation 
+    #     pd = p2 - p1                                        # Difference of poses
+    #     td = path[i + 1,-1] - path[i,-1]                # Difference of timestamps
+    #     nrPoses = int(td/cycleTime)                         # Number of interpolations
+
+    #     r = np.divide(pd,td)                                # Slope
+        
+        
+    #     res.append(p1)
+    #     for j in range(0, nrPoses):                            # Interpolate path
+    #         res.append(r*cycleTime*(j + 1) + p1 )             # Calculate interpolation        
+        
+    # return np.array(res)
+
 # MAIN CODE ----------------------------------------------------------------------
 if __name__ == '__main__':
     
     # Message prefix for debugging print statements
     msgPrefix = '[Main ]: '
+
+    # Default joint angles values for robot home position
+    # Robot will go to here when the home function is called
+    home = [45.0, -90.0, 90.0, 0.0, 0.0, 0.0]
 
     # Initialize instance of controllerComm object with default parameters
     comm = controllerComm()
@@ -314,23 +388,19 @@ if __name__ == '__main__':
 
 
     # Recieve Path poses from ROS node ----- for now hard coded as a reversed poses list
-    pathPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
-                                [20.0,-90.0,90.0,0.0,0.0,0.0],
-                                [30.0,-90.0,90.0,0.0,0.0,0.0],
-                                [40.0,-90.0,90.0,0.0,0.0,0.0]])
+    pathPosesForComm = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+                                [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
+                                [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
+                                [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
     # Set PTP motions where needed ----- for now hard coded as a reversed poses list
     PTPPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
                                 [20.0,-90.0,90.0,0.0,0.0,0.0],
                                 [30.0,-90.0,90.0,0.0,0.0,0.0],
                                 [40.0,-90.0,90.0,0.0,0.0,0.0]])
 
-
     # Start the communication
     comm.start(30)
     print(msgPrefix + 'Spinning up user menu')
-    
-    # Input recieved poses into the comm object
-    comm.readPathData(pathPosesForComm)
 
     # Start up user interface for the user
     commandInfo = '''
@@ -343,49 +413,35 @@ if __name__ == '__main__':
     Press 'c' to close the gripper.
     Press 'q' to quit the program.
     '''
-    while True:
-        command = input(commandInfo)
 
+    while True:
+
+        command = input(commandInfo)
         if command == 'p':
             print("Starting PTP motion")
-            comm.readPTPData(PTPPosesForComm)
-            comm.startPTP()
-        
+            comm.startPTP(PTPPosesForComm)
         elif command == 'h':
             print("Heading home!")
-            home = [0.0, -90.0, 90.0, 0.0, 0.0, 0.0]
-            comm.addPTPPose(home)
-            comm.startPTP()
-
+            comm.startPTP(home)
         elif command == 'm': #  NOT DONE
             print("Starting path motion")
-            comm.readPathData()
-            comm.startPath()
-            while comm.pathState == '0':
-                continue
-            while comm.robotReadyForData == '1':
-                continue
-
+            #tempPose = [0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+            comm.startPath(pathPosesForComm)
         elif command == 's':
             print(msgPrefix + "Stopping motion")
             comm.stopMotion()
-
         elif command == 'o':
             print(msgPrefix + "Opening Gripper!")
             comm.openGripper()
-
         elif command == 'c':
             print(msgPrefix + "Closing gripper!")
             comm.closeGripper()
-
         elif command == 'q':
             print(msgPrefix + "Shutting down...")
             comm.exitProgram()
             break
-
         else:
             print(msgPrefix + "Unknown input please retry!")
-
     while comm.isRunning():
         sleep(0.1)
     comm.close()

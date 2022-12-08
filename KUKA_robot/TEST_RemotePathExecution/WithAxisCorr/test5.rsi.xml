@@ -6,7 +6,7 @@
       <Input InIdx="2" OutObjID="DIGOUT2" OutIdx="1" />
     </Inputs>
     <Parameters>
-      <Parameter Name="ConfigFile" ParamID="1" ParamValue="test4.xml" IsRuntime="false" />
+      <Parameter Name="ConfigFile" ParamID="1" ParamValue="test5.xml" IsRuntime="false" />
       <Parameter Name="Timeout" ParamID="1" ParamValue="100" />
       <Parameter Name="Flag" ParamID="4" ParamValue="1" />
       <Parameter Name="Precision" ParamID="8" ParamValue="1" />
