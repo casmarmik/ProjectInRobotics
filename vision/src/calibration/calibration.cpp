@@ -116,7 +116,7 @@ void calibrate(bool show_images = false)
       R_base2gripper.push_back(euler);
       img_index.push_back(i);
 
-      drawChessboardCorners(imgs[i], boardSize, cv::Mat(temp_corners), found);
+      // drawChessboardCorners(imgs[i], boardSize, cv::Mat(temp_corners), found);
     }
   }
 
@@ -152,6 +152,10 @@ void calibrate(bool show_images = false)
     trans(0, 3) = -0.083;
     trans(1, 3) = 0.062;
     trans(2, 3) = 0.075;
+    // Rotation from tcp to object coordinate system
+    trans(0, 0) = 1;
+    trans(1, 1) = -1;
+    trans(2, 2) = -1;
 
     cv::Matx44f b2g(cv::Matx44f::eye());
     b2g(0, 0) = R_base2gripper[i].at<double>(0, 0);
@@ -197,12 +201,6 @@ void calibrate(bool show_images = false)
     t2c(1, 3) = t_t2c[i].at<double>(1);
     t2c(2, 3) = t_t2c[i].at<double>(2);
 
-    cv::Matx44f trans2(cv::Matx44f::eye());
-    trans2(0, 0) = 1;
-    trans2(1, 1) = -1;
-    trans2(2, 2) = -1;
-
-    t2c = t2c * trans2;
     // Inverte object transformation so that we get from object to camera
     t2c = t2c.inv();
 
@@ -228,14 +226,18 @@ void calibrate(bool show_images = false)
       std::vector<cv::Point3f> point_3d;
       point_3d.push_back(cv::Point3f(0.1, 0, 0));
       point_3d.push_back(cv::Point3f(0, 0.1, 0));
-      point_3d.push_back(cv::Point3f(0, 0, 0.1));
+      point_3d.push_back(cv::Point3f(0, 0, -0.1));
       point_3d.push_back(cv::Point3f(0, 0, 0));
       std::vector<cv::Point2f> point_2d;
       cv::projectPoints(point_3d, R_temp, t_temp, K, k, point_2d);
-      cv::line(imgs[img_index[i]], point_2d[3], point_2d[0], (0, 0, 255), 5);
-      cv::line(imgs[img_index[i]], point_2d[3], point_2d[1], (255, 255, 0), 5);
-      cv::line(imgs[img_index[i]], point_2d[3], point_2d[2], (255, 0, 0), 5);
+      cv::line(imgs[img_index[i]], point_2d[3], point_2d[0], cv::Scalar(0, 0, 255), 5);
+      cv::line(imgs[img_index[i]], point_2d[3], point_2d[1], cv::Scalar(0, 255, 0), 5);
+      cv::line(imgs[img_index[i]], point_2d[3], point_2d[2], cv::Scalar(255, 0, 0), 5);
       cv::imshow("chessboard detection", imgs[img_index[i]]);
+      if (img_index[i] == 5)
+      {
+        cv::imwrite("chessboard_corners.jpg", imgs[img_index[i]]);
+      }
       cv::waitKey(0);
     }
   }
@@ -246,7 +248,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "calibration");
 
-  calibrate();
+  calibrate(false);
 
   return 0;
 }
