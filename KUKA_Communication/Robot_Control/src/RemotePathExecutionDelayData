@@ -32,7 +32,7 @@ class delay_data:
         self.time_stamps = np.append(self.time_stamps, time)
 
 
-    def save(self, f_act="delay_data_file_act.csv", f_sent="delay_data_file_sent.csv", f_time="delay_data_file_time.csv"):
+    def save(self, f_act="delay_data_file_act_deci9.csv", f_sent="delay_data_file_sent_deci9.csv", f_time="delay_data_file_time_deci9.csv"):
         path = "/home/toasted/Documents/KUKA_systems/project_in_robotics/KUKA_Communication/Robot_Control/src/pose_delay_data/"
         out_act  = open(path + f_act,  "w")
         out_sent = open(path + f_sent, "w")
