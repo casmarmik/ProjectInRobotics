@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<rSIObjectDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 13.875, 16.375" name="~vs7B42">
+<rSIObjectDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 15.375, 16.375" name="~vs7B42">
   <rSIModelMoniker name="/" />
   <nestedChildShapes>
     <rSIElementShape Id="9ec22177-4264-4c62-9179-1f74f312d461" absoluteBounds="4.5, 1, 1.5, 7.2750000029802333" fillColor="BlanchedAlmond">
@@ -424,5 +424,61 @@
         <rSIOutPortShapeMoniker Id="72abd388-e1b9-42d8-ae07-4608b7f0d28f" />
       </nodes>
     </rSISignalConnector>
+    <rSIElementShape Id="920ed429-9509-4a4d-b2a5-4df740fe2dca" absoluteBounds="13.25, 1, 1.5, 4.8750000029802329" fillColor="BlanchedAlmond">
+      <rSIElementMoniker name="//AXISCORRMON1" />
+      <relativeChildShapes>
+        <rSIOutPortShape Id="197bf5bb-521d-492f-ac13-919729e61192" absoluteBounds="14.75, 1.25, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/A1" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="54ee54bc-a3b7-4a2f-9577-7bcd50f8686a" absoluteBounds="14.75, 1.65, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/A2" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="3167cc83-e9f6-49e3-8fa1-4a918f41d55e" absoluteBounds="14.75, 2.05, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/A3" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="c75769c9-124f-44f9-88f2-b25cd3bfd6b4" absoluteBounds="14.75, 2.45, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/A4" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="2ef737b7-72cb-4f33-afa8-8fa96c51da32" absoluteBounds="14.75, 2.85, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/A5" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="f8688625-74d8-40eb-b45f-32f64cabe133" absoluteBounds="14.75, 3.25, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/A6" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="06b201da-3ffc-4e4c-b260-ccf600b7284d" absoluteBounds="14.75, 3.6500000000000004, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/E1" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="13dffb6b-a45d-44d5-8a8d-b5d28eaff15e" absoluteBounds="14.75, 4.0500000000000007, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/E2" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="b4302603-7778-44bf-b2f4-4843e30c4c77" absoluteBounds="14.75, 4.45, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/E3" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="7cc6489b-2667-4acd-ba6a-f829265973d9" absoluteBounds="14.75, 4.85, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/E4" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="3c33d9a1-3088-41d6-b0a9-ff4623228d7c" absoluteBounds="14.75, 5.25, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/E5" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+        <rSIOutPortShape Id="f9166cf2-3338-4df9-8709-54a9903061c4" absoluteBounds="14.75, 5.65, 0.40000000596046448, 0.075000002980232239" fillColor="White">
+          <rSIOutPortMoniker name="//AXISCORRMON1/E6" />
+          <relativeChildShapes />
+        </rSIOutPortShape>
+      </relativeChildShapes>
+      <nestedChildShapes>
+        <elementListCompartment Id="5d3ad300-9a47-4eed-a8be-33786a2828f3" absoluteBounds="13.265, 1.5099999999999998, 1.4700000000000002, 2.5570068359375" name="RSIParameters" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </rSIElementShape>
   </nestedChildShapes>
 </rSIObjectDiagram>

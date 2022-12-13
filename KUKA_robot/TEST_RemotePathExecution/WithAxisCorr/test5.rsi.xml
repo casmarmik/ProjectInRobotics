@@ -9,7 +9,7 @@
       <Parameter Name="ConfigFile" ParamID="1" ParamValue="test5.xml" IsRuntime="false" />
       <Parameter Name="Timeout" ParamID="1" ParamValue="100" />
       <Parameter Name="Flag" ParamID="4" ParamValue="1" />
-      <Parameter Name="Precision" ParamID="8" ParamValue="1" />
+      <Parameter Name="Precision" ParamID="8" ParamValue="9" />
     </Parameters>
   </RSIObject>
   <RSIObject ObjType="AXISCORR" ObjTypeID="33" ObjID="AXISCORR1">
@@ -135,6 +135,22 @@
     <Parameters>
       <Parameter Name="Index" ParamID="1" ParamValue="400" />
       <Parameter Name="DataSize" ParamID="2" ParamValue="0" />
+    </Parameters>
+  </RSIObject>
+  <RSIObject ObjType="AXISCORRMON" ObjTypeID="82" ObjID="AXISCORRMON1">
+    <Parameters>
+      <Parameter Name="MaxA1" ParamID="1" ParamValue="1000" />
+      <Parameter Name="MaxA2" ParamID="2" ParamValue="1000" />
+      <Parameter Name="MaxA3" ParamID="3" ParamValue="1000" />
+      <Parameter Name="MaxA4" ParamID="4" ParamValue="1000" />
+      <Parameter Name="MaxA5" ParamID="5" ParamValue="1000" />
+      <Parameter Name="MaxA6" ParamID="6" ParamValue="1000" />
+      <Parameter Name="MaxE1" ParamID="7" ParamValue="6.0" />
+      <Parameter Name="MaxE2" ParamID="8" ParamValue="6.0" />
+      <Parameter Name="MaxE3" ParamID="9" ParamValue="6.0" />
+      <Parameter Name="MaxE4" ParamID="10" ParamValue="6.0" />
+      <Parameter Name="MaxE5" ParamID="11" ParamValue="6.0" />
+      <Parameter Name="MaxE6" ParamID="12" ParamValue="6.0" />
     </Parameters>
   </RSIObject>
 </RSIObjects>
