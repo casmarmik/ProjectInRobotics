@@ -59,7 +59,7 @@ def image_callback(msg):
         # Save your OpenCV2 image as a jpeg 
         if target == "none":
             global none_counter
-            cv2.imwrite(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/object_classification/{target}/{none_counter}.jpeg", cv2_img)
+            cv2.imwrite(f"/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/tests/rgb/screw/{none_counter}.jpeg", cv2_img)
             none_counter = none_counter + 1
         elif target == "multiple":
             global multiple_counter

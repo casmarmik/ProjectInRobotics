@@ -2,7 +2,7 @@
 
 PoseEstimation3D::PoseEstimation3D()
 {
-  
+
 }
 
 // Inspired by lecture 6
@@ -133,7 +133,7 @@ Eigen::Matrix3f PoseEstimation3D::findOrientation(pcl::PointCloud<pcl::PointNorm
   return eigen_vectors;
 }
 
-void PoseEstimation3D::executePoseEstimation(bool visualize)
+void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_path, std::string template_path)
 {
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud(new pcl::PointCloud<pcl::PointNormal>);
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_template(new pcl::PointCloud<pcl::PointNormal>);
@@ -143,8 +143,10 @@ void PoseEstimation3D::executePoseEstimation(bool visualize)
   // Read in the cloud data
   pcl::PCDReader pcd_reader;
   pcl::PLYReader ply_reader;
-  pcd_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/pose_estimation3d/screw2.pcd", *cloud);	 // Target
-  ply_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/screw.ply", *cloud_template); // Template
+  // pcd_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/pose_estimation3d/screw2.pcd", *cloud);	 // Target
+  // ply_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/screw.ply", *cloud_template); // Template
+  pcd_reader.read(scene_path, *cloud);	 // Target
+  ply_reader.read(template_path, *cloud_template); // Template
 
   for (size_t i = 0; i < cloud_template->size(); i++)
   {

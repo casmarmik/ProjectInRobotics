@@ -33,7 +33,7 @@ class PoseEstimation3D
 {
 public:
   PoseEstimation3D();
-  void executePoseEstimation(bool visualize);
+  void executePoseEstimation(bool visualize, std::string scene_path, std::string template_path);
 private:
   inline float dist_sq(const pcl::Histogram<153> &query, const pcl::Histogram<153> &target);
   void nearest_feature(const pcl::Histogram<153> &query, const pcl::PointCloud<pcl::Histogram<153>> &target, int &idx, float &distsq);

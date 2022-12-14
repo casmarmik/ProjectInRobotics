@@ -71,6 +71,7 @@ private:
   tf2_ros::TransformListener tf_listener_;
   ros::ServiceServer service_server_;
   bool save_;
+  int counter_;
 
 public:
   string cloud_topic_;
@@ -117,8 +118,9 @@ public:
       }
       else
       {
-        ss << prefix_ << cloud->header.stamp << ".pcd";
+        ss << prefix_ << counter_ << ".pcd";
       }
+      counter_++;
       ROS_INFO("Data saved to %s", ss.str().c_str());
 
       pcl::PCDWriter writer;
@@ -154,7 +156,7 @@ public:
   {
     // Check if a prefix parameter is defined for output file names.
     ros::NodeHandle priv_nh("~");
-    priv_nh.setParam("prefix", "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/pose_estimation3d/");
+    priv_nh.setParam("prefix", "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/tests/depth/screw/");
     if (priv_nh.getParam("prefix", prefix_))
     {
       ROS_INFO_STREAM("PCD file prefix is: " << prefix_);
@@ -189,7 +191,9 @@ public:
       ROS_INFO_STREAM("Saving to fixed filename: " << filename_);
     }
 
-    cloud_topic_ = "input";
+    counter_ = 0;
+
+    cloud_topic_ = "/camera/depth/points";
 
     sub_ = nh_.subscribe(cloud_topic_, 1, &PointCloudToPCD::cloud_cb, this);
     ROS_INFO("Listening for incoming data on topic %s", nh_.resolveName(cloud_topic_).c_str());

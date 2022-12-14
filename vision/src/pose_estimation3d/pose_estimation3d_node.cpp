@@ -25,9 +25,9 @@ private:
     std::string image_path = msg->data;
     cv::Mat image = cv::imread(image_path);
 
-    bool visualize = true;
+    bool visualize = false;
   
-    pose3d_.executePoseEstimation(visualize);
+    pose3d_.executePoseEstimation(visualize, image_path, "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/screw.ply");
   }
 };
 
