@@ -15,7 +15,7 @@
    <SEND>
       <ELEMENTS>
          <ELEMENT TAG="DEF_AIPos" TYPE="DOUBLE" INDX="INTERNAL" />
-		 <ELEMENT TAG="readyForData" TYPE="BOOL" INDX="1" />
+		 <ELEMENT TAG="robotPathDone" TYPE="BOOL" INDX="1" />
 		 <ELEMENT TAG="robotIsShutdown" TYPE="BOOL" INDX="2" />
       </ELEMENTS>
    </SEND>

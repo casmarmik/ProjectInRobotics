@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(pointnet)
+project(vision)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -58,16 +58,17 @@ find_package(OpenCV)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  PoseEstimation.msg
+  Pose.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  image_capture.srv
+  ImageCapture.srv
+  ClassifyObject.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -247,6 +248,14 @@ target_link_libraries(pose_estimation3d_node
 )
 
 catkin_install_python(PROGRAMS src/helpers/take_image.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+catkin_install_python(PROGRAMS src/helpers/capture_image.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+catkin_install_python(PROGRAMS src/object_classification/network_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
