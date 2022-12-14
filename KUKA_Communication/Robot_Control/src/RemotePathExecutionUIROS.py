@@ -5,106 +5,56 @@ import numpy as np
 from scipy.spatial import distance as dis
 from collections import deque
 from time import time, sleep
-#import rospy as ro
-#from trajectory_msgs.msg import JointTrajectory as JT
-
-
+import rospy as ro
+from trajectory_msgs.msg import JointTrajectory as JT
+from trajectory_msgs.msg import JointTrajectoryPoint as JTp
 
 # Global variable containing the poses recieved from the simulation
 #sim_poses = JT()
 
-
-
-
-class delay_data:
+class simROS:
     def __init__(self):
-        self.act_poses   = np.array([]).reshape(0,6)
-        self.sent_poses  = np.array([]).reshape(0,6)
-        self.time_stamps = np.array([])
+        self.simPoses = JT()
+        ro.init_node('listener', anonymous=True, disable_signals=True)
 
-    def add_act(self, pose):
-        self.act_poses = np.vstack([self.act_poses, pose])
+        try:
+            self.pub, self.rate = sro.whisper()
+        except ro.ROSInterruptException:
+            pass
+        print("(0-0) { HEYO! We Made it! ]")
+        # Subscriber to poses
+        try:
+            sro.listener()
+        except ro.ROSInterruptException:
+            pass
 
-    def add_sent(self, pose):
-        self.sent_poses = np.vstack([self.sent_poses, pose])
-    
-    def add_time(self, time):
-        self.time_stamps = np.append(self.time_stamps, time)
+    def getSimPoses(self):
+            return self.simPoses
 
+    def getPub(self):
+            return self.pub
 
-    def save(self, f_act="delay_data_file_act_t00.csv", f_sent="delay_data_file_sent_t00.csv", f_time="delay_data_file_time_t00.csv"):
-        path = "/home/toasted/Documents/KUKA_systems/project_in_robotics/KUKA_Communication/Robot_Control/src/pose_delay_data/t/"
-        out_act  = open(path + f_act,  "w")
-        out_sent = open(path + f_sent, "w")
-        out_time = open(path + f_time, "w")
-        pose_len = 6
-        print(len(self.time_stamps))
-        str_act  = ""
-        str_sent = ""
-        str_time = ""
-        for i in range(0, len(self.time_stamps)):
-            for j in range(0, pose_len):
-                print(i)
-                print(j)
-                print(" ")
-                str_sent += str(self.sent_poses[i][j]) + ","
-                str_act  += str(self.act_poses[i][j])  + ","
+    def getRate(self):
+            return self.rate
 
-            str_act  += "\n"
-            str_sent += "\n"
-        
-            str_time += str(self.time_stamps[i]) + "\n"
-        
-        out_act.write(str_act)
-        out_sent.write(str_sent)
-        out_time.write(str_time)
+    def call(self, jt):
+        # Setting the sim_poses to the recieved values
+        self.simPoses = jt
 
+    def whisper(self):
+        self.pub = ro.Publisher('poses', JT, queue_size=10)
+        self.rate = ro.Rate(10) # 10hz publisher rate
 
-        out_act.close()
-        out_sent.close()
-        out_time.close()
-
-    def text(self):
-        print_str  =   ""
-        print_str  +=  "act: "  + str(self.act_poses) + "\n" 
-        print_str  +=  "sent: " + str(self.sent_poses) + "\n" 
-        print_str  +=  "time: " + str(self.time_stamps)
-        return print_str
-
-
-def poses_speed(tnr=0, dt=2.0, vel_procents=[0.0, 0.10, 0.20, 0.30]):
-    des_paths = []
-    vel_procents = np.array(vel_procents)
-    max_vel = 30.0 # np.array([360.0, 300.0, 360.0, 381.0, 388.0, 615.0])
-    for vp in vel_procents:
-        v = vp*max_vel
-        print("v: " + str(v))
-        if v != 0.0:
-            dist = v*dt
-            print("dist: " + str(dist))
-            des_paths.append(np.array([[       0.0,       0.0,       0.0,      0.0,      0.0,      0.0,    0.0],
-                                        [-1.0*dist, -1.0*dist, -1.0*dist,-1.0*dist,-1.0*dist,-1.0*dist, 1.0*dt],
-                                        [-2.0*dist, -2.0*dist, -2.0*dist,-2.0*dist,-2.0*dist,-2.0*dist, 2.0*dt],
-                                        [-3.0*dist, -3.0*dist, -3.0*dist,-3.0*dist,-3.0*dist,-3.0*dist, 3.0*dt]]))
-        else:
-            des_paths.append(np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0,  0.0],
-                                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,  4.0],
-                                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,  8.0],
-                                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.0]]))
+    def listener(self):
+        ro.Subscriber("poses", JT, self.call)
 
     
 
 
-    return des_paths[tnr]
 
-        
-        
-# GLOBAL DATA SAVE ARRAY
-DD = delay_data()
 # NOTES:
 # You must have a static IP-address on your PC that is in the same subnet as the controllers RSI-interface.
 # The recommended IP and subnet-mask is "192.168.1.102" and "255.255.0.0"
-
 
 class controllerComm:
     # IP and port variables are the IP-address and port number of the PC that the controller is sending its data-structure to.
@@ -268,7 +218,7 @@ class controllerComm:
         actPose.append(float(actPose_tag.attrib['A6']))
         return actPose
 
-    def addPosesToQueue(self, poses, queueType):
+    def addPosesToQueue(self, poses, queueType, sro):
         # If there is more than one pose
         if type(poses) is np.ndarray:
             for pose in poses:
@@ -306,13 +256,6 @@ class controllerComm:
                 startPoint = self.pathPoses[0]
                 endPoint = self.pathPoses[1]
                 jointAngles = interpolatePath(startPoint, endPoint, timeElapsed)
-                #-----------------------------------------------------------------------------------------------------------------------------
-                before_corr = [0.0, -90.0, 90.0, 0.0, 0.0, 0.0]
-                print(self.curRobotAngles)
-                DD.add_sent(before_corr + jointAngles)
-                DD.add_act(self.curRobotAngles)
-                DD.add_time(timeElapsed)
-                #-----------------------------------------------------------------------------------------------------------------------------
                 nextPose = self.getPoseInXML(jointAngles, 'Path')
                 return nextPose
         else:
@@ -418,9 +361,8 @@ def listener():
 # and the 7'th value is the timestamp
 # cycleTime is in s
 def interpolatePath(startPoint, endPoint, timeSincePathStart):
+    
     pd = endPoint[:-1] - startPoint[:-1]
-    #if pd == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
-        #return [0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + startPoint[:-1]
     td = endPoint[-1] - startPoint[-1]
     curTime = timeSincePathStart - startPoint[-1]
     slope = np.divide(pd,td)
@@ -460,91 +402,72 @@ if __name__ == '__main__':
     # Setup ptp poses
     #comm.setStartAndEndPoses()
 
-    # Initialization of publisher and subcriber node and relevant variables
-    #ro.init_node('reciever', anonymous=True, disable_signals=True)
-    pub  = None
-    rate = None
+    sro = simROS()
+    while not ro.is_shutdown():
+        publishable_pose = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+                                     [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
+                                     [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
+                                     [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
 
-    # Initialize Publisher and set it to publish on the topic: poses 
-    """ try:
-        pub, rate = whisper()
-    except ro.ROSInterruptException:
-        pass
-    print("(0-0) { HEYO! We Made it! ]") """
-    # Initialize Subscriber and set it to listen on the topic: poses 
-    """ try:
-        listener()
-    except ro.ROSInterruptException:
-        pass """
+        # Recieve Path poses from ROS node ----- for now hard coded as a reversed poses list
+        pathPosesForComm = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+                                    [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
+                                    [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
+                                    [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
+        # Set PTP motions where needed ----- for now hard coded as a reversed poses list
+        PTPPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
+                                    [20.0,-90.0,90.0,0.0,0.0,0.0],
+                                    [30.0,-90.0,90.0,0.0,0.0,0.0],
+                                    [40.0,-90.0,90.0,0.0,0.0,0.0]])
 
-    #print("(0-0) { Hello! ]")
-    #while not ro.is_shutdown():
-        # Publish with Publisher at the set rate when the Publisher was initialized
-        #pub.publish(sim_poses)
-        #rate.sleep()
+        # Start the communication
+        comm.start(30)
+        print(msgPrefix + 'Spinning up user menu')
 
+        # Start up user interface for the user
+        commandInfo = '''
+        Options: 
+        Press 'm' to move along an interpolated path.
+        Press 'p' to move between pose(s) using PTP movement.
+        Press 's' to stop movements.
+        Press 'h' to return to home position.
+        Press 'o' to open the gripper.
+        Press 'c' to close the gripper.
+        Press 'q' to quit the program.
+        '''
 
-    # Recieve Path poses from ROS node ----- for now hard coded as a reversed poses list
-    #pathPosesForComm = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
-    #                            [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
-    #                            [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
-    #                            [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
-    # Set PTP motions where needed ----- for now hard coded as a reversed poses list
-    #-----------------------------------------------------------------------------------------------------------------------
-    pathPosesForComm = poses_speed()
-    print("hello")
-    print(pathPosesForComm)
-    #-----------------------------------------------------------------------------------------------------------------------
-    PTPPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
-                                [20.0,-90.0,90.0,0.0,0.0,0.0],
-                                [30.0,-90.0,90.0,0.0,0.0,0.0],
-                                [40.0,-90.0,90.0,0.0,0.0,0.0]])
-    
-    # Start the communication
-    comm.start(30)
-    print(msgPrefix + 'Spinning up user menu')
+        while True:
+            pub = sro.getPub()
+            rate = sro.getRate()
+            pub.publish(publishable_pose)
+            rate.sleep()
 
-    # Start up user interface for the user
-    commandInfo = '''
-    Options: 
-    Press 'm' to move along an interpolated path.
-    Press 'p' to move between pose(s) using PTP movement.
-    Press 's' to stop movements.
-    Press 'h' to return to home position.
-    Press 'o' to open the gripper.
-    Press 'c' to close the gripper.
-    Press 'q' to quit the program.
-    '''
+            command = input(commandInfo)
+            if command == 'p':
+                print("Starting PTP motion")
+                comm.startPTP(PTPPosesForComm)
+            elif command == 'h':
+                print("Heading home!")
+                comm.startPTP(home)
+            elif command == 'm': #  NOT DONE
+                print("Starting path motion")
+                comm.startPath(sro.getSimPoses())
+            elif command == 's':
+                print(msgPrefix + "Stopping motion")
+                comm.stopMotion()
+            elif command == 'o':
+                print(msgPrefix + "Opening Gripper!")
+                comm.openGripper()
+            elif command == 'c':
+                print(msgPrefix + "Closing gripper!")
+                comm.closeGripper()
+            elif command == 'q':
+                print(msgPrefix + "Shutting down...")
+                comm.exitProgram()
+                break
+            else:
+                print(msgPrefix + "Unknown input please retry!")
 
-    while True:
-
-        command = input(commandInfo)
-        if command == 'p':
-            print("Starting PTP motion")
-            comm.startPTP(PTPPosesForComm)
-        elif command == 'h':
-            print("Heading home!")
-            comm.startPTP(home)
-        elif command == 'm': #  NOT DONE
-            print("Starting path motion")
-            #tempPose = [0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
-            comm.startPath(pathPosesForComm)
-        elif command == 's':
-            print(msgPrefix + "Stopping motion")
-            comm.stopMotion()
-        elif command == 'o':
-            print(msgPrefix + "Opening Gripper!")
-            comm.openGripper()
-        elif command == 'c':
-            print(msgPrefix + "Closing gripper!")
-            comm.closeGripper()
-        elif command == 'q':
-            print(msgPrefix + "Shutting down...")
-            comm.exitProgram()
-            break
-        else:
-            print(msgPrefix + "Unknown input please retry!")
     while comm.isRunning():
         sleep(0.1)
-    DD.save()
     comm.close()
