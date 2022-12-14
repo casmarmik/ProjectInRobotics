@@ -143,6 +143,13 @@ add_library(pose_estimation2d
 
 target_link_libraries(pose_estimation2d ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_library(pose_estimation3d
+  src/pose_estimation3d/pose_estimation3d.cpp
+  include/pose_estimation3d/pose_estimation3d.h
+)
+
+target_link_libraries(pose_estimation3d ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${PCL_LIBRARIES})
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -163,9 +170,9 @@ add_executable(calibrate
   src/calibration/calibration.cpp
   )
 
-add_executable(pose_estimation
-  src/pose_estimation3d/pose_estimation.cpp
-  )
+# add_executable(pose_estimation
+#   src/pose_estimation3d/pose_estimation.cpp
+#   )
 
 add_executable(image_sim
   src/image_simulation/image_sim.cpp
@@ -173,6 +180,10 @@ add_executable(image_sim
 
 add_executable(pose_estimation2d_node
   src/pose_estimation2d/pose_estimation2d_node.cpp
+  )
+
+add_executable(pose_estimation3d_node
+  src/pose_estimation3d/pose_estimation3d_node.cpp
   )
 
 ## Rename C++ executable without prefix
@@ -189,11 +200,13 @@ add_dependencies(pointcloud_to_pcd ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_
 
 add_dependencies(calibrate ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_dependencies(pose_estimation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(pose_estimation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_dependencies(image_sim ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_dependencies(pose_estimation2d_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_dependencies(pose_estimation3d_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
@@ -211,11 +224,11 @@ target_link_libraries(calibrate
   ${OpenCV_LIBRARIES}
 )
 
-target_link_libraries(pose_estimation
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-  ${PCL_LIBRARIES}
-)
+# target_link_libraries(pose_estimation
+#   ${catkin_LIBRARIES}
+#   ${OpenCV_LIBRARIES}
+#   ${PCL_LIBRARIES}
+# )
 
 target_link_libraries(image_sim
   ${catkin_LIBRARIES}
@@ -225,6 +238,12 @@ target_link_libraries(pose_estimation2d_node
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   pose_estimation2d
+)
+
+target_link_libraries(pose_estimation3d_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  pose_estimation3d
 )
 
 catkin_install_python(PROGRAMS src/helpers/take_image.py

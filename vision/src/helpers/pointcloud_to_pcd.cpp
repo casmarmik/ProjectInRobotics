@@ -154,7 +154,7 @@ public:
   {
     // Check if a prefix parameter is defined for output file names.
     ros::NodeHandle priv_nh("~");
-    priv_nh.setParam("prefix", "/home/mads/project_in_robotics/project_in_robotics/vision/data/");
+    priv_nh.setParam("prefix", "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/pose_estimation3d/");
     if (priv_nh.getParam("prefix", prefix_))
     {
       ROS_INFO_STREAM("PCD file prefix is: " << prefix_);
