@@ -29,6 +29,7 @@
   <exec_depend>std_msgs</exec_depend>
   <depend>moveit_ros_planning_interface</depend>
   <depend>tf2_ros</depend>
+  <depend>pir_msgs</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

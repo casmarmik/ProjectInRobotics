@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ros/ros.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc.hpp>
 
@@ -31,9 +30,8 @@ private:
 
   // Get the angle at which the object is rotated
   double getAngle(std::vector<cv::Point> contour, bool debug = false);
+  void drawAxis(cv::Point p, cv::Point q, cv::Scalar colour, const float scale = 0.2);
   cv::Point2f getObjectCenter(std::vector<cv::Point> contour, bool debug = false);
-
-private:
 };
 
 }  // namespace pose_estimation_2d

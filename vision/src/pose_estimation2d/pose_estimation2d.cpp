@@ -87,7 +87,6 @@ void PoseEstimation2D::findHomography(std::string homography_path)
     drawChessboardCorners(img, boardSize, corners, found);
   }
 
-  // x 285.1 mm and y -272.7 mm, which is 0.0 in the homography plane
   homography_ = cv::findHomography(corners, objp);
 
   cv::FileStorage file(homography_path, cv::FileStorage::WRITE);
@@ -189,6 +188,24 @@ std::vector<cv::Point> PoseEstimation2D::getContour(cv::Mat binary_image, bool s
 }
 
 // Inspired from here https://docs.opencv.org/4.x/d1/dee/tutorial_introduction_to_pca.html
+void PoseEstimation2D::drawAxis(cv::Point p, cv::Point q, cv::Scalar colour, const float scale)
+{
+  double angle = atan2((double)p.y - q.y, (double)p.x - q.x);  // angle in radians
+  double hypotenuse = sqrt((double)(p.y - q.y) * (p.y - q.y) + (p.x - q.x) * (p.x - q.x));
+  // Here we lengthen the arrow by a factor of scale
+  q.x = (int)(p.x - scale * hypotenuse * cos(angle));
+  q.y = (int)(p.y - scale * hypotenuse * sin(angle));
+  line(image_, p, q, colour, 1, cv::LINE_AA);
+  // create the arrow hooks
+  p.x = (int)(q.x + 9 * cos(angle + CV_PI / 4));
+  p.y = (int)(q.y + 9 * sin(angle + CV_PI / 4));
+  line(image_, p, q, colour, 1, cv::LINE_AA);
+  p.x = (int)(q.x + 9 * cos(angle - CV_PI / 4));
+  p.y = (int)(q.y + 9 * sin(angle - CV_PI / 4));
+  line(image_, p, q, colour, 1, cv::LINE_AA);
+}
+
+// Inspired from here https://docs.opencv.org/4.x/d1/dee/tutorial_introduction_to_pca.html
 double PoseEstimation2D::getAngle(std::vector<cv::Point> contour, bool debug)
 {
   // Construct a buffer used by the pca analysis
@@ -205,16 +222,29 @@ double PoseEstimation2D::getAngle(std::vector<cv::Point> contour, bool debug)
 
   // Get the eigen vectors
   std::vector<cv::Point2d> eigen_vecs(2);
+  std::vector<double> eigen_val(2);
   for (int i = 0; i < 2; i++)
   {
     eigen_vecs[i] = cv::Point2d(pca.eigenvectors.at<double>(i, 0), pca.eigenvectors.at<double>(i, 1));
+    eigen_val[i] = pca.eigenvalues.at<double>(i);
   }
+
+  // Store the center of the object
+  cv::Point cntr = cv::Point(static_cast<int>(pca.mean.at<double>(0, 0)), static_cast<int>(pca.mean.at<double>(0, 1)));
 
   // Use the eigen vector with the most spread to compute the angle
   double angle = atan2(eigen_vecs[0].y, eigen_vecs[0].x);
   angle = angle * (180 / M_PI);
   if (debug)
   {
+    // Draw the principal components
+    cv::circle(image_, cntr, 3, cv::Scalar(255, 0, 255), 2);
+    cv::Point p1 = cntr + 0.02 * cv::Point(static_cast<int>(eigen_vecs[0].x * eigen_val[0]),
+                                           static_cast<int>(eigen_vecs[0].y * eigen_val[0]));
+    cv::Point p2 = cntr - 0.02 * cv::Point(static_cast<int>(eigen_vecs[1].x * eigen_val[1]),
+                                           static_cast<int>(eigen_vecs[1].y * eigen_val[1]));
+    drawAxis(cntr, p1, cv::Scalar(0, 255, 0), 1);
+    drawAxis(cntr, p2, cv::Scalar(255, 255, 0), 5);
     std::cout << "orientation of binary object: " << angle << std::endl;
   }
   return angle;

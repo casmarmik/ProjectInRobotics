@@ -9,7 +9,7 @@ from cv_bridge import CvBridge, CvBridgeError
 # OpenCV2 for saving an image
 import cv2
 
-from pointnet.srv import image_capture
+from pir_msgs.srv import image_capture
 
 # Instantiate CvBridge
 bridge = CvBridge()
@@ -18,8 +18,8 @@ bridge = CvBridge()
 take_image_flag = False
 none_counter = 0
 multiple_counter = 0
-skrew_counter = 0
-stick_counter = 0
+skrew_counter = 120
+stick_counter = 120
 calibration_counter = 0
 target = -1
   
@@ -63,14 +63,14 @@ def image_callback(msg):
             none_counter = none_counter + 1
         elif target == "multiple":
             global multiple_counter
-            cv2.imwrite(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/object_classification/{target}/{multiple_counter}.jpeg", cv2_img)
+            cv2.imwrite(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/object_classification_data/{target}/{multiple_counter}.jpeg", cv2_img)
         elif target == "skrew":
             global skrew_counter
-            cv2.imwrite(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/object_classification/{target}/{skrew_counter}.jpeg", cv2_img)
+            cv2.imwrite(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/object_classification_data/1/{skrew_counter}.jpeg", cv2_img)
             skrew_counter = skrew_counter + 1
         elif target == "stick":
             global stick_counter
-            cv2.imwrite(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/object_classification/{target}/{stick_counter}.jpeg", cv2_img)
+            cv2.imwrite(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/object_classification_data/2/{stick_counter}.jpeg", cv2_img)
             stick_counter = stick_counter + 1
         elif target == "calibration":
             global calibration_counter
