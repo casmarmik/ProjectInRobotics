@@ -8,25 +8,51 @@ from time import time, sleep
 import rospy as ro
 from trajectory_msgs.msg import JointTrajectory as JT
 from trajectory_msgs.msg import JointTrajectoryPoint as JTp
+import urllib.request
 
 # Global variable containing the poses recieved from the simulation
 #sim_poses = JT()
 
 class simROS:
     def __init__(self):
-        self.simPoses = JT()
         ro.init_node('listener', anonymous=True, disable_signals=True)
+        self.running   = False
+        self.publishableJT = JT()
+        self.simPoses = JT()
+        self.pub = None
+        self.rate = None
 
         try:
-            self.pub, self.rate = sro.whisper()
+            self.whisper()
         except ro.ROSInterruptException:
             pass
-        print("(0-0) { HEYO! We Made it! ]")
+        #print("(0-0) { HEYO! We Made it! ]")
         # Subscriber to poses
         try:
-            sro.listener()
+            self.listener()
         except ro.ROSInterruptException:
             pass
+
+        self.thread    = threading.Thread(target=self.talker)
+    
+    def talker(self):
+        while self.running:
+            self.pub.publish(self.publishableJT)
+            self.rate.sleep()
+
+    def startPublisher(self):
+        self.running = True
+        self.thread.start()
+
+    def stopPublisher(self):
+        self.running = False
+
+    def getNPPoses(self):
+        l = []
+        for pos in self.simPoses.points:
+            l.append(pos.positions)
+
+        return np.array(l)
 
     def getSimPoses(self):
             return self.simPoses
@@ -61,6 +87,7 @@ class controllerComm:
     # IP and port variables must be the same as what's defined in the .XML configuration file on the robot controller,
     # and the IP variable must be the same as the IP-address on the PC from which the script is run.
     def __init__(self, IP="192.168.1.102", port=49152):
+        #urllib.request.urlopen("https://" + IP + ":" + str(port))
         
         self.IP        = IP
         self.port      = port
@@ -134,13 +161,14 @@ class controllerComm:
         self.pathState = '1'
         while self.robotPathDone == '1':
             sleep(0.1)
-        self.addPosesToQueue(poses,'Path')
+        self.addPosesToQueue(poses,'Path', sro)
+        print("(=<>=)HELLO!")
         self.timePathStart = time()
 
     # The poses-variable can be a 2D np-array of multiple poses, 
     # or a single pose in the form of a list containing six joint angles
     def startPTP(self, poses):
-        self.addPosesToQueue(poses,'PTP')
+        self.addPosesToQueue(poses,'PTP', sro)
         self.PTPState = '1'
 
     def stopMotion(self):
@@ -165,9 +193,12 @@ class controllerComm:
         self.debugMsg("Communication started")
 
     # Terminates the thread and socket
-    def close(self):
+    def close(self, sro):
+        sro.stopPublisher()
+        sro.thread.join()
         self.thread.join()
         self.socket.close()
+        ro.signal_shutdown("reason") 
         self.debugMsg("Communication closed")
 
     # Returns the XML-string of the variables formatted such that the controller can receive them
@@ -220,6 +251,8 @@ class controllerComm:
 
     def addPosesToQueue(self, poses, queueType, sro):
         # If there is more than one pose
+        print("(=<>=)HELLO!")
+        print(poses)
         if type(poses) is np.ndarray:
             for pose in poses:
                 if queueType == 'PTP':
@@ -395,79 +428,93 @@ if __name__ == '__main__':
 
     # Default joint angles values for robot home position
     # Robot will go to here when the home function is called
-    home = [45.0, -90.0, 90.0, 0.0, 0.0, 0.0]
+    home = [0.0, -90.0, 90.0, 0.0, 0.0, 0.0]
 
     # Initialize instance of controllerComm object with default parameters
     comm = controllerComm()
     # Setup ptp poses
     #comm.setStartAndEndPoses()
 
+
+    publishable_pose = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+                                 [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
+                                 [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
+                                 [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
+
+    # Recieve Path poses from ROS node ----- for now hard coded as a reversed poses list
+    pathPosesForComm = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+                                [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
+                                [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
+                                [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
+    # Set PTP motions where needed ----- for now hard coded as a reversed poses list
+    PTPPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
+                                [20.0,-90.0,90.0,0.0,0.0,0.0],
+                                [30.0,-90.0,90.0,0.0,0.0,0.0],
+                                [40.0,-90.0,90.0,0.0,0.0,0.0]])
+
+    # Start the communication
+    comm.start(30)
+    print(msgPrefix + 'Spinning up user menu')
+
+    # Start up user interface for the user
+    commandInfo = '''
+    Options: 
+    Press 'm' to move along an interpolated path.
+    Press 'p' to move between pose(s) using PTP movement.
+    Press 's' to stop movements.
+    Press 'h' to return to home position.
+    Press 'o' to open the gripper.
+    Press 'c' to close the gripper.
+    Press 'q' to quit the program.
+    '''
     sro = simROS()
+    publishableJTp0 = JTp()
+    publishableJTp1 = JTp()
+    publishableJTp2 = JTp()
+    publishableJTp3 = JTp()
+
+    publishableJTp0.positions = publishable_pose[0]
+    sro.publishableJT.points.append(publishableJTp0)
+
+    publishableJTp1.positions = publishable_pose[1]
+    sro.publishableJT.points.append(publishableJTp1)
+
+    publishableJTp2.positions = publishable_pose[2]
+    sro.publishableJT.points.append(publishableJTp2)
+
+    publishableJTp3.positions = publishable_pose[3]
+    sro.publishableJT.points.append(publishableJTp3)
+    sro.startPublisher()
+
     while not ro.is_shutdown():
-        publishable_pose = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
-                                     [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
-                                     [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
-                                     [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
-
-        # Recieve Path poses from ROS node ----- for now hard coded as a reversed poses list
-        pathPosesForComm = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
-                                    [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
-                                    [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
-                                    [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
-        # Set PTP motions where needed ----- for now hard coded as a reversed poses list
-        PTPPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
-                                    [20.0,-90.0,90.0,0.0,0.0,0.0],
-                                    [30.0,-90.0,90.0,0.0,0.0,0.0],
-                                    [40.0,-90.0,90.0,0.0,0.0,0.0]])
-
-        # Start the communication
-        comm.start(30)
-        print(msgPrefix + 'Spinning up user menu')
-
-        # Start up user interface for the user
-        commandInfo = '''
-        Options: 
-        Press 'm' to move along an interpolated path.
-        Press 'p' to move between pose(s) using PTP movement.
-        Press 's' to stop movements.
-        Press 'h' to return to home position.
-        Press 'o' to open the gripper.
-        Press 'c' to close the gripper.
-        Press 'q' to quit the program.
-        '''
-
-        while True:
-            pub = sro.getPub()
-            rate = sro.getRate()
-            pub.publish(publishable_pose)
-            rate.sleep()
-
-            command = input(commandInfo)
-            if command == 'p':
-                print("Starting PTP motion")
-                comm.startPTP(PTPPosesForComm)
-            elif command == 'h':
-                print("Heading home!")
-                comm.startPTP(home)
-            elif command == 'm': #  NOT DONE
-                print("Starting path motion")
-                comm.startPath(sro.getSimPoses())
-            elif command == 's':
-                print(msgPrefix + "Stopping motion")
-                comm.stopMotion()
-            elif command == 'o':
-                print(msgPrefix + "Opening Gripper!")
-                comm.openGripper()
-            elif command == 'c':
-                print(msgPrefix + "Closing gripper!")
-                comm.closeGripper()
-            elif command == 'q':
-                print(msgPrefix + "Shutting down...")
-                comm.exitProgram()
-                break
-            else:
-                print(msgPrefix + "Unknown input please retry!")
-
+ 
+        command = input(commandInfo)
+        if command == 'p':
+            print("Starting PTP motion")
+            comm.startPTP(PTPPosesForComm)
+        elif command == 'h':
+            print("Heading home!")
+            comm.startPTP(home)
+        elif command == 'm':
+            print("Starting path motion")
+            comm.startPath(sro.getNPPoses())
+        elif command == 's':
+            print(msgPrefix + "Stopping motion")
+            comm.stopMotion()
+        elif command == 'o':
+            print(msgPrefix + "Opening Gripper!")
+            comm.openGripper()
+        elif command == 'c':
+            print(msgPrefix + "Closing gripper!")
+            comm.closeGripper()
+        elif command == 'q':
+            print(msgPrefix + "Shutting down...")
+            comm.exitProgram()
+            break
+        else:
+            print(msgPrefix + "Unknown input please retry!")
+        print("(-.-)hello")
     while comm.isRunning():
         sleep(0.1)
-    comm.close()
+    comm.close(sro)
+    
