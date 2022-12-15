@@ -143,6 +143,7 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_template(new pcl::PointCloud<pcl::PointNormal>);
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointNormal>);
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_p(new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_template_static(new pcl::PointCloud<pcl::PointNormal>);
 
   // Read in the cloud data
   pcl::PCDReader pcd_reader;
@@ -151,12 +152,16 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   // ply_reader.read("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/screw.ply", *cloud_template); // Template
   pcd_reader.read(scene_path, *cloud);	 // Target
   ply_reader.read(template_path, *cloud_template); // Template
+  ply_reader.read(template_path, *cloud_template_static); // Template
 
   for (size_t i = 0; i < cloud_template->size(); i++)
   {
     cloud_template->at(i).x = cloud_template->at(i).x/1000.0;
     cloud_template->at(i).y = cloud_template->at(i).y/1000.0;
     cloud_template->at(i).z = cloud_template->at(i).z/1000.0;
+    cloud_template_static->at(i).x = cloud_template_static->at(i).x/1000.0;
+    cloud_template_static->at(i).y = cloud_template_static->at(i).y/1000.0;
+    cloud_template_static->at(i).z = cloud_template_static->at(i).z/1000.0;
   }
 
   //  std::cout << "PointCloud before voxel grid: " << cloud->width * cloud->height
@@ -178,6 +183,11 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   transform_1(2,2) = -1; 
   pcl::transformPointCloud (*cloud, *cloud, transform_1);
 
+  // Transform from rgb to depth camera
+  Eigen::Matrix4f transform_2 = Eigen::Matrix4f::Identity();
+  transform_2(0,3) = 0.03;
+  pcl::transformPointCloud (*cloud, *cloud, transform_2);
+
   // get coordinates to help spacial filtering
   pcl::PointNormal minPt, maxPt;
   pcl::getMinMax3D(*cloud, minPt, maxPt);
@@ -195,7 +205,10 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   // Filter away points not in pick location
   spatialFilter(cloud, cloud_filtered, -0.9, -0.589, "z");
   spatialFilter(cloud_filtered, cloud_filtered, -0.036, 0.25, "y");
-  spatialFilter(cloud_filtered, cloud_filtered, -0.15, 0.2, "x");
+  spatialFilter(cloud_filtered, cloud_filtered, -0.12, 0.23, "x");
+
+
+  pcl::transformPointCloud (*cloud_filtered, *cloud_filtered, transform_1.inverse());
 
   // make point cloud of only object
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_object(cloud_template);
@@ -265,7 +278,7 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
   pcl::PointCloud<pcl::PointNormal>::Ptr object_aligned(new pcl::PointCloud<pcl::PointNormal>);
   float penalty = FLT_MAX;
-  std::cout << "Starting RANSAC..." << std::endl;
+  // std::cout << "Starting RANSAC..." << std::endl;
   pcl::common::UniformGenerator<int> gen(0, corr.size() - 1);
   for (size_t i = 0; i < iter; ++i)
   {
@@ -313,12 +326,12 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
     // Update result
     if (penaltyi < penalty)
     {
-      std::cout << "\t--> Got a new model with " << inliers << " inliers!" << std::endl;
+      // std::cout << "\t--> Got a new model with " << inliers << " inliers!" << std::endl;
       penalty = penaltyi;
       pose = T;
       if (inliers >= scene_features->size()*0.75)
       {
-        std::cout << inliers << " points out of " << scene_features->size() << " points for model are inliers. Ending RANSAC" << std::endl;
+        // std::cout << inliers << " points out of " << scene_features->size() << " points for model are inliers. Ending RANSAC" << std::endl;
         break;
       }
     }
@@ -343,10 +356,10 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   rmse = sqrtf(rmse / inliers);
 
   // // Print pose
-  std::cout << "Got the following pose:" << std::endl
-            << pose << std::endl;
-  std::cout << "Inliers: " << inliers << "/" << scene_features->size() << std::endl;
-  std::cout << "RMSE: " << rmse << std::endl;
+  // std::cout << "Got the following pose:" << std::endl
+  //           << pose << std::endl;
+  // std::cout << "Inliers: " << inliers << "/" << scene_features->size() << std::endl;
+  // std::cout << "RMSE: " << rmse << std::endl;
 
   // Inspired by lecture 6
   // Create a k-d tree for scene ICP
@@ -361,7 +374,7 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   Eigen::Matrix4f pose2 = Eigen::Matrix4f::Identity();
   pcl::PointCloud<pcl::PointNormal>::Ptr object_alignedICP(new pcl::PointCloud<pcl::PointNormal>(*object_aligned));
 
-  std::cout << "Starting ICP..." << std::endl;
+  // std::cout << "Starting ICP..." << std::endl;
   for (std::size_t i = 0; i < iter2; ++i)
   {
     // 1) Find closest points
@@ -410,10 +423,10 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   rmse = sqrtf(rmse / inliers);
 
   // Print pose
-  std::cout << "Got the following pose:" << std::endl
-            << pose2 << std::endl;
-  std::cout << "Inliers: " << inliers << "/" << object_alignedICP->size() << std::endl;
-  std::cout << "RMSE: " << rmse << std::endl;
+  // std::cout << "Got the following pose:" << std::endl
+  //           << pose2 << std::endl;
+  // std::cout << "Inliers: " << inliers << "/" << object_alignedICP->size() << std::endl;
+  // std::cout << "RMSE: " << rmse << std::endl;
 
   // Find centroid of square
   Eigen::Vector4f centroidPoint;
@@ -435,6 +448,12 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   // End timer
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
+  Eigen::Matrix4f pose_estimate = pose * pose2;
+
+  std::cout << "Final pose estimate:\n" << pose_estimate << std::endl;
+
+  std::cout << "True pose:\n" << pose_gt << std::endl;
+
   std::cout << "Execution time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
 
@@ -445,8 +464,10 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
     // v.addPointCloud<pcl::PointNormal>(object_aligned, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_aligned, 0, 255, 0), "object_aligned");
     v.addPointCloud<pcl::PointNormal>(object_alignedICP, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_alignedICP, 0, 0, 255), "object_alignedICP");
     v.addPointCloud<pcl::PointNormal>(cloud_filtered, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(cloud_filtered, 255, 0, 0), "scene");
+    v.addPointCloud<pcl::PointNormal>(cloud_template_static, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(cloud_template_static, 255, 255, 0), "cloud_template_static");
     // v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_aligned");
     v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_alignedICP");
+    v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud_template_static");
     v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "scene");
     
     v.spin();
