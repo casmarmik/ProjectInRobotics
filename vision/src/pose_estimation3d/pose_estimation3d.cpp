@@ -1,4 +1,5 @@
-# include <pose_estimation3d/pose_estimation3d.h>
+#include <pose_estimation3d/pose_estimation3d.h>
+#include <chrono>
 
 PoseEstimation3D::PoseEstimation3D()
 {
@@ -133,8 +134,11 @@ Eigen::Matrix3f PoseEstimation3D::findOrientation(pcl::PointCloud<pcl::PointNorm
   return eigen_vectors;
 }
 
-void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_path, std::string template_path)
+void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_path, std::string template_path, Eigen::Matrix4f pose_gt)
 {
+  // Start timer
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud(new pcl::PointCloud<pcl::PointNormal>);
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_template(new pcl::PointCloud<pcl::PointNormal>);
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointNormal>);
@@ -155,8 +159,8 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
     cloud_template->at(i).z = cloud_template->at(i).z/1000.0;
   }
 
-   std::cout << "PointCloud before voxel grid: " << cloud->width * cloud->height
-            << " data points (" << pcl::getFieldsList(*cloud) << ")." << std::endl;
+  //  std::cout << "PointCloud before voxel grid: " << cloud->width * cloud->height
+  //           << " data points (" << pcl::getFieldsList(*cloud) << ")." << std::endl;
 
   // Create the filtering object
   pcl::VoxelGrid<pcl::PointNormal> vox;
@@ -177,15 +181,15 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   // get coordinates to help spacial filtering
   pcl::PointNormal minPt, maxPt;
   pcl::getMinMax3D(*cloud, minPt, maxPt);
-  std::cout << "Max x: " << maxPt.x << std::endl;
-  std::cout << "Max y: " << maxPt.y << std::endl;
-  std::cout << "Max z: " << maxPt.z << std::endl;
-  std::cout << "Min x: " << minPt.x << std::endl;
-  std::cout << "Min y: " << minPt.y << std::endl;
-  std::cout << "Min z: " << minPt.z << std::endl;
+  // std::cout << "Max x: " << maxPt.x << std::endl;
+  // std::cout << "Max y: " << maxPt.y << std::endl;
+  // std::cout << "Max z: " << maxPt.z << std::endl;
+  // std::cout << "Min x: " << minPt.x << std::endl;
+  // std::cout << "Min y: " << minPt.y << std::endl;
+  // std::cout << "Min z: " << minPt.z << std::endl;
 
-  std::cout << "PointCloud before filtering: " << cloud->width * cloud->height
-            << " data points (" << pcl::getFieldsList(*cloud) << ")." << std::endl;
+  // std::cout << "PointCloud before filtering: " << cloud->width * cloud->height
+  //           << " data points (" << pcl::getFieldsList(*cloud) << ")." << std::endl;
 
 
   // Filter away points not in pick location
@@ -196,14 +200,14 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   // make point cloud of only object
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_object(cloud_template);
 
-  std::cout << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height
-            << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl;
+  // std::cout << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height
+  //           << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl;
 
   // // Find largest plane to remove table top
   findLargestPlane(cloud_filtered, cloud_p);
 
-  std::cout << "PointCloud before StatisticalOutlierRemoval: " << cloud_filtered->width * cloud_filtered->height
-            << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl; 
+  // std::cout << "PointCloud before StatisticalOutlierRemoval: " << cloud_filtered->width * cloud_filtered->height
+  //           << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl; 
   // Create the filtering object
   pcl::StatisticalOutlierRemoval<pcl::PointNormal> sor;
   sor.setInputCloud(cloud_filtered);
@@ -211,8 +215,8 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   sor.setStddevMulThresh(1.0);
   sor.filter(*cloud_filtered);
 
-  std::cout << "PointCloud after StatisticalOutlierRemoval: " << cloud_filtered->width * cloud_filtered->height
-            << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl; 
+  // std::cout << "PointCloud after StatisticalOutlierRemoval: " << cloud_filtered->width * cloud_filtered->height
+  //           << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl; 
 
   // // Compute surface normals
   pcl::NormalEstimation<pcl::PointNormal, pcl::PointNormal> ne;
@@ -312,7 +316,7 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
       std::cout << "\t--> Got a new model with " << inliers << " inliers!" << std::endl;
       penalty = penaltyi;
       pose = T;
-      if (inliers >= scene_features->size()*0.9)
+      if (inliers >= scene_features->size()*0.75)
       {
         std::cout << inliers << " points out of " << scene_features->size() << " points for model are inliers. Ending RANSAC" << std::endl;
         break;
@@ -426,16 +430,22 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   Eigen::Matrix3f rot = orientationTemplate.transpose() * orientationObject;
 
   double angle = std::acos((rot.trace() - 1) / 2) * 180 / 3.1415926536;
-  std::cout << "ANGLE " << angle << std::endl;
+  // std::cout << "ANGLE " << angle << std::endl;
+
+  // End timer
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+  std::cout << "Execution time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
 
   // visualize template on target square
   if (visualize)
   {
     pcl::visualization::PCLVisualizer v("Calculated position in pick location");
-    v.addPointCloud<pcl::PointNormal>(object_aligned, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_aligned, 0, 255, 0), "object_aligned");
+    // v.addPointCloud<pcl::PointNormal>(object_aligned, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_aligned, 0, 255, 0), "object_aligned");
     v.addPointCloud<pcl::PointNormal>(object_alignedICP, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(object_alignedICP, 0, 0, 255), "object_alignedICP");
     v.addPointCloud<pcl::PointNormal>(cloud_filtered, pcl::visualization::PointCloudColorHandlerCustom<pcl::PointNormal>(cloud_filtered, 255, 0, 0), "scene");
-    v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_aligned");
+    // v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_aligned");
     v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "object_alignedICP");
     v.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "scene");
     

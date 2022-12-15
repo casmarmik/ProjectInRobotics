@@ -4,7 +4,8 @@
 
 // Ros stuff
 #include <ros/ros.h>
-#include <std_msgs/String.h>
+#include <std_srvs/Trigger.h>
+
 
 class PoseEstimation3DNode
 {
@@ -12,23 +13,31 @@ public:
   PoseEstimation3DNode(const ros::NodeHandle& nh)
   {
     nh_ = nh;
-    // image_path_sub_ = nh_.subscribe<std_msgs::String>("image_pose2d", 1000, &PoseEstimation2DNode::poseEstimationCallback, this);
+    service_ = nh_.advertiseService("/pose_estimate3d", &PoseEstimation3DNode::poseEstimationCallback, this);
+  }
+
+  bool poseEstimationCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
+  {
+    std::string image_path;
+    bool visualize = true;
+
+    for(int i = 0;i <= 2; ++i)
+    {
+      Eigen::Matrix4f pose_gt;
+      image_path = "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/tests/depth/plug/" + std::to_string(i) + ".pcd";
+      pose3d_.executePoseEstimation(visualize, image_path, "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/plug.ply", pose_gt);
+    }
+  
+    return true;
   }
 
 private:
   ros::NodeHandle nh_;
   ros::Subscriber image_path_sub_;
   PoseEstimation3D pose3d_;
+  ros::ServiceServer service_;
 
-  void poseEstimationCallback(const std_msgs::String::ConstPtr& msg)
-  {
-    std::string image_path = msg->data;
-    cv::Mat image = cv::imread(image_path);
-
-    bool visualize = false;
   
-    pose3d_.executePoseEstimation(visualize, image_path, "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/screw.ply");
-  }
 };
 
 int main(int argc, char** argv)
