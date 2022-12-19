@@ -1,16 +1,17 @@
 import sys
 import os
 import cv2
+from cv2 import imshow
 import numpy as np
 
 # Network stuff 
 from tensorflow import keras
 
 # measured manually
-CROPPED_IMAGE_X1 = 80
-CROPPED_IMAGE_X2 = 360
-CROPPED_IMAGE_Y1 = 160
-CROPPED_IMAGE_Y2 = 470
+CROPPED_IMAGE_X1 = 65
+CROPPED_IMAGE_X2 = 315
+CROPPED_IMAGE_Y1 = 165
+CROPPED_IMAGE_Y2 = 510
 
 class CNN():
     def __init__(self):
@@ -41,11 +42,10 @@ class CNN():
         
         # Maybe it would make sense to measure how much time the prediction takes
         prediction = self.model.predict(img)
-        print(prediction)
         
+        print(prediction[0])
         # Get the index for the maxium value which will give us the class
-        max_value = max(prediction[0])
-        index = prediction(max_value)
+        index = np.argmax(prediction[0])
         return index 
 
 # This doesn't work locally
@@ -54,13 +54,28 @@ if __name__ == '__main__':
     cnn = CNN()
     cnn.load_model("/home/mads/project_in_robotics/project_in_robotics/vision/src/object_classification/model/retina_extraction.hdf5")
     # TODO collect some test image
-    test_images = cv2.imread("/home/mads/project_in_robotics/project_in_robotics/vision/data/pose_estimation2d/plug.jpeg")
-    test_images = test_images[CROPPED_IMAGE_X1:CROPPED_IMAGE_X2, CROPPED_IMAGE_Y1:CROPPED_IMAGE_Y2]
-    cv2.imshow("Cropped image, from new angle", test_images)
-    cv2.waitKey()
-    test_images = test_images / 255.
-    test_images = np.array([test_images])
-    print(test_images.shape)
-    index = cnn.predict(test_images)
+    succes_count = 0
+    for i in range(36):
+        plug_img = cv2.imread(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/tests/rgb/plug/{i}.jpeg")
+        plug_img = plug_img[CROPPED_IMAGE_X1:CROPPED_IMAGE_X2, CROPPED_IMAGE_Y1:CROPPED_IMAGE_Y2]
+        plug_img = plug_img / 255.
+        plug_img = np.array([plug_img])
+        index = cnn.predict(plug_img)
 
-    print(index)
+        if index == 1:
+            print("correct plug")
+            succes_count = succes_count + 1
+        else:
+            print("wrong plug")
+        screw_img = cv2.imread(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/tests/rgb/screw/{i}.jpeg")
+        screw_img = screw_img[CROPPED_IMAGE_X1:CROPPED_IMAGE_X2, CROPPED_IMAGE_Y1:CROPPED_IMAGE_Y2]
+        screw_img = screw_img / 255.
+        screw_img = np.array([screw_img])
+        index = cnn.predict(screw_img)
+        if index == 0:
+            print("correct screw")
+            succes_count = succes_count + 1
+        else:
+            print("wrong screw")
+    
+    print(succes_count)

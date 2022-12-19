@@ -180,6 +180,10 @@ add_executable(pose_estimation2d_node
   src/pose_estimation2d/pose_estimation2d_node.cpp
   )
 
+  add_executable(pose_estimation2d_test
+  src/pose_estimation2d/pose_estimation_test_node.cpp
+  )
+
 add_executable(pose_estimation3d_node
   src/pose_estimation3d/pose_estimation3d_node.cpp
   )
@@ -203,6 +207,8 @@ add_dependencies(calibrate ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED
 add_dependencies(image_sim ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_dependencies(pose_estimation2d_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_dependencies(pose_estimation2d_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_dependencies(pose_estimation3d_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -237,6 +243,13 @@ target_link_libraries(pose_estimation2d_node
   ${OpenCV_LIBRARIES}
   pose_estimation2d
 )
+
+target_link_libraries(pose_estimation2d_test
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  pose_estimation2d
+)
+
 
 target_link_libraries(pose_estimation3d_node
   ${catkin_LIBRARIES}

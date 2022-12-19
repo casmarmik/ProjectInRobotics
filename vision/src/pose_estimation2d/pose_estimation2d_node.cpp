@@ -35,7 +35,7 @@ private:
 
     cv::Point2f object_center;
     double angle;
-    pose2d_.computePoseEstimation(image, object_center, angle);
+    // pose2d_.computePoseEstimation(image, 0, object_center, angle);
 
     // Publish pose estimate for motion planner
     pir_msgs::HomographyPose pose;
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
                              "plug.jpeg");
   cv::Point2f object_center;
   double angle;
-  pose2d_.computePoseEstimation(image, object_center, angle);
+  // pose2d_.computePoseEstimation(image, 0, object_center, angle);
 
   ros::spin();
 

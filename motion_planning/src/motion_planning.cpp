@@ -8,6 +8,7 @@ MotionPlanning::MotionPlanning(const ros::NodeHandle& nh, std::string arm_name)
   nh_ = nh;
   arm_.reset(new moveit::planning_interface::MoveGroupInterface(arm_name));
   arm_->setNumPlanningAttempts(10);
+  std::cout << "Planning ID: " << arm_->getPlannerId() << std::endl;
 
   // I think this can be used to set how fast the robot will move
   // TODO maybe test this
@@ -18,7 +19,7 @@ MotionPlanning::MotionPlanning(const ros::NodeHandle& nh, std::string arm_name)
                                                                    &MotionPlanning::homographyPoseCallback, this);
 
   target_3d_sub_ =
-      nh_.subscribe<pir_msgs::Pose3D>("/motion_planning/pose3D", 1000, &MotionPlanning::homographyPoseCallback, this);
+      nh_.subscribe<pir_msgs::Pose3D>("/motion_planning/pose3D", 1000, &MotionPlanning::pose3DCallback, this);
 
   homography_pose_received_ = false;
   pose_3d_received_ = false;
@@ -159,7 +160,7 @@ bool MotionPlanning::execute_motion(std::vector<moveit::planning_interface::Move
   return true;
 }
 
-geometry_msgs::Pose MotionPlanning::calculate_3d_to_3d_pose(double x, double y, double angle)
+void MotionPlanning::calculate_3d_to_3d_pose(double x, double y, double angle)
 {
   // TODO calculate this
 
@@ -220,7 +221,7 @@ void MotionPlanning::homographyPoseCallback(const pir_msgs::HomographyPose::Cons
   homography_pose_received_ = true;
 }
 
-void MotionPlanning::pose3D(const pir_msgs::HomographyPose::ConstPtr& msg)
+void MotionPlanning::pose3DCallback(const pir_msgs::Pose3D::ConstPtr& msg)
 {
 }
 

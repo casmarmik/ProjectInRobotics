@@ -1,5 +1,6 @@
 #include "pose_estimation2d/pose_estimation2d.h"
 #include <opencv2/highgui.hpp>
+#include "opencv2/features2d.hpp"
 
 #include <opencv2/calib3d.hpp>
 #include <iostream>
@@ -18,18 +19,16 @@ PoseEstimation2D::PoseEstimation2D(std::string homography_path)
   loadHomography(homography_path);
 }
 
-void PoseEstimation2D::computePoseEstimation(cv::Mat image, cv::Point2f& object_center, double& object_orientation,
-                                             bool debug)
+void PoseEstimation2D::computePoseEstimation(cv::Mat& image, cv::Mat object_img, int object, cv::Point2f& object_center,
+                                             double& object_orientation, double& second_orientation, bool debug)
 {
-  // TODO map to the plane before finding the contours or maybe do some other stuff to handle the offset that is comming
-  // when mapping to the plane
   image_ = image;
 
   // Crop the input image into grasping area
   cropImage();
 
   // Compute the binary image
-  cv::Mat binary_image = computeBinaryImage(debug);
+  cv::Mat binary_image = computeBinaryImage(object, debug);
 
   // Find the contour of the object
   std::vector<cv::Point> contour = getContour(binary_image, debug);
@@ -38,12 +37,79 @@ void PoseEstimation2D::computePoseEstimation(cv::Mat image, cv::Point2f& object_
   object_center = getObjectCenter(contour, debug);
 
   // Calculate the angle of the object
-  object_orientation = getAngle(contour, true);
+  object_orientation = getAngle(contour, debug);
+
+  // ORB based orientation computation
+  cv::Rect rect = computeBoundedRectangle(contour);
+  cv::Mat rect_image = cropImageBasedOnRectangle(rect);
+  second_orientation = computeAngle(object_img, rect_image);
+
+  // Doesn't produced better results unfortantely
+  // std::vector<cv::Point2f> image_point;
+  // std::vector<cv::Point2f> table_point;
+  // cv::Point2f center_of_rect = (rect.br() + rect.tl()) * 0.5;
+  // image_point.push_back(center_of_rect);
+
+  // cv::perspectiveTransform(image_point, table_point, homography_);
+  // object_center = table_point[0];
+}
+
+double PoseEstimation2D::computeAngle(cv::Mat object, cv::Mat rect_img)
+{
+  cv::Mat descriptor_1, descriptor_2;
+  std::vector<cv::KeyPoint> keypoints_1, keypoints_2;
+
+  cv::Mat object_gray, rect_img_gray;
+  cv::cvtColor(object, object_gray, cv::COLOR_BGR2GRAY);
+  cv::cvtColor(rect_img, rect_img_gray, cv::COLOR_BGR2GRAY);
+
+  cv::Ptr<cv::ORB> detector = cv::ORB::create();
+
+  detector->detectAndCompute(object_gray, cv::noArray(), keypoints_1, descriptor_1);
+  detector->detectAndCompute(rect_img_gray, cv::noArray(), keypoints_2, descriptor_2);
+
+  std::vector<cv::DMatch> matches;
+  cv::BFMatcher matcher(cv::NORM_L2);  // Euclidian distance
+
+  matcher.match(descriptor_1, descriptor_2, matches);
+
+  // Compute the coordinates for the keypoints
+  std::vector<cv::Point2f> object_points, rect_img_points;
+  for (unsigned int i = 0; i < matches.size(); ++i)
+  {
+    cv::Point2f object_point = keypoints_1[matches[i].queryIdx].pt;
+    cv::Point2f rect_img_point = keypoints_2[matches[i].trainIdx].pt;
+    object_points.push_back(object_point);
+    rect_img_points.push_back(rect_img_point);
+  }
+
+  cv::Mat affineMapping = cv::estimateAffine2D(object_points, rect_img_points);
+  // Compute angle
+  double ss = -affineMapping.at<double>(0, 1);
+  double sc = affineMapping.at<double>(0, 0);
+  double angle = atan2(ss, sc);
+  return angle;
+}
+
+cv::Mat PoseEstimation2D::cropImageBasedOnRectangle(cv::Rect rect)
+{
+  cv::Mat masked_image = cv::Mat::zeros(image_.size(), image_.type());
+
+  for (unsigned int cols = rect.tl().x; cols < rect.br().x; ++cols)
+  {
+    for (unsigned int rows = rect.tl().y; rows < rect.br().y; ++rows)
+    {
+      masked_image.at<cv::Vec3b>(rows, cols)[0] = image_.at<cv::Vec3b>(rows, cols)[0];
+      masked_image.at<cv::Vec3b>(rows, cols)[1] = image_.at<cv::Vec3b>(rows, cols)[1];
+      masked_image.at<cv::Vec3b>(rows, cols)[2] = image_.at<cv::Vec3b>(rows, cols)[2];
+    }
+  }
+
+  return masked_image;
 }
 
 void PoseEstimation2D::cropImage()
 {
-  // TODO does it make sense to warp the image first?
   cv::Mat masked_image = cv::Mat::zeros(image_.size(), image_.type());
   for (unsigned int cols = 207; cols < 458; ++cols)
   {
@@ -101,10 +167,20 @@ void PoseEstimation2D::loadHomography(std::string homography_path)
   file.release();
 }
 
-cv::Mat PoseEstimation2D::computeBinaryImage(bool show_image)
+cv::Mat PoseEstimation2D::computeBinaryImage(int object, bool show_image)
 {
-  cv::Scalar lower(34, 0, 0);
-  cv::Scalar upper(179, 255, 201);
+  cv::Scalar lower;
+  cv::Scalar upper;
+  if (object == 1)  // Screw
+  {
+    lower = cv::Scalar(34, 0, 0);
+    upper = cv::Scalar(179, 255, 160);
+  }
+  else  // plug
+  {
+    lower = cv::Scalar(34, 0, 0);
+    upper = cv::Scalar(179, 255, 180);
+  }
 
   cv::Mat mask, hsv_image, masked_image;
   cv::cvtColor(cropped_image_, hsv_image, cv::COLOR_BGR2HSV);
@@ -114,20 +190,51 @@ cv::Mat PoseEstimation2D::computeBinaryImage(bool show_image)
   cv::Mat gray_image, binary_image;
   cv::cvtColor(masked_image, gray_image, cv::COLOR_BGR2GRAY);
   cv::GaussianBlur(gray_image, gray_image, cv::Size(5, 5), 0);
-  cv::threshold(gray_image, binary_image, 10, 255, cv::THRESH_BINARY);
+  cv::GaussianBlur(gray_image, gray_image, cv::Size(5, 5), 0);
+  cv::threshold(gray_image, binary_image, 60, 100, cv::THRESH_BINARY);
+
+  if (show_image)
+  {
+    cv::imshow("binary image", binary_image);
+    cv::waitKey();
+    cv::destroyAllWindows();
+  }
 
   cv::Mat dilate_element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
   cv::Mat erode_element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
 
-  // Dilate the image
-  cv::dilate(binary_image, binary_image, dilate_element);
-  cv::dilate(binary_image, binary_image, dilate_element);
-  cv::dilate(binary_image, binary_image, dilate_element);
-  cv::dilate(binary_image, binary_image, dilate_element);
+  if (object == 1)  // Screw
+  {
+    // Dilate the image
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
 
-  // Erode the image
-  cv::erode(binary_image, binary_image, erode_element);
-  cv::erode(binary_image, binary_image, erode_element);
+    // Erode the image
+    cv::erode(binary_image, binary_image, erode_element);
+    cv::erode(binary_image, binary_image, erode_element);
+  }
+  else  // plug
+  {
+    // Dilate the image
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+    cv::dilate(binary_image, binary_image, dilate_element);
+
+    // Erode the image
+    cv::erode(binary_image, binary_image, erode_element);
+    cv::erode(binary_image, binary_image, erode_element);
+    // cv::erode(binary_image, binary_image, erode_element);
+    // cv::erode(binary_image, binary_image, erode_element);
+  }
 
   if (show_image)
   {
@@ -136,6 +243,12 @@ cv::Mat PoseEstimation2D::computeBinaryImage(bool show_image)
     cv::destroyAllWindows();
   }
   return binary_image;
+}
+
+cv::Rect PoseEstimation2D::computeBoundedRectangle(std::vector<cv::Point> contour)
+{
+  cv::Rect rect = cv::boundingRect(contour);
+  return rect;
 }
 
 std::vector<cv::Point> PoseEstimation2D::getContour(cv::Mat binary_image, bool show_image)
@@ -174,16 +287,19 @@ std::vector<cv::Point> PoseEstimation2D::getContour(cv::Mat binary_image, bool s
 
   if (show_image)
   {
+    // cv::Scalar color = cv::Scalar(0, 0, 255);
+    // cv::drawContours(cropped_image_, approx, -1, color, 3);
     // Loop through all contours to draw them
-    for (size_t i = 0; i < contours.size(); i++)
-    {
-      cv::Scalar color = cv::Scalar(0, 0, 255);
-      cv::drawContours(cropped_image_, contours, (int)i, color, 2, cv::LINE_8, hierarchy, 0);
-    }
+    // for (size_t i = 0; i < contours.size(); i++)
+    // {
+    //   cv::Scalar color = cv::Scalar(0, 0, 255);
+    //   cv::drawContours(cropped_image_, contours, (int)i, color, 2, cv::LINE_8, hierarchy, 0);
+    // }
     cv::imshow("Contours", cropped_image_);
     cv::waitKey();
     cv::destroyAllWindows();
   }
+
   return contour;
 }
 
@@ -238,14 +354,20 @@ double PoseEstimation2D::getAngle(std::vector<cv::Point> contour, bool debug)
   if (debug)
   {
     // Draw the principal components
-    cv::circle(image_, cntr, 3, cv::Scalar(255, 0, 255), 2);
     cv::Point p1 = cntr + 0.02 * cv::Point(static_cast<int>(eigen_vecs[0].x * eigen_val[0]),
                                            static_cast<int>(eigen_vecs[0].y * eigen_val[0]));
     cv::Point p2 = cntr - 0.02 * cv::Point(static_cast<int>(eigen_vecs[1].x * eigen_val[1]),
                                            static_cast<int>(eigen_vecs[1].y * eigen_val[1]));
-    drawAxis(cntr, p1, cv::Scalar(0, 255, 0), 1);
-    drawAxis(cntr, p2, cv::Scalar(255, 255, 0), 5);
-    std::cout << "orientation of binary object: " << angle << std::endl;
+    drawAxis(cntr, p1, cv::Scalar(0, 0, 255), 10);
+    drawAxis(cntr, p2, cv::Scalar(0, 255, 0), 10);
+    // line(cropped_image_, cv::Point(0, cropped_image_.rows), cv::Point(200, cropped_image_.rows), cv::Scalar(0, 0,
+    // 255),
+    //      10);
+    // line(cropped_image_, cv::Point(0, cropped_image_.rows), cv::Point(0, cropped_image_.rows - 200),
+    //      cv::Scalar(0, 255, 0), 10);
+    cv::imshow("Image", image_);
+    std::cout << "orientation of binary object: " << -angle << std::endl;
+    cv::waitKey();
   }
   return angle;
 }
@@ -256,14 +378,13 @@ cv::Point2f PoseEstimation2D::getObjectCenter(std::vector<cv::Point> contour, bo
   cv::Point center_of_mass;
   center_of_mass.x = (moments.m10 / moments.m00);
   center_of_mass.y = (moments.m01 / moments.m00);
-  std::cout << center_of_mass.x << " " << center_of_mass.y << std::endl;
 
   std::vector<cv::Point2f> image_point;
   std::vector<cv::Point2f> table_point;
   image_point.push_back(center_of_mass);
 
   cv::perspectiveTransform(image_point, table_point, homography_);
-
+  cv::circle(image_, center_of_mass, 5, cv::Scalar(0, 255, 0));
   if (debug)
   {
     cv::circle(cropped_image_, center_of_mass, 5, cv::Scalar(0, 255, 0));
