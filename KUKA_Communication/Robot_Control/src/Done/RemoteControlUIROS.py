@@ -8,7 +8,6 @@ from time import time, sleep
 import rospy as ro
 from trajectory_msgs.msg import JointTrajectory as JT
 from trajectory_msgs.msg import JointTrajectoryPoint as JTp
-import urllib.request
 
 # Global variables
 currPoseForPublisher = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -53,8 +52,17 @@ class simROS:
     def getNPPoses(self):
         l = []
         for pos in self.simPoses.points:
-            l.append(pos.positions)
+            t_temp = pos.time_from_start.to_sec()
+            temp = []
+            for i in range(0, 6):
+                temp.append(pos.positions[i])
+            temp.append(t_temp)
+            print("--------------------------------------")
+            print(temp)
+            print("--------------------------------------")
 
+            l.append(temp)
+        
         return np.array(l)
 
     def getSimPoses(self):
@@ -283,6 +291,8 @@ class controllerComm:
             timeElapsed = time() - self.timePathStart
             if len(self.pathPoses) > 1 and self.pathPoses[1][-1] < timeElapsed:
                 self.debugMsg("Current Time: " + str(timeElapsed))
+                self.debugMsg("Path poses: " + str(self.pathPoses))
+ 
                 self.pathPoses.popleft()
             if len(self.pathPoses) == 1:
                 self.pathState = '0'
@@ -390,16 +400,16 @@ if __name__ == '__main__':
     #comm.setStartAndEndPoses()
 
 
-    publishable_pose = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
-                                 [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
-                                 [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
-                                 [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
+    #publishable_pose = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+    #                             [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
+    #                             [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
+    #                             [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
 
     # Recieve Path poses from ROS node ----- for now hard coded as a reversed poses list
-    pathPosesForComm = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
-                                [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
-                                [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
-                                [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
+    #pathPosesForComm = np.array([[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+    #                            [-10.0,0.0,0.0,0.0,0.0,0.0,4.0],
+    #                            [-20.0,0.0,0.0,0.0,0.0,0.0,8.0],
+    #                            [-30.0,0.0,0.0,0.0,0.0,0.0,12.0]])
     # Set PTP motions where needed ----- for now hard coded as a reversed poses list
     PTPPosesForComm = np.array([[10.0,-90.0,90.0,0.0,0.0,0.0],
                                 [20.0,-90.0,90.0,0.0,0.0,0.0],
@@ -435,7 +445,7 @@ if __name__ == '__main__':
             comm.startPTP(home)
         elif command == 'm':
             print("Starting path motion")
-            comm.startPath(pathPosesForComm)#sro.getNPPoses())
+            comm.startPath(sro.getNPPoses())
         elif command == 's':
             print(msgPrefix + "Stopping motion")
             comm.stopMotion()
