@@ -1,9 +1,12 @@
 #include <pose_estimation3d/pose_estimation3d.h>
 #include <chrono>
+#include <valarray>
+#include <cmath>
+#include <fstream>
 
 PoseEstimation3D::PoseEstimation3D()
 {
-
+  pcl::console::setVerbosityLevel(pcl::console::L_ALWAYS);
 }
 
 // Inspired by lecture 6
@@ -75,7 +78,7 @@ void PoseEstimation3D::findLargestPlane(pcl::PointCloud<pcl::PointNormal>::Ptr &
   extract.setNegative(true);
   extract.filter(*output_cloud);
   input_cloud.swap(output_cloud);
-  std::cout << "PointCloud representing the planar component: " << output_cloud->width * output_cloud->height << " data points remaining." << std::endl;
+  // std::cout << "PointCloud representing the planar component: " << output_cloud->width * output_cloud->height << " data points remaining." << std::endl;
 }
 
 pcl::PointNormal PoseEstimation3D::findCentroid(pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud)
@@ -134,7 +137,7 @@ Eigen::Matrix3f PoseEstimation3D::findOrientation(pcl::PointCloud<pcl::PointNorm
   return eigen_vectors;
 }
 
-void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_path, std::string template_path, Eigen::Matrix4f pose_gt)
+void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_path, std::string template_path, Eigen::Matrix4f pose_gt, Eigen::Matrix4f base2cam)
 {
   // Start timer
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -163,6 +166,7 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
     cloud_template_static->at(i).y = cloud_template_static->at(i).y/1000.0;
     cloud_template_static->at(i).z = cloud_template_static->at(i).z/1000.0;
   }
+  pcl::transformPointCloud (*cloud_template_static, *cloud_template_static, pose_gt);
 
   //  std::cout << "PointCloud before voxel grid: " << cloud->width * cloud->height
   //           << " data points (" << pcl::getFieldsList(*cloud) << ")." << std::endl;
@@ -177,15 +181,20 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   vox.setInputCloud(cloud_template);
   vox.setLeafSize(leaf_size, leaf_size, leaf_size);
   vox.filter(*cloud_template);
+  vox.setInputCloud(cloud_template_static);
+  vox.setLeafSize(leaf_size, leaf_size, leaf_size);
+  vox.filter(*cloud_template_static);
 
   Eigen::Matrix4f transform_1 = Eigen::Matrix4f::Identity();
   transform_1(1,1) = -1;
   transform_1(2,2) = -1; 
   pcl::transformPointCloud (*cloud, *cloud, transform_1);
+  pcl::transformPointCloud (*cloud_template_static, *cloud_template_static, transform_1);
+  pcl::transformPointCloud (*cloud_template, *cloud_template, transform_1);
 
   // Transform from rgb to depth camera
   Eigen::Matrix4f transform_2 = Eigen::Matrix4f::Identity();
-  transform_2(0,3) = 0.03;
+  transform_2(0,3) = -0.03;
   pcl::transformPointCloud (*cloud, *cloud, transform_2);
 
   // get coordinates to help spacial filtering
@@ -209,9 +218,6 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
 
 
   pcl::transformPointCloud (*cloud_filtered, *cloud_filtered, transform_1.inverse());
-
-  // make point cloud of only object
-  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_object(cloud_template);
 
   // std::cout << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height
   //           << " data points (" << pcl::getFieldsList(*cloud_filtered) << ")." << std::endl;
@@ -280,6 +286,8 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   float penalty = FLT_MAX;
   // std::cout << "Starting RANSAC..." << std::endl;
   pcl::common::UniformGenerator<int> gen(0, corr.size() - 1);
+  // std::chrono::steady_clock::time_point seed_time = std::chrono::steady_clock::now();
+  // gen.setSeed(std::chrono::duration_cast<std::chrono::milliseconds>(seed_time - begin).count());
   for (size_t i = 0; i < iter; ++i)
   {
     // Sample 3 random correspondences
@@ -329,7 +337,7 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
       // std::cout << "\t--> Got a new model with " << inliers << " inliers!" << std::endl;
       penalty = penaltyi;
       pose = T;
-      if (inliers >= scene_features->size()*0.75)
+      if (inliers >= scene_features->size()*0.85)
       {
         // std::cout << inliers << " points out of " << scene_features->size() << " points for model are inliers. Ending RANSAC" << std::endl;
         break;
@@ -423,38 +431,117 @@ void PoseEstimation3D::executePoseEstimation(bool visualize, std::string scene_p
   rmse = sqrtf(rmse / inliers);
 
   // Print pose
-  // std::cout << "Got the following pose:" << std::endl
+  // std::cout << "Got the following ICPpose:" << std::endl
   //           << pose2 << std::endl;
+
+  Eigen::Matrix4f pose_estimate = pose * pose2;
+  pcl::transformPointCloud(*cloud_template_static, *cloud_template_static, transform_1.inverse());
   // std::cout << "Inliers: " << inliers << "/" << object_alignedICP->size() << std::endl;
   // std::cout << "RMSE: " << rmse << std::endl;
+  // pcl::transformPointCloud(*object_alignedICP, *object_alignedICP, pose_estimate.inverse());
+  // pcl::transformPointCloud(*cloud_filtered, *cloud_filtered, pose_estimate.inverse());
+  // pcl::transformPointCloud(*object_alignedICP, *object_alignedICP, base2cam.inverse());
+  // pcl::transformPointCloud(*cloud_filtered, *cloud_filtered, base2cam.inverse());
 
   // Find centroid of square
   Eigen::Vector4f centroidPoint;
   pcl::compute3DCentroid(*object_alignedICP, centroidPoint);
   // Find centroid of template
-  Eigen::Vector4f centroidPointTemplate;
-  pcl::compute3DCentroid(*cloud_template, centroidPointTemplate);
+  Eigen::Vector4f centroidPointScene;
+  pcl::compute3DCentroid(*cloud_template_static, centroidPointScene);
   // // find orientation of template and object
-  Eigen::Matrix3f orientationTemplate, orientationObject;
-  orientationTemplate = findOrientation(cloud_template, centroidPointTemplate);
+  // Eigen::Matrix3f orientationScene, orientationObject;
+  // orientationScene = findOrientation(cloud_template_static, centroidPointScene);
+  // orientationObject = findOrientation(object_alignedICP, centroidPoint);
+
+  
+  std::cout << "centroidPoint:\n" << centroidPoint << std::endl;
+  std::cout << "True centroidPoint:\n" << centroidPointScene << std::endl;
+
+  std::ofstream centroidFile;
+  centroidFile.open("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/tests/depth/coordinate_test_plug.txt", ios::app);
+  centroidFile << centroidPointScene[0] - centroidPoint[0] << " " << centroidPointScene[1] - centroidPoint[1] << "\n";
+  centroidFile.close();
+
+  // for (size_t i = 0; i < cloud_template_static->size(); i++)
+  // {
+  //   cloud_template_static->at(i).x = cloud_template_static->at(i).x - centroidPointScene[0];
+  //   cloud_template_static->at(i).y = cloud_template_static->at(i).y - centroidPointScene[1];
+  //   cloud_template_static->at(i).z = cloud_template_static->at(i).z - centroidPointScene[2];
+  // }
+
+  // for (size_t i = 0; i < object_alignedICP->size(); i++)
+  // {
+  //   object_alignedICP->at(i).x = object_alignedICP->at(i).x - centroidPoint[0];
+  //   object_alignedICP->at(i).y = object_alignedICP->at(i).y - centroidPoint[1];
+  //   object_alignedICP->at(i).z = object_alignedICP->at(i).z - centroidPoint[2];
+  // }
+
+  pcl::compute3DCentroid(*object_alignedICP, centroidPoint);
+  pcl::compute3DCentroid(*cloud_template_static, centroidPointScene);
+  // // find orientation of template and object
+  Eigen::Matrix3f orientationScene, orientationObject;
+  orientationScene = findOrientation(cloud_template_static, centroidPointScene);
   orientationObject = findOrientation(object_alignedICP, centroidPoint);
 
+  pcl::PointCloud<pcl::PointNormal>::Ptr orientedScene(new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PCA<pcl::PointNormal> pcaScene;
+  pcaScene.setInputCloud(cloud_template_static);
+  pcaScene.project(*cloud_template_static, *orientedScene);
+
+  pcl::PointCloud<pcl::PointNormal>::Ptr orientedObject(new pcl::PointCloud<pcl::PointNormal>);
+  pcl::PCA<pcl::PointNormal> pcaObject;
+  pcaObject.setInputCloud(object_alignedICP);
+  pcaObject.project(*object_alignedICP, *orientedObject);
+  std::cout << "orientedObject\n" << pcaObject.getEigenVectors() << std::endl;
+  std::cout << "orientedScene\n" << pcaScene.getEigenVectors()  << std::endl;
+
+  
+  // pcl::transformPointCloud(*object_alignedICP, *object_alignedICP, pose_estimate.inverse());
+  // pcl::compute3DCentroid(*object_alignedICP, centroidPoint); 
+  // pcl::transformPointCloud(*cloud_template_static, *cloud_template_static, pose_gt.inverse());
+  // pcl::compute3DCentroid(*cloud_template_static, centroidPointScene);
+
   // Find axis angle representation difference  Inspired by https://math.stackexchange.com/questions/2113634/comparing-two-rotation-matrices
-  Eigen::Matrix3f rot = orientationTemplate.transpose() * orientationObject;
+  Eigen::Matrix3f rot = orientationScene.transpose() * orientationObject;
+  double angle = std::acos((rot.trace() - 1) / 2) * 180 / 3.141592653589793238463;
+  std::cout << "ANGLE " << angle << std::endl;
 
-  double angle = std::acos((rot.trace() - 1) / 2) * 180 / 3.1415926536;
-  // std::cout << "ANGLE " << angle << std::endl;
+  float x1,y1,x2,y2,z1,z2, dot, det, ang, lenSq1, lenSq2;
+  x1 = pcaObject.getEigenVectors()(0,0);
+  y1 = pcaObject.getEigenVectors()(1,0);
+  z1 = pcaObject.getEigenVectors()(2,0);
+  x2 = pcaScene.getEigenVectors()(0,0);
+  y2 = pcaScene.getEigenVectors()(1,0);
+  z2 = pcaScene.getEigenVectors()(2,0);
+  dot = x1*x2 + y1*y2;
+  det = x1*y2 - y1*x2;
+  ang = atan2(det, dot);
 
-  // End timer
-  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  dot = x1*x2 + y1*y2;
+  lenSq1 = x1*x1 + y1*y1;
+  lenSq2 = x2*x2 + y2*y2;
+  ang = acos(dot/sqrt(lenSq1 * lenSq2));
+  std::cout << "ang: " << ang << std::endl;
+  ang = ang * (180.0/3.141592653589793238463);
+  std::cout << "angdeg: " << ang << std::endl;
 
-  Eigen::Matrix4f pose_estimate = pose * pose2;
+  std::ofstream angFile;
+  angFile.open("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/tests/depth/angle_test_plug.txt", ios::app);
+  angFile << ang << "\n";
+  angFile.close();
 
   std::cout << "Final pose estimate:\n" << pose_estimate << std::endl;
 
   std::cout << "True pose:\n" << pose_gt << std::endl;
 
+  // End timer
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "Execution time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+  std::ofstream timeFile;
+  timeFile.open("/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/tests/depth/time_test_plug.txt", ios::app);
+  timeFile << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "\n";
+  timeFile.close();
 
 
   // visualize template on target square

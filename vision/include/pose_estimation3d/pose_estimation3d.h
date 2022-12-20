@@ -27,13 +27,14 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/centroid.h>
+#include <pcl/common/pca.h>
 #include <pcl/io/ply_io.h>
 
 class PoseEstimation3D
 {
 public:
   PoseEstimation3D();
-  void executePoseEstimation(bool visualize, std::string scene_path, std::string template_path, Eigen::Matrix4f pose_gt);
+  void executePoseEstimation(bool visualize, std::string scene_path, std::string template_path, Eigen::Matrix4f pose_gt, Eigen::Matrix4f base2cam);
 private:
   inline float dist_sq(const pcl::Histogram<153> &query, const pcl::Histogram<153> &target);
   void nearest_feature(const pcl::Histogram<153> &query, const pcl::PointCloud<pcl::Histogram<153>> &target, int &idx, float &distsq);

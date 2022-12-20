@@ -23,7 +23,7 @@ public:
   bool poseEstimationCallback()
   {
     std::string image_path;
-    bool visualize = true;
+    bool visualize = false;
 
     Eigen::Matrix4f base2cam = Eigen::Matrix4f::Identity();
     base2cam(0,0) = 0.998620015673737 ;
@@ -43,7 +43,7 @@ public:
 
     float x,y,z;
 
-    for(int i = 0;i <= 0; ++i)
+    for(int i = 0;i <= 35; ++i)
     {
       Eigen::Matrix4f pose_gt_temp;
       Eigen::Matrix4f pose_gt = Eigen::Matrix4f::Identity();
@@ -55,11 +55,44 @@ public:
       Eigen::Affine3f transform(Eigen::Translation3f(x,y,z));
       Eigen::Matrix4f trans = transform.matrix();
       std::cout << "Number: " << i << std::endl;
-      std::cout << trans << std::endl;
-      pose_gt_temp = trans.inverse() * base2cam;
+      Eigen::Matrix4f rot_gt = Eigen::Matrix4f::Zero();
+      rot_gt(2,2) = 1;
+      rot_gt(3,3) = 1;
+      if (i%4==3)
+      {
+        rot_gt(0,1) = 1;
+        rot_gt(1,0) = -1;
+      }
+      else if(i%4==2)
+      {
+        rot_gt(0,0) = 1;
+        rot_gt(1,1) = 1;
+      }
+      else if(i%4==1)
+      {
+        rot_gt(0,1) = -1;
+        rot_gt(1,0) = 1;
+      }
+      else if(i%4==0)
+      {
+        rot_gt(0,0) = -1;
+        rot_gt(1,1) = -1;
+      }
+      Eigen::Matrix4f rot_x = Eigen::Matrix4f::Identity();
+      rot_x(1,1) = -1;
+      rot_x(2,2) = -1;
+
+      pose_gt_temp = rot_gt * rot_x;
+      rot_gt = pose_gt_temp;
+      pose_gt_temp = pose_gt;
+      pose_gt = pose_gt_temp * rot_gt;
+      pose_gt_temp = (trans * rot_gt).inverse() * base2cam;
       pose_gt = pose_gt_temp.inverse();
-      image_path = "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/tests/depth/screw/" + std::to_string(i) + ".pcd";
-      pose3d_.executePoseEstimation(visualize, image_path, "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/screw.ply", pose_gt);
+      image_path = "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/tests/depth/plug/" + std::to_string(i) + ".pcd";
+      pose3d_.executePoseEstimation(visualize, image_path, "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/templates/plug.ply", pose_gt, base2cam);
+    
+      
+      // std::cout << trans << std::endl;
     }
   
     return true;
