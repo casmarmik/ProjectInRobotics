@@ -20,7 +20,7 @@ class ControlBarBase:
 
     def __init__(self, img_path: Path):
         self.img_bgr: np.ndarray = cv2.imread(str(img_path))
-        self.img_bgr = self.img_bgr[77:300, 207:458]
+        #self.img_bgr = self.img_bgr[77:300, 207:458]
         #self.img_bgr = self.img_bgr[36:1937, 577:2120] # change when the setup is changed
         self.init_window()
         self.init_track_bar()
@@ -103,6 +103,6 @@ class ControlBarHSV(ControlBarBase):
 
 
 if __name__ == '__main__':
-    image_path = "vision/data/homography/plug.jpeg"
+    image_path = "vision/data/object_classification_data/cropped_images2/1/1.jpeg"
     obj = ControlBarHSV(image_path)
     obj.run()

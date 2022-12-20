@@ -10,10 +10,10 @@ from vision.msg import PoseEstimation
 
 
 # measured manually
-CROPPED_IMAGE_X1 = 80
-CROPPED_IMAGE_X2 = 360
-CROPPED_IMAGE_Y1 = 160
-CROPPED_IMAGE_Y2 = 470
+CROPPED_IMAGE_X1 = 65
+CROPPED_IMAGE_X2 = 315
+CROPPED_IMAGE_Y1 = 165
+CROPPED_IMAGE_Y2 = 510
 
 class NetworkNode:
     def __init__(self, model="/home/mads/project_in_robotics/project_in_robotics/vision/src/object_classification/model/retina_extraction.hdf5"):

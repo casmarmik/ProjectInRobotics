@@ -356,7 +356,7 @@ if __name__ == '__main__':
 
     # Default joint angles values for robot home position
     # Robot will go to here when the home function is called
-    home = [45.0, -90.0, 90.0, 0.0, 0.0, 0.0]
+    home = [0.0, -90.0, 90.0, 0.0, 0.0, 0.0]
 
     # Initialize instance of controllerComm object with default parameters
     comm = controllerComm()

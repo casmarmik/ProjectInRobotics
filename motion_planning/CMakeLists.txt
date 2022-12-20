@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   moveit_ros_planning_interface
   pluginlib
+  pir_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -106,11 +107,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- #INCLUDE_DIRS include
+  INCLUDE_DIRS include
   CATKIN_DEPENDS
   moveit_ros_planning_interface
   roscpp rospy
   std_msgs
+  pir_msgs
 )
 
 ###########
@@ -120,7 +122,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  #include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -128,11 +130,16 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/pointnet.cpp
 # )
+add_library(motion_planning
+  src/motion_planning.cpp
+  include/motion_planning.h
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(motion_planning ${catkin_LIBRARIES})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -151,10 +158,15 @@ add_executable(motion_planning_node
 ## same as for the library above
 add_dependencies(motion_planning_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-
 ## Specify libraries to link a library or executable target against
+
+target_link_libraries(motion_planning
+  ${catkin_LIBRARIES}
+)
+
 target_link_libraries(motion_planning_node
   ${catkin_LIBRARIES}
+  motion_planning
 )
 
 #############

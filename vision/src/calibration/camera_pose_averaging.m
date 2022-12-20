@@ -11,7 +11,7 @@ end
 
 % Calculate x, y and z means
 meanx = mean(camera_poses(1,4,:));
-meany = mean(camera_poses(2,4,:));
+meany = mean(camera_poses(2,4,:));e
 meanz = mean(camera_poses(3,4,:));
 
 % Calculate mean rotations, based on

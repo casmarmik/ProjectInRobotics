@@ -4,8 +4,8 @@
 
 // Ros stuff
 #include <ros/ros.h>
-#include <vision/PoseEstimation.h>
-#include <vision/Pose.h>
+#include <pir_msgs/PoseEstimation.h>
+#include <pir_msgs/HomographyPose.h>
 
 using namespace pose_estimation_2d;
 
@@ -15,10 +15,10 @@ public:
   PoseEstimation2DNode(const ros::NodeHandle& nh)
   {
     nh_ = nh;
-    image_path_sub_ = nh_.subscribe<vision::PoseEstimation>("/network_node/image_pose2d", 1000,
-                                                            &PoseEstimation2DNode::poseEstimationCallback, this);
+    image_path_sub_ = nh_.subscribe<pir_msgs::PoseEstimation>("/network_node/image_pose2d", 1000,
+                                                              &PoseEstimation2DNode::poseEstimationCallback, this);
 
-    pose_estimate_pub_ = nh_.advertise<vision::Pose>("/vision/pose", 1000);
+    pose_estimate_pub_ = nh_.advertise<pir_msgs::HomographyPose>("/vision/pose", 1000);
   }
 
 private:
@@ -27,7 +27,7 @@ private:
   ros::Publisher pose_estimate_pub_;
   PoseEstimation2D pose2d_;
 
-  void poseEstimationCallback(const vision::PoseEstimation::ConstPtr& msg)
+  void poseEstimationCallback(const pir_msgs::PoseEstimation::ConstPtr& msg)
   {
     std::string image_path = msg->filepath;
     uint32_t object = msg->object;
@@ -35,10 +35,10 @@ private:
 
     cv::Point2f object_center;
     double angle;
-    pose2d_.computePoseEstimation(image, object_center, angle);
+    // pose2d_.computePoseEstimation(image, 0, object_center, angle);
 
     // Publish pose estimate for motion planner
-    vision::Pose pose;
+    pir_msgs::HomographyPose pose;
     pose.x = object_center.x;
     pose.y = object_center.y;
     pose.angle = angle;
@@ -53,6 +53,12 @@ int main(int argc, char** argv)
 
   // TODO make publisher based on pose data
   PoseEstimation2DNode pose_estimation2d(nh);
+  PoseEstimation2D pose2d_;
+  cv::Mat image = cv::imread("/home/mads/project_in_robotics/project_in_robotics/vision/data/pose_estimation2d/"
+                             "plug.jpeg");
+  cv::Point2f object_center;
+  double angle;
+  // pose2d_.computePoseEstimation(image, 0, object_center, angle);
 
   ros::spin();
 

@@ -1,29 +1,15 @@
-cmake_minimum_required(VERSION 3.0.2)
-project(vision)
-
-## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+cmake_minimum_required(VERSION 2.8.3)
+project(pir_msgs)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
-  sensor_msgs
-  pcl_ros
-  pcl_conversions
-  tf2_ros
+  actionlib_msgs
   message_generation
   std_msgs
-  visualization_msgs
-  pir_msgs
+  geometry_msgs
 )
-
-find_package(PCL 1.5 REQUIRED)
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-find_package(OpenCV)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -58,28 +44,34 @@ find_package(OpenCV)
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-# )
+# Generate messages in the 'msg' folder
+add_message_files(
+  FILES
+  PoseEstimation.msg
+  HomographyPose.msg
+  Pose3D.msg
+)
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-# )
+add_service_files(
+  FILES
+  ImageCapture.srv
+  ClassifyObject.srv
+)
 
-## Generate actions in the 'action' folder
+# Generate actions in the 'action' folder
 # add_action_files(
 #   FILES
-#   Action1.action
-#   Action2.action
+#   SetMode.action
 # )
 
-## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+# Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+  actionlib_msgs
+  geometry_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -111,10 +103,11 @@ find_package(OpenCV)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include
- LIBRARIES pointnet
- CATKIN_DEPENDS roscpp rospy std_msgs pcl_ros pcl_conversions pir_msgs
- DEPENDS system_lib
+  CATKIN_DEPENDS
+    actionlib_msgs
+    message_runtime
+    std_msgs
+#  DEPENDS system_lib
 )
 
 ###########
@@ -123,30 +116,12 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
-)
+
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/pointnet.cpp
+#   src/${PROJECT_NAME}/ur_dashboard_msgs.cpp
 # )
-
-add_library(pose_estimation2d
-  src/pose_estimation2d/pose_estimation2d.cpp
-  include/pose_estimation2d/pose_estimation2d.h
-)
-
-target_link_libraries(pose_estimation2d ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-
-add_library(pose_estimation3d
-  src/pose_estimation3d/pose_estimation3d.cpp
-  include/pose_estimation3d/pose_estimation3d.h
-)
-
-target_link_libraries(pose_estimation3d ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${PCL_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -156,37 +131,7 @@ target_link_libraries(pose_estimation3d ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME} 
-  src/pointnet/pointnet.cpp
-  )
-
-add_executable(pointcloud_to_pcd
-  src/helpers/pointcloud_to_pcd.cpp
-  )
-
-add_executable(calibrate
-  src/calibration/calibration.cpp
-  )
-
-# add_executable(pose_estimation
-#   src/pose_estimation3d/pose_estimation.cpp
-#   )
-
-add_executable(image_sim
-  src/image_simulation/image_sim.cpp
-  )
-
-add_executable(pose_estimation2d_node
-  src/pose_estimation2d/pose_estimation2d_node.cpp
-  )
-
-  add_executable(pose_estimation2d_test
-  src/pose_estimation2d/pose_estimation_test_node.cpp
-  )
-
-add_executable(pose_estimation3d_node
-  src/pose_estimation3d/pose_estimation3d_node.cpp
-  )
+# add_executable(${PROJECT_NAME}_node src/ur_dashboard_msgs_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -196,78 +141,12 @@ add_executable(pose_estimation3d_node
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_dependencies(pointcloud_to_pcd ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_dependencies(calibrate ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-# add_dependencies(pose_estimation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_dependencies(image_sim ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_dependencies(pose_estimation2d_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_dependencies(pose_estimation2d_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_dependencies(pose_estimation3d_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  ${PCL_LIBRARIES}
-  Eigen3::Eigen
-)
-
-target_link_libraries(pointcloud_to_pcd
-  ${catkin_LIBRARIES}
-)
-
-target_link_libraries(calibrate
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
-
-# target_link_libraries(pose_estimation
+# target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
-#   ${OpenCV_LIBRARIES}
-#   ${PCL_LIBRARIES}
 # )
-
-target_link_libraries(image_sim
-  ${catkin_LIBRARIES}
-)
-
-target_link_libraries(pose_estimation2d_node
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-  pose_estimation2d
-)
-
-target_link_libraries(pose_estimation2d_test
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-  pose_estimation2d
-)
-
-
-target_link_libraries(pose_estimation3d_node
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-  pose_estimation3d
-)
-
-catkin_install_python(PROGRAMS src/helpers/take_image.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
-catkin_install_python(PROGRAMS src/helpers/capture_image.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
-catkin_install_python(PROGRAMS src/object_classification/network_node.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
 
 #############
 ## Install ##
@@ -278,23 +157,16 @@ catkin_install_python(PROGRAMS src/object_classification/network_node.py
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
+# install(PROGRAMS
 #   scripts/my_python_script
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-## Mark executables for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-# install(TARGETS ${PROJECT_NAME}_node
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark libraries for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-# install(TARGETS ${PROJECT_NAME}
+## Mark executables and/or libraries for installation
+# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
 ## Mark cpp header files for installation
@@ -316,7 +188,7 @@ catkin_install_python(PROGRAMS src/object_classification/network_node.py
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pointnet.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_ur_dashboard_msgs.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
