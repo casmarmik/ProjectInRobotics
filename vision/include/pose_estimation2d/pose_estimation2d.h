@@ -13,8 +13,8 @@ public:
   PoseEstimation2D(std::string homography_path);
 
   // Compute the pose of an object based on the input image
-  void computePoseEstimation(cv::Mat& image, cv::Mat object_img, int object, cv::Point2f& object_center,
-                             double& object_orientation, double& orb_orientation, bool debug = false);
+  void computePoseEstimation(cv::Mat& image, int object, cv::Point2f& object_center, double& object_orientation,
+                             bool debug = false);
 
   cv::Mat computeBinaryImage(int object, bool show_image = false);
 

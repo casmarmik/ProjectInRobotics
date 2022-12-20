@@ -32,7 +32,9 @@ public:
 
   void calculate_3d_to_3d_pose(double x, double y, double angle);
 
-  void calculate_homography_based_pose(double x, double y, double angle);
+  void calculate_homography_based_pose(double x, double y, double angle, int object);
+
+  void publishTrajectory(std::vector<moveit::planning_interface::MoveGroupInterface::Plan> plan);
 
 private:
   void homographyPoseCallback(const pir_msgs::HomographyPose::ConstPtr& msg);
@@ -41,6 +43,7 @@ private:
 
   ros::Subscriber homography_target_sub_;
   ros::Subscriber target_3d_sub_;
+  ros::Publisher publish_trajectory_;
   std::unique_ptr<moveit::planning_interface::MoveGroupInterface> arm_;
   ros::NodeHandle nh_;
   geometry_msgs::Pose target_pose_homography_;

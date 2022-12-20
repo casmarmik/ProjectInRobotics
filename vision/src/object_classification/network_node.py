@@ -5,8 +5,8 @@ from cnn import CNN
 from cv_bridge import CvBridge, CvBridgeError
 
 from sensor_msgs.msg import Image
-from vision.srv import ClassifyObject
-from vision.msg import PoseEstimation
+from pir_msgs.srv import ClassifyObject
+from pir_msgs.msg import PoseEstimation
 
 
 # measured manually
@@ -16,7 +16,7 @@ CROPPED_IMAGE_Y1 = 165
 CROPPED_IMAGE_Y2 = 510
 
 class NetworkNode:
-    def __init__(self, model="/home/mads/project_in_robotics/project_in_robotics/vision/src/object_classification/model/retina_extraction.hdf5"):
+    def __init__(self, model="/home/mads/project_in_robotics/project_in_robotics/vision/src/object_classification/model/retin_extraction.hdf5"):
         self.image = None
         self.image_path = None
         self.pose_estimation_type = None
@@ -31,13 +31,7 @@ class NetworkNode:
 
         self.pub_pose2d = rospy.Publisher("/network_node/pose_2d", PoseEstimation)
         self.pub_pose3d = rospy.Publisher("/network_node/pose_3d", PoseEstimation)
-        self.pub_network = rospy.Publisher("/network_node/pose_network", PoseEstimation)
 
-    def crop_single_image(self):
-        if self.image == None:
-            print("no image has been taking cannot crop image")
-        self.image = self.image[CROPPED_IMAGE_X1:CROPPED_IMAGE_X2, CROPPED_IMAGE_Y1:CROPPED_IMAGE_Y2]
-    
     def classify_object(self):
         obj = self.cnn.predict(self.image)
         return obj
@@ -50,7 +44,7 @@ class NetworkNode:
                 bridge = CvBridge()
                 self.image = bridge.imgmsg_to_cv2(msg, "bgr8")
                 cv2.imwrite(self.image_path, self.image)
-                self.crop_single_image()
+                self.image = self.cnn.find_object_image(self.image_path)
                 prediction = self.classify_object()
                 
                 msg = PoseEstimation()
@@ -61,8 +55,6 @@ class NetworkNode:
                     self.pub_pose2d.publish(msg)
                 elif self.pose_estimation_type == 1:
                     self.pub_pose3d.publish(msg)
-                elif self.pose_estimation_type == 2:
-                    self.pub_network.publish(msg)
                 else:
                     print("Unknown pose estimation type, please try again")
 

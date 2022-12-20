@@ -19,8 +19,8 @@ PoseEstimation2D::PoseEstimation2D(std::string homography_path)
   loadHomography(homography_path);
 }
 
-void PoseEstimation2D::computePoseEstimation(cv::Mat& image, cv::Mat object_img, int object, cv::Point2f& object_center,
-                                             double& object_orientation, double& second_orientation, bool debug)
+void PoseEstimation2D::computePoseEstimation(cv::Mat& image, int object, cv::Point2f& object_center,
+                                             double& object_orientation, bool debug)
 {
   image_ = image;
 
@@ -39,10 +39,10 @@ void PoseEstimation2D::computePoseEstimation(cv::Mat& image, cv::Mat object_img,
   // Calculate the angle of the object
   object_orientation = getAngle(contour, debug);
 
-  // ORB based orientation computation
-  cv::Rect rect = computeBoundedRectangle(contour);
-  cv::Mat rect_image = cropImageBasedOnRectangle(rect);
-  second_orientation = computeAngle(object_img, rect_image);
+  // ORB based orientation computation (Not used)
+  // cv::Rect rect = computeBoundedRectangle(contour);
+  // cv::Mat rect_image = cropImageBasedOnRectangle(rect);
+  // second_orientation = computeAngle(object_img, rect_image);
 
   // Doesn't produced better results unfortantely
   // std::vector<cv::Point2f> image_point;
@@ -171,7 +171,7 @@ cv::Mat PoseEstimation2D::computeBinaryImage(int object, bool show_image)
 {
   cv::Scalar lower;
   cv::Scalar upper;
-  if (object == 1)  // Screw
+  if (object == 0)  // Screw
   {
     lower = cv::Scalar(34, 0, 0);
     upper = cv::Scalar(179, 255, 160);
@@ -203,7 +203,7 @@ cv::Mat PoseEstimation2D::computeBinaryImage(int object, bool show_image)
   cv::Mat dilate_element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
   cv::Mat erode_element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
 
-  if (object == 1)  // Screw
+  if (object == 0)  // Screw
   {
     // Dilate the image
     cv::dilate(binary_image, binary_image, dilate_element);

@@ -1,5 +1,6 @@
 #include "motion_planning.h"
 #include <Eigen/Geometry>
+#include <trajectory_msgs/JointTrajectory.h>
 
 namespace planner
 {
@@ -21,6 +22,8 @@ MotionPlanning::MotionPlanning(const ros::NodeHandle& nh, std::string arm_name)
   target_3d_sub_ =
       nh_.subscribe<pir_msgs::Pose3D>("/motion_planning/pose3D", 1000, &MotionPlanning::pose3DCallback, this);
 
+  publish_trajectory_ = nh_.advertise<trajectory_msgs::JointTrajectory>("/motion_planning/trajectory", 100);
+
   homography_pose_received_ = false;
   pose_3d_received_ = false;
 }
@@ -39,6 +42,8 @@ void MotionPlanning::update()
     std::vector<moveit::planning_interface::MoveGroupInterface::Plan> plan =
         plan_motion(target_pose_homography_, current_joints);
     execute_motion(plan);
+    publishTrajectory(plan);
+
     homography_pose_received_ = false;
   }
   else if (pose_3d_received_)
@@ -53,6 +58,7 @@ void MotionPlanning::update()
     std::vector<moveit::planning_interface::MoveGroupInterface::Plan> plan =
         plan_motion(target_pose_3d_, current_joints);
     execute_motion(plan);
+    publishTrajectory(plan);
     pose_3d_received_ = false;
   }
 }
@@ -87,7 +93,8 @@ MotionPlanning::plan_motion(geometry_msgs::Pose target_pose, std::vector<double>
 
   // Move to pre grasp position
   geometry_msgs::Pose pre_grasp_pose = target_pose;
-  pre_grasp_pose.position.z = target_pose.position.z + 0.01;
+  pre_grasp_pose.position.z = target_pose.position.z + 0.02;
+  std::cout << pre_grasp_pose << std::endl;
   arm_->setPoseTarget(pre_grasp_pose, "tool0");
   success = (arm_->plan(cur_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   if (success)
@@ -118,25 +125,6 @@ MotionPlanning::plan_motion(geometry_msgs::Pose target_pose, std::vector<double>
     std::cerr << "Failed to plan a trajectory from pre grasp position to grasp position" << std::endl;
     return {};
   }
-  // Set end position of last trajectory as start position for the next trajectory
-  end_joint_positions = cur_plan.trajectory_.joint_trajectory.points.back().positions;
-  robot_state->setJointGroupPositions(joint_model_group, end_joint_positions);
-  arm_->setStartState(*robot_state);
-  std::cout << "hmm2" << std::endl;
-
-  // Move to pre grasp after grasping
-  arm_->setPoseTarget(pre_grasp_pose, "tool0");
-  success = (arm_->plan(cur_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-  if (success)
-  {
-    plan.push_back(cur_plan);
-    // TODO store the motion in a vector to publish afterwards
-  }
-  else
-  {
-    std::cerr << "Failed to plan a trajectory from grasp position to post grasp position" << std::endl;
-    return {};
-  }
   std::cout << "done calculating plan" << std::endl;
   return plan;
 }
@@ -145,19 +133,48 @@ bool MotionPlanning::execute_motion(std::vector<moveit::planning_interface::Move
 {
   for (unsigned int i = 0; i < plan.size(); ++i)
   {
-    std::cout << "executing plan " << std::endl;
-    for (unsigned int j = 0; j < plan[i].trajectory_.joint_trajectory.points.size(); ++j)
-    {
-      std::cout << plan[i].trajectory_.joint_trajectory.points[j].positions[0] << " "
-                << plan[i].trajectory_.joint_trajectory.points[j].positions[1] << " "
-                << plan[i].trajectory_.joint_trajectory.points[j].positions[2] << " "
-                << plan[i].trajectory_.joint_trajectory.points[j].positions[3] << " "
-                << plan[i].trajectory_.joint_trajectory.points[j].positions[4] << " "
-                << plan[i].trajectory_.joint_trajectory.points[j].positions[5] << " " << std::endl;
-    }
     arm_->execute(plan[i]);
   }
   return true;
+}
+
+void MotionPlanning::publishTrajectory(std::vector<moveit::planning_interface::MoveGroupInterface::Plan> plan)
+{
+  trajectory_msgs::JointTrajectory joint_traj;
+  joint_traj.joint_names = plan[0].trajectory_.joint_trajectory.joint_names;
+  joint_traj.header = plan[0].trajectory_.joint_trajectory.header;
+  double cur_time = 0.0;
+  for (unsigned int i = 0; i < plan.size(); ++i)
+  {
+    for (unsigned int j = 0; j < plan[i].trajectory_.joint_trajectory.points.size(); ++j)
+    {
+      trajectory_msgs::JointTrajectoryPoint cur_point;
+      if (i > 0)  // New trajectory means zeroing the time, this is fixed with this, keeping the time counting up
+      {
+        if (j == 0)
+        {
+          cur_time = cur_time + 0.2;
+        }
+        else if (j > 0)
+        {
+          cur_time = plan[i].trajectory_.joint_trajectory.points[j].time_from_start.toSec() + cur_time;
+        }
+      }
+      else
+      {  // First trajectory just use the tome from this
+        cur_time = plan[i].trajectory_.joint_trajectory.points[j].time_from_start.toSec();
+      }
+      for (unsigned int k = 0; k < plan[i].trajectory_.joint_trajectory.points[j].positions.size(); ++k)
+      {
+        cur_point.positions.push_back(plan[i].trajectory_.joint_trajectory.points[j].positions[k]);
+        cur_point.velocities.push_back(plan[i].trajectory_.joint_trajectory.points[j].velocities[k]);
+        cur_point.accelerations.push_back(plan[i].trajectory_.joint_trajectory.points[j].accelerations[k]);
+      }
+      cur_point.time_from_start.fromSec(cur_time);
+      joint_traj.points.push_back(cur_point);
+    }
+  }
+  publish_trajectory_.publish(joint_traj);
 }
 
 void MotionPlanning::calculate_3d_to_3d_pose(double x, double y, double angle)
@@ -181,19 +198,26 @@ void MotionPlanning::calculate_3d_to_3d_pose(double x, double y, double angle)
   rot = rot * rot_angle;
 }
 
-void MotionPlanning::calculate_homography_based_pose(double x, double y, double angle)
+void MotionPlanning::calculate_homography_based_pose(double x, double y, double angle, int object)
 {
-  // x 285.1 mm and y -272.7 mm, which is 0.0 in the homography plane (measured manually)
-  target_pose_homography_.position.x = x + 0.2851;
-  target_pose_homography_.position.y = -1 * y - 0.2727;
-  target_pose_homography_.position.z =
-      0.2;  // Find out the correct height to pick up the object, should be based on the object to be grasped
+  target_pose_homography_.position.x = x;
+  target_pose_homography_.position.y = y;
+  if (object == 0)  // screw
+  {
+    target_pose_homography_.position.z = 115.79 / 1000;
+  }
+  else if (object == 1)  // plug
+  {
+    target_pose_homography_.position.z = 114.80 / 1000;
+    angle = 0;
+    target_pose_homography_.position.y = y + 1.5;
+  }
 
   // This makes the z-axis point downwards
   Eigen::Matrix3d rot = Eigen::Matrix3d::Zero();
+  rot(0, 1) = -1;
+  rot(1, 0) = -1;
   rot(2, 2) = -1;
-  rot(0, 0) = -1;
-  rot(1, 1) = 1;
 
   // Build rotation matrix from angle rotated around the z axis
   Eigen::Matrix3d rot_angle = Eigen::Matrix3d::Identity();
@@ -204,7 +228,8 @@ void MotionPlanning::calculate_homography_based_pose(double x, double y, double 
 
   // compute final orientation
   rot = rot * rot_angle;
-  // std::cout << rot << std::endl;
+
+  std::cout << rot << std::endl;
 
   Eigen::Quaterniond q(rot);
   target_pose_homography_.orientation.x = q.x();
@@ -215,8 +240,7 @@ void MotionPlanning::calculate_homography_based_pose(double x, double y, double 
 
 void MotionPlanning::homographyPoseCallback(const pir_msgs::HomographyPose::ConstPtr& msg)
 {
-  std::cout << "Callback called" << std::endl;
-  calculate_homography_based_pose(msg->x, msg->y, msg->angle);
+  calculate_homography_based_pose(msg->x, msg->y, msg->angle, msg->object);
 
   homography_pose_received_ = true;
 }

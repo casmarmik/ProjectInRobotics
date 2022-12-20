@@ -18,7 +18,7 @@ public:
     image_path_sub_ = nh_.subscribe<pir_msgs::PoseEstimation>("/network_node/image_pose2d", 1000,
                                                               &PoseEstimation2DNode::poseEstimationCallback, this);
 
-    pose_estimate_pub_ = nh_.advertise<pir_msgs::HomographyPose>("/vision/pose", 1000);
+    pose_estimate_pub_ = nh_.advertise<pir_msgs::HomographyPose>("/motion_planning/homography_pose", 1000);
   }
 
 private:
@@ -35,13 +35,14 @@ private:
 
     cv::Point2f object_center;
     double angle;
-    // pose2d_.computePoseEstimation(image, 0, object_center, angle);
+    pose2d_.computePoseEstimation(image, object, object_center, angle);
 
     // Publish pose estimate for motion planner
     pir_msgs::HomographyPose pose;
-    pose.x = object_center.x;
-    pose.y = object_center.y;
+    pose.x = (object_center.x + 285.1) / 1000;
+    pose.y = (-object_center.y - 272.7) / 1000;
     pose.angle = angle;
+    pose.object = object;
     pose_estimate_pub_.publish(pose);
   }
 };
