@@ -51,15 +51,17 @@ class simROS:
 
     def getNPPoses(self):
         l = []
+        l.append([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        home = [0.0, -90.0, 90.0, 0.0, 0.0, 0.0]
         for pos in self.simPoses.points:
             t_temp = pos.time_from_start.to_sec()
             temp = []
-            for i in range(0, 6):
-                temp.append(pos.positions[i])
+            for i in range(6):
+                temp.append(np.rad2deg(pos.positions[i]) -home[i])
             temp.append(t_temp)
-            print("--------------------------------------")
-            print(temp)
-            print("--------------------------------------")
+            # print("--------------------------------------")
+            # print(temp)
+            # print("--------------------------------------")
 
             l.append(temp)
         
@@ -83,7 +85,7 @@ class simROS:
         self.rate = ro.Rate(10) # 10hz publisher rate
 
     def listener(self):
-        ro.Subscriber("POSES", JT, self.call)
+        ro.Subscriber("/POSES", JT, self.call)
 
     
 
@@ -197,7 +199,7 @@ class controllerComm:
 
     # Starts the socket and thread
     # Parameter timeout is the time in seconds that the PC will wait for a response from the controller
-    def start(self, timeout = 60):
+    def start(self, timeout = 6000000):
         self.socket.bind((self.IP, self.port))
         self.socket.settimeout(timeout)
         self.thread.start()
@@ -263,7 +265,7 @@ class controllerComm:
     def addPosesToQueue(self, poses, queueType, sro):
         # If there is more than one pose
         print("(=<>=)HELLO!")
-        print(poses)
+        # print(poses)
         if type(poses) is np.ndarray:
             for pose in poses:
                 if queueType == 'PTP':
@@ -375,12 +377,15 @@ class controllerComm:
 # and the 7'th value is the timestamp
 # cycleTime is in s
 def interpolatePath(startPoint, endPoint, timeSincePathStart):
-    
+    # print(startPoint)
+    # print(endPoint)
+    # for i in range(6):
+    #     startPoint[i] = np.rad2deg(startPoint[i]) - home[i]
+    #     endPoint[i] = np.rad2deg(endPoint[i]) - home[i]
     pd = endPoint[:-1] - startPoint[:-1]
     td = endPoint[-1] - startPoint[-1]
     curTime = timeSincePathStart - startPoint[-1]
     slope = np.divide(pd,td)
-
     return slope * curTime + startPoint[:-1]
 
 

@@ -54,11 +54,11 @@ int main(int argc, char** argv)
 
   // TODO make publisher based on pose data
   PoseEstimation2DNode pose_estimation2d(nh);
-  PoseEstimation2D pose2d_;
-  cv::Mat image = cv::imread("/home/mads/project_in_robotics/project_in_robotics/vision/data/pose_estimation2d/"
-                             "plug.jpeg");
-  cv::Point2f object_center;
-  double angle;
+  // PoseEstimation2D pose2d_;
+  // cv::Mat image = cv::imread("/home/mads/project_in_robotics/project_in_robotics/vision/data/pose_estimation2d/"
+  //                            "plug.jpeg");
+  // cv::Point2f object_center;
+  // double angle;
   // pose2d_.computePoseEstimation(image, 0, object_center, angle);
 
   ros::spin();

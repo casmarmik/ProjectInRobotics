@@ -9,8 +9,7 @@ namespace pose_estimation_2d
 {
 PoseEstimation2D::PoseEstimation2D()
 {
-  std::string homography_path = "/home/mads/project_in_robotics/project_in_robotics/vision/data/homography/"
-                                "homography_matrix.xml";
+  std::string homography_path = "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/homography/homography_matrix.xml";
   findHomography(homography_path);
 }
 
@@ -126,7 +125,7 @@ void PoseEstimation2D::cropImage()
 void PoseEstimation2D::findHomography(std::string homography_path)
 {
   std::stringstream ss;
-  ss << "/home/mads/project_in_robotics/project_in_robotics/vision/data/homography/homography.jpeg";
+  ss << "/home/marcus/pir/ros_ws/src/project_in_robotics/vision/data/homography/homography.jpeg";
   std::string image_path = cv::samples::findFile(ss.str().c_str());
   cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
 

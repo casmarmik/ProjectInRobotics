@@ -22,7 +22,7 @@ MotionPlanning::MotionPlanning(const ros::NodeHandle& nh, std::string arm_name)
   target_3d_sub_ =
       nh_.subscribe<pir_msgs::Pose3D>("/motion_planning/pose3D", 1000, &MotionPlanning::pose3DCallback, this);
 
-  publish_trajectory_ = nh_.advertise<trajectory_msgs::JointTrajectory>("/motion_planning/trajectory", 100);
+  publish_trajectory_ = nh_.advertise<trajectory_msgs::JointTrajectory>("/POSES", 100);
 
   homography_pose_received_ = false;
   pose_3d_received_ = false;
@@ -43,7 +43,7 @@ void MotionPlanning::update()
         plan_motion(target_pose_homography_, current_joints);
     execute_motion(plan);
     publishTrajectory(plan);
-
+    std::cout << "published code" << std::endl;
     homography_pose_received_ = false;
   }
   else if (pose_3d_received_)
@@ -93,7 +93,7 @@ MotionPlanning::plan_motion(geometry_msgs::Pose target_pose, std::vector<double>
 
   // Move to pre grasp position
   geometry_msgs::Pose pre_grasp_pose = target_pose;
-  pre_grasp_pose.position.z = target_pose.position.z + 0.02;
+  pre_grasp_pose.position.z = target_pose.position.z + 0.1;
   std::cout << pre_grasp_pose << std::endl;
   arm_->setPoseTarget(pre_grasp_pose, "tool0");
   success = (arm_->plan(cur_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
@@ -153,16 +153,17 @@ void MotionPlanning::publishTrajectory(std::vector<moveit::planning_interface::M
       {
         if (j == 0)
         {
-          cur_time = cur_time + 0.2;
+          cur_time = cur_time + 1;
         }
         else if (j > 0)
         {
-          cur_time = plan[i].trajectory_.joint_trajectory.points[j].time_from_start.toSec() + cur_time;
+          cur_time = cur_time + 2;
         }
       }
       else
       {  // First trajectory just use the tome from this
-        cur_time = plan[i].trajectory_.joint_trajectory.points[j].time_from_start.toSec();
+        // cur_time = plan[i].trajectory_.joint_trajectory.points[j].time_from_start.toSec();
+        cur_time = cur_time + 1;
       }
       for (unsigned int k = 0; k < plan[i].trajectory_.joint_trajectory.points[j].positions.size(); ++k)
       {
@@ -200,6 +201,9 @@ void MotionPlanning::calculate_3d_to_3d_pose(double x, double y, double angle)
 
 void MotionPlanning::calculate_homography_based_pose(double x, double y, double angle, int object)
 {
+  std::cout << "angle: " << angle << std::endl;
+  angle = angle * M_PI/180;
+  std::cout << "angle: " << angle << std::endl;
   target_pose_homography_.position.x = x;
   target_pose_homography_.position.y = y;
   if (object == 0)  // screw
@@ -209,9 +213,11 @@ void MotionPlanning::calculate_homography_based_pose(double x, double y, double 
   else if (object == 1)  // plug
   {
     target_pose_homography_.position.z = 114.80 / 1000;
-    angle = 0;
-    target_pose_homography_.position.y = y + 1.5;
+    angle = -1.57;
+    target_pose_homography_.position.y = y + 0.015;
   }
+
+  std::cout << target_pose_homography_ << std::endl;
 
   // This makes the z-axis point downwards
   Eigen::Matrix3d rot = Eigen::Matrix3d::Zero();

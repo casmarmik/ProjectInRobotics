@@ -148,6 +148,10 @@ catkin_install_python(PROGRAMS src/RosNodes.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+catkin_install_python(PROGRAMS src/Done/RemoteControlUIROS.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 #############
 ## Install ##
 #############
