@@ -122,25 +122,27 @@ if __name__ == '__main__':
     cnn.load_model("/home/mads/project_in_robotics/project_in_robotics/vision/src/object_classification/model/retin_extraction.hdf5")
     # TODO collect some test image
     succes_count = 0
+    plug_count = 0
     for i in range(36):
         plug_img = cnn.find_object_image(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/tests/rgb/plug/{i}.jpeg")
         plug_img = plug_img / 255.
         plug_img = np.array([plug_img])
         index = cnn.predict(plug_img)
-
+        
         if index == 1:
-            print("correct plug")
+            #print("correct plug")
             succes_count = succes_count + 1
         else:
-            print("wrong plug")
+            print(f"wrong plug {plug_count}")
+        plug_count = plug_count + 1
         screw_img = cnn.find_object_image(f"/home/mads/project_in_robotics/project_in_robotics/vision/data/tests/rgb/screw/{i}.jpeg")
         screw_img = screw_img / 255.
         screw_img = np.array([screw_img])
         index = cnn.predict(screw_img)
         if index == 0:
-            print("correct screw")
+            #print("correct screw")
             succes_count = succes_count + 1
         else:
-            print("wrong screw")
+            print(f"wrong screw {succes_count}")
     
     print(succes_count)

@@ -31,6 +31,10 @@ std(plug_error_ang);
 
 absolute_error_plug = sqrt(plug_error_x.^2+ plug_error_y.^2);
 absolute_error_screw = sqrt(screw_error_x.^2+ screw_error_y.^2);
+(mean(absolute_error_screw) + mean(absolute_error_plug)) / 2
+(mean(screw_error_ang) + mean(plug_error_ang)) / 2
+
+
 
 % Grasping area analysis
 mean_screw1 = mean(absolute_error_screw(1:4));

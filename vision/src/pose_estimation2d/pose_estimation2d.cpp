@@ -190,7 +190,7 @@ cv::Mat PoseEstimation2D::computeBinaryImage(int object, bool show_image)
   cv::cvtColor(masked_image, gray_image, cv::COLOR_BGR2GRAY);
   cv::GaussianBlur(gray_image, gray_image, cv::Size(5, 5), 0);
   cv::GaussianBlur(gray_image, gray_image, cv::Size(5, 5), 0);
-  cv::threshold(gray_image, binary_image, 60, 100, cv::THRESH_BINARY);
+  cv::threshold(gray_image, binary_image, 60, 255, cv::THRESH_BINARY);
 
   if (show_image)
   {

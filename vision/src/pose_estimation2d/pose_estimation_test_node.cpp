@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     ss_plug << "/home/mads/project_in_robotics/project_in_robotics/vision/data/tests/rgb/plug/" << i << ".jpeg";
     cv::Mat image_plug = cv::imread(ss_plug.str());
 
-    // pose2d_.computePoseEstimation(image_plug, object_plug, 0, object_center, pca_angle, orb_angle, false);
+    pose2d_.computePoseEstimation(image_plug, 1, object_center, pca_angle, false);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     std::cout << " angle orb plug " << orb_angle << std::endl;
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
     ss_screw << "/home/mads/project_in_robotics/project_in_robotics/vision/data/tests/rgb/screw/" << i << ".jpeg";
     cv::Mat image_screw = cv::imread(ss_screw.str());
 
-    // pose2d_.computePoseEstimation(image_screw, object_screw, 1, object_center, pca_angle, orb_angle, false);
+    pose2d_.computePoseEstimation(image_screw, 0, object_center, pca_angle, false);
     stop = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(stop - start);
     // std::cout << "Cordinates screw " << object_center.x + 285.1 << " " << -1 * object_center.y - 272.7 << " "
