@@ -5,3 +5,4 @@ devel
 object_classification_data
 model/
 *.asv
+__pycache__
